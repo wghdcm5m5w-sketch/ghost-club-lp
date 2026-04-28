@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHOST CLUB — ジム会費を、無駄にさせない。</title>
+<meta name="description" content="日本のジム退会率は3ヶ月で35%。GHOST CLUBは、月会費を可視化することで「行く理由」を作る。たった一つの機能を持つ、皮肉でドライな筋トレアプリ。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Text:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060606;
+  --bg-2: #0e0e0e;
+  --bg-3: #181818;
+  --line: #2a2a2a;
+  --line-2: #3a3a3a;
+  --text: #ededed;
+  --text-2: #9c9c9c;
+  --text-3: #5a5a5a;
+  --burn: #ff3a1f;
+  --burn-2: #ff6a3d;
+  --ash: #c4ff00;
+  --ghost: rgba(237,237,237,0.35);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.04'/></svg>");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+
+/* ===== NAV ===== */
+nav.top {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(6,6,6,0.85);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  max-width: 1300px; margin: 0 auto;
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  width: 36px; height: 36px;
+  background: var(--burn);
+  display: grid; place-items: center;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 22px; color: #000;
+}
+.logo-text { font-family: 'Big Shoulders Stencil Text'; font-weight: 900; font-size: 20px; letter-spacing: 0.12em; }
+.nav-cta {
+  font-family: 'IBM Plex Mono'; font-size: 12px;
+  letter-spacing: 0.18em; color: var(--burn);
+  text-decoration: none;
+  padding: 10px 18px;
+  border: 1px solid var(--burn);
+  transition: all 0.2s;
+}
+.nav-cta:hover {
+  background: var(--burn); color: #000;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 140px 32px 100px;
+  max-width: 1300px; margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,58,31,0.18) 0%, transparent 60%);
+  pointer-events: none; z-index: -1;
+  filter: blur(20px);
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  letter-spacing: 0.32em; color: var(--burn);
+  margin-bottom: 32px;
+  padding: 8px 14px;
+  border: 1px solid var(--burn);
+  background: rgba(255,58,31,0.06);
+}
+.hero-tag .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--burn);
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+.hero-title {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(48px, 8vw, 120px);
+  line-height: 0.88; letter-spacing: -0.01em;
+  margin-bottom: 32px;
+  text-transform: uppercase;
+  animation: titleIn 0.9s ease-out;
+}
+@keyframes titleIn {
+  from { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.hero-title .ghost {
+  color: var(--ghost);
+  position: relative; display: inline-block;
+}
+.hero-title .ghost::after {
+  content: ''; position: absolute;
+  left: -2%; right: -2%; top: 45%;
+  height: 8px; background: var(--burn);
+  transform: rotate(-2deg);
+  filter: drop-shadow(0 0 12px var(--burn));
+}
+.hero-title .burn { color: var(--burn); text-shadow: 0 0 30px rgba(255,58,31,0.4); }
+.hero-pitch {
+  font-family: 'Noto Serif JP'; font-weight: 500;
+  font-size: clamp(17px, 2vw, 21px);
+  max-width: 620px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+.hero-pitch strong {
+  color: var(--burn); font-weight: 700;
+  border-bottom: 2px solid var(--burn);
+  padding-bottom: 1px;
+}
+.hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.cta-primary {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 16px; letter-spacing: 0.16em;
+  color: #000; background: var(--burn);
+  text-decoration: none;
+  padding: 16px 28px;
+  display: inline-block;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.cta-primary::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--ash);
+  transform: translateX(-101%);
+  transition: transform 0.3s;
+  z-index: -1;
+}
+.cta-primary:hover { color: #000; }
+.cta-primary:hover::after { transform: translateX(0); }
+.cta-primary span { position: relative; z-index: 1; }
+.cta-secondary {
+  font-family: 'IBM Plex Mono'; font-size: 12px;
+  letter-spacing: 0.18em; color: var(--text-2);
+  text-decoration: none;
+  padding: 16px 4px;
+}
+.cta-secondary:hover { color: var(--text); }
+
+/* HERO PHONE MOCKUP */
+.phone-mock {
+  position: relative;
+  width: 100%; max-width: 360px;
+  margin: 0 auto;
+  aspect-ratio: 9/19;
+  background: #000;
+  border-radius: 44px;
+  border: 1.5px solid var(--line-2);
+  padding: 12px;
+  box-shadow:
+    0 0 0 6px #1a1a1a,
+    0 30px 80px rgba(255,58,31,0.18),
+    0 0 60px rgba(0,0,0,0.6);
+}
+.phone-screen {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  display: flex; flex-direction: column;
+}
+.phone-notch {
+  position: absolute; top: 8px; left: 50%;
+  transform: translateX(-50%);
+  width: 100px; height: 28px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 5;
+}
+.phone-status {
+  padding: 16px 20px 8px;
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  color: var(--text-2);
+}
+.phone-content { padding: 28px 18px 18px; flex: 1; }
+.phone-greeting {
+  font-size: 12px; color: var(--text-2);
+  margin-bottom: 18px;
+  font-family: 'Noto Sans JP';
+}
+.phone-burn-card {
+  background: var(--bg-2);
+  border: 1px solid var(--burn);
+  padding: 18px 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.phone-burn-card::before {
+  content: ''; position: absolute; top: -1px; left: -1px;
+  width: 22px; height: 22px;
+  border-top: 2px solid var(--burn);
+  border-left: 2px solid var(--burn);
+}
+.phone-burn-label {
+  font-family: 'IBM Plex Mono'; font-size: 8px;
+  color: var(--burn); letter-spacing: 0.24em;
+  margin-bottom: 8px;
+}
+.phone-burn-num {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 48px; line-height: 1; color: var(--text);
+}
+.phone-burn-num .yen {
+  color: var(--burn); margin-right: 4px;
+  display: inline-block;
+  animation: burnPulse 2s ease-in-out infinite;
+}
+@keyframes burnPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,58,31,0.6)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 12px rgba(255,58,31,0.9)); }
+}
+.phone-burn-num .digit {
+  display: inline-block;
+  animation: digitTick 6s linear infinite;
+}
+@keyframes digitTick {
+  0%, 90% { transform: translateY(0); }
+  92% { transform: translateY(-100%); }
+  94%, 100% { transform: translateY(0); }
+}
+.phone-burn-sub {
+  font-size: 9px; color: var(--text-2);
+  margin-top: 8px;
+  font-family: 'Noto Sans JP';
+}
+.phone-burn-bar {
+  margin-top: 10px;
+  height: 3px; background: var(--line);
+  position: relative; overflow: hidden;
+}
+.phone-burn-bar > i {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, var(--burn) 0%, var(--burn-2) 100%);
+  animation: barFill 4s ease-out forwards, barPulse 2s 4s ease-in-out infinite;
+}
+@keyframes barFill {
+  from { width: 0%; }
+  to { width: 38%; }
+}
+@keyframes barPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.phone-cta {
+  background: var(--ash);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.phone-cta-label {
+  font-family: 'IBM Plex Mono'; font-size: 7px;
+  color: #000; letter-spacing: 0.24em;
+  margin-bottom: 4px;
+}
+.phone-cta-text {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 16px; color: #000; line-height: 1.1;
+}
+.phone-stat-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px; margin-bottom: 14px;
+}
+.phone-stat {
+  background: var(--bg-2);
+  padding: 10px 12px;
+}
+.phone-stat-label {
+  font-family: 'IBM Plex Mono'; font-size: 7px;
+  color: var(--text-3); letter-spacing: 0.16em;
+}
+.phone-stat-num {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 22px; color: var(--text);
+  margin-top: 2px;
+}
+.phone-stat-num.s { font-size: 12px; color: var(--ash); }
+.phone-tabs {
+  background: var(--bg-2);
+  padding: 14px 16px 18px;
+  display: flex; justify-content: space-around;
+  margin-top: auto;
+}
+.phone-tab {
+  font-family: 'IBM Plex Mono'; font-size: 7px;
+  color: var(--text-3); letter-spacing: 0.16em;
+  position: relative;
+}
+.phone-tab.active { color: var(--burn); }
+.phone-tab.active::before {
+  content: '·'; position: absolute;
+  top: -8px; left: 50%; transform: translateX(-50%);
+  font-size: 14px; color: var(--burn);
+}
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 32px;
+  position: relative;
+  z-index: 2;
+}
+.stats-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+.stat-cell {
+  position: relative;
+  padding-left: 24px;
+}
+.stat-cell::before {
+  content: ''; position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 2px; background: var(--burn);
+}
+.stat-num {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1; color: var(--text);
+}
+.stat-num .accent { color: var(--burn); }
+.stat-label {
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  letter-spacing: 0.18em; color: var(--text-3);
+  margin-top: 8px;
+}
+
+/* ===== SECTION COMMON ===== */
+section.block {
+  padding: 120px 32px;
+  max-width: 1300px;
+  margin: 0 auto;
+  position: relative; z-index: 2;
+}
+.eyebrow {
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  letter-spacing: 0.32em; color: var(--burn);
+  margin-bottom: 16px;
+}
+.h2 {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(36px, 6vw, 84px);
+  line-height: 0.95; letter-spacing: -0.01em;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  max-width: 920px;
+}
+.h2 .alt { color: var(--burn); }
+.lead {
+  font-family: 'Noto Serif JP'; font-weight: 500;
+  font-size: clamp(16px, 1.6vw, 19px);
+  color: var(--text);
+  line-height: 1.7;
+  max-width: 720px;
+  margin-bottom: 64px;
+}
+.lead strong { color: var(--burn); }
+
+/* ===== PROBLEM SECTION ===== */
+.problem-block {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+.problem-text { padding: 56px; }
+.problem-text h3 {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 36px; letter-spacing: 0.01em;
+  margin-bottom: 22px; line-height: 1.05;
+  text-transform: uppercase;
+}
+.problem-text p {
+  font-family: 'Noto Sans JP'; font-size: 15px;
+  color: var(--text-2); line-height: 1.85;
+  margin-bottom: 16px;
+}
+.problem-text p strong { color: var(--text); font-weight: 700; }
+.problem-numbers {
+  background: var(--burn);
+  color: #000;
+  padding: 56px;
+  display: flex; flex-direction: column; justify-content: center; gap: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.problem-numbers::before {
+  content: '¥';
+  position: absolute;
+  right: -60px; bottom: -120px;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 480px; color: rgba(0,0,0,0.12); line-height: 1;
+}
+.big-num {
+  position: relative;
+}
+.big-num-val {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(56px, 8vw, 92px);
+  line-height: 1; letter-spacing: -0.02em;
+  color: #000;
+}
+.big-num-label {
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  letter-spacing: 0.22em; margin-top: 8px;
+  color: rgba(0,0,0,0.7);
+}
+
+/* ===== HOW IT WORKS ===== */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.step {
+  background: var(--bg-2);
+  padding: 36px 28px;
+  position: relative;
+  min-height: 320px;
+}
+.step::after {
+  content: '→';
+  position: absolute;
+  right: -16px; top: 50%; transform: translateY(-50%);
+  background: var(--bg);
+  color: var(--burn);
+  padding: 6px 4px;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 22px; z-index: 2;
+}
+.step:last-child::after { display: none; }
+.step-num {
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  letter-spacing: 0.28em; color: var(--burn);
+  margin-bottom: 18px;
+}
+.step-icon {
+  width: 56px; height: 56px;
+  border: 1px solid var(--burn);
+  color: var(--burn);
+  display: grid; place-items: center;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 22px;
+}
+.step-title {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 22px; line-height: 1.1;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  min-height: 48px;
+}
+.step-desc {
+  font-size: 13px; color: var(--text-2);
+  line-height: 1.7;
+}
+.step-desc strong { color: var(--text); font-weight: 700; }
+
+/* ===== WIDGET DEMO ===== */
+.widget-demo {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border-radius: 32px;
+  padding: 64px 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.widget-demo-text h3 {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: 0.01em;
+  margin-bottom: 20px;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.widget-demo-text h3 .alt { color: var(--burn); }
+.widget-demo-text p {
+  font-family: 'Noto Sans JP'; font-size: 15px;
+  color: var(--text-2); line-height: 1.85;
+  margin-bottom: 20px;
+}
+.widget-demo-text p strong { color: var(--text); font-weight: 700; }
+.lock-screen-mock {
+  position: relative;
+  width: 100%; max-width: 320px; margin: 0 auto;
+  aspect-ratio: 9/19;
+  background:
+    radial-gradient(ellipse 50% 30% at 50% 30%, rgba(255,58,31,0.2), transparent),
+    linear-gradient(160deg, #2a2a2a 0%, #050505 100%);
+  border-radius: 36px;
+  border: 1.5px solid var(--line-2);
+  padding: 14px;
+  overflow: hidden;
+}
+.lock-time {
+  font-family: 'IBM Plex Mono'; font-weight: 300;
+  font-size: 56px; line-height: 1;
+  color: var(--text);
+  text-align: center;
+  margin-top: 60px;
+  letter-spacing: -0.04em;
+}
+.lock-date {
+  font-family: 'Noto Sans JP'; font-size: 13px;
+  color: var(--text-2);
+  text-align: center;
+  margin-top: 8px;
+}
+.lock-widget-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 32px 8px 8px;
+}
+.lock-widget {
+  background: rgba(10,10,10,0.65);
+  backdrop-filter: blur(8px);
+  border: 0.5px solid rgba(255,58,31,0.4);
+  border-radius: 16px;
+  padding: 14px;
+  aspect-ratio: 1;
+}
+.lock-widget.lime {
+  border-color: rgba(196,255,0,0.4);
+}
+.lock-widget-label {
+  font-family: 'IBM Plex Mono'; font-size: 7px;
+  letter-spacing: 0.18em;
+  color: var(--burn);
+  margin-bottom: 4px;
+}
+.lock-widget.lime .lock-widget-label { color: var(--ash); }
+.lock-widget-num {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 26px; line-height: 1; color: var(--text);
+  margin-top: 22px;
+}
+.lock-widget-num .yen { color: var(--burn); font-size: 18px; }
+.lock-widget-num .small { font-size: 13px; color: var(--text-2); }
+.lock-widget-sub {
+  font-family: 'Noto Sans JP'; font-size: 8px;
+  color: var(--text-2); margin-top: 8px;
+}
+.lock-notification {
+  position: absolute; bottom: 30px; left: 14px; right: 14px;
+  background: rgba(20,20,20,0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.lock-notification-icon {
+  width: 28px; height: 28px;
+  background: var(--burn);
+  display: grid; place-items: center;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 16px; color: #000;
+  border-radius: 6px;
+}
+.lock-notification-text { flex: 1; }
+.lock-notification-title {
+  font-size: 11px; font-weight: 700; color: var(--text);
+}
+.lock-notification-msg {
+  font-size: 10px; color: var(--text-2); margin-top: 2px;
+}
+.lock-notification-time {
+  font-size: 9px; color: var(--text-3);
+  font-family: 'IBM Plex Mono';
+}
+
+/* ===== PSYCH CARDS ===== */
+.psych-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.psych-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ash);
+  padding: 28px;
+}
+.psych-card-en {
+  font-family: 'Antonio'; font-weight: 700;
+  font-size: 13px; letter-spacing: 0.06em;
+  color: var(--ash);
+  margin-bottom: 8px;
+}
+.psych-card-jp {
+  font-family: 'Noto Serif JP'; font-weight: 700;
+  font-size: 19px;
+  margin-bottom: 14px;
+}
+.psych-card-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.psych-card-desc strong { color: var(--text); font-weight: 700; }
+
+/* ===== PRICING ===== */
+.pricing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.price-cell {
+  background: var(--bg-2);
+  padding: 48px;
+}
+.price-cell.pro {
+  background: var(--bg-2);
+  border-left: 3px solid var(--burn);
+  position: relative;
+}
+.price-cell.pro::before {
+  content: 'RECOMMENDED';
+  position: absolute;
+  top: 20px; right: 20px;
+  font-family: 'IBM Plex Mono'; font-size: 9px;
+  letter-spacing: 0.22em;
+  color: #000; background: var(--burn);
+  padding: 4px 8px;
+}
+.price-tier {
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  letter-spacing: 0.28em; color: var(--text-3);
+  margin-bottom: 18px;
+}
+.price-cell.pro .price-tier { color: var(--burn); }
+.price-amount {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 64px; line-height: 1;
+  margin-bottom: 4px;
+}
+.price-cell.pro .price-amount { color: var(--text); }
+.price-period {
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  color: var(--text-3); letter-spacing: 0.12em;
+  margin-bottom: 28px;
+}
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.price-features li {
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--text-2);
+  border-bottom: 1px dashed var(--line);
+  display: flex; gap: 12px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+.price-features li:last-child { border-bottom: none; }
+.price-features li::before {
+  content: '◉';
+  color: var(--ash);
+  font-size: 11px;
+  margin-top: 4px;
+}
+.price-cell.free .price-features li::before { color: var(--text-3); }
+
+/* ===== EMAIL CTA ===== */
+.email-cta {
+  background: linear-gradient(135deg, var(--burn) 0%, var(--burn-2) 100%);
+  padding: 80px 56px;
+  position: relative; overflow: hidden;
+}
+.email-cta::before {
+  content: '¥';
+  position: absolute;
+  right: -120px; bottom: -200px;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 700px;
+  color: rgba(0,0,0,0.08); line-height: 1;
+}
+.email-inner { position: relative; max-width: 800px; }
+.email-eye {
+  font-family: 'IBM Plex Mono'; font-size: 11px;
+  letter-spacing: 0.32em; color: rgba(0,0,0,0.6);
+  margin-bottom: 16px;
+}
+.email-h {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1; letter-spacing: -0.01em;
+  margin-bottom: 24px;
+  color: #000;
+  text-transform: uppercase;
+}
+.email-sub {
+  font-family: 'Noto Serif JP'; font-weight: 500;
+  font-size: 17px; line-height: 1.7;
+  color: rgba(0,0,0,0.8);
+  margin-bottom: 32px; max-width: 640px;
+}
+.email-form {
+  display: flex; gap: 0;
+  max-width: 540px;
+  background: #000;
+}
+.email-input {
+  flex: 1;
+  background: #000; color: var(--text);
+  border: none;
+  padding: 18px 20px;
+  font-family: 'IBM Plex Mono'; font-size: 13px;
+  outline: none;
+  letter-spacing: 0.04em;
+}
+.email-input::placeholder { color: var(--text-3); }
+.email-submit {
+  background: var(--ash);
+  color: #000;
+  border: none;
+  padding: 18px 28px;
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 14px; letter-spacing: 0.16em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.email-submit:hover { background: var(--text); }
+.email-note {
+  margin-top: 16px;
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  color: rgba(0,0,0,0.6);
+  letter-spacing: 0.1em;
+}
+
+/* ===== FAQ ===== */
+.faq-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.faq-item {
+  background: var(--bg-2);
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 80px 1fr 1.4fr;
+  gap: 32px;
+  align-items: start;
+}
+.faq-num {
+  font-family: 'Big Shoulders Stencil Text'; font-weight: 900;
+  font-size: 32px; color: var(--burn);
+  line-height: 1;
+}
+.faq-q {
+  font-family: 'Noto Serif JP'; font-weight: 700;
+  font-size: 16px; color: var(--text);
+  line-height: 1.5;
+}
+.faq-a {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.75;
+}
+.faq-a strong { color: var(--text); font-weight: 700; }
+
+/* ===== FOOTER ===== */
+footer.bottom {
+  border-top: 1px solid var(--line);
+  padding: 56px 32px 32px;
+  position: relative; z-index: 2;
+}
+.footer-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 36px;
+}
+.footer-brand .logo { margin-bottom: 16px; }
+.footer-tagline {
+  font-family: 'Noto Serif JP'; font-style: italic;
+  font-size: 13px; color: var(--text-2);
+  line-height: 1.65;
+  max-width: 360px;
+}
+.footer-col h4 {
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  letter-spacing: 0.28em; color: var(--text-3);
+  margin-bottom: 16px;
+}
+.footer-col a {
+  display: block;
+  font-size: 13px; color: var(--text-2);
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--burn); }
+.footer-bottom {
+  max-width: 1300px; margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px dashed var(--line);
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono'; font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.18em;
+  flex-wrap: wrap; gap: 16px;
+}
+
+@media (max-width: 1000px) {
+  .hero { grid-template-columns: 1fr; padding-top: 100px; }
+  .stats-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .problem-block { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .step::after { display: none; }
+  .pricing { grid-template-columns: 1fr; }
+  .widget-demo { grid-template-columns: 1fr; }
+  .faq-item { grid-template-columns: 1fr; gap: 12px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  section.block { padding: 80px 22px; }
+  .hero { padding: 90px 22px 60px; }
+  .stats-inner { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .problem-text, .problem-numbers { padding: 36px 28px; }
+  .price-cell { padding: 32px 28px; }
+  .email-cta { padding: 56px 28px; }
+  .email-form { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="top">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark">¥</div>
+      <div class="logo-text">GHOST CLUB</div>
+    </div>
+    <a href="#waitlist" class="nav-cta">事前登録 →</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-tag">
+      <span class="dot"></span>
+      COMING SUMMER 2026 · iOS ONLY
+    </div>
+    <h1 class="hero-title">
+      <span class="ghost">GYM</span><br>
+      <span class="burn">GHOST</span><br>
+      <span style="color: var(--text);">CLUB.</span>
+    </h1>
+    <p class="hero-pitch">
+      日本のジム退会率は3ヶ月で<strong>約35%</strong>。<br>
+      行かないけど辞められない、何百万人もの「幽霊会員」のためのアプリ。<br>
+      たった一つの機能で、月会費を<strong>"行く理由"</strong>に変える。
+    </p>
+    <div class="hero-cta-row">
+      <a href="#waitlist" class="cta-primary">
+        <span>事前登録する →</span>
+      </a>
+      <a href="#how" class="cta-secondary">仕組みを見る ↓</a>
+    </div>
+  </div>
+
+  <div class="phone-mock">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="phone-status">
+        <span>9:41</span>
+        <span>● ●●●●</span>
+      </div>
+      <div class="phone-content">
+        <div class="phone-greeting">おはよう、ユキさん</div>
+        <div class="phone-burn-card">
+          <div class="phone-burn-label">— THIS MONTH · BURN —</div>
+          <div class="phone-burn-num"><span class="yen">¥</span>1,860</div>
+          <div class="phone-burn-sub">月会費のうち、まだ使えていない金額</div>
+          <div class="phone-burn-bar"><i></i></div>
+          <div class="phone-burn-sub" style="margin-top:8px;">15日経過 · 来館 1回 · 残り回収 ¥1,418</div>
+        </div>
+        <div class="phone-cta">
+          <div class="phone-cta-label">— TODAY —</div>
+          <div class="phone-cta-text">今日行けば ¥218 取り戻せる</div>
+        </div>
+        <div class="phone-stat-row">
+          <div class="phone-stat">
+            <div class="phone-stat-label">STREAK</div>
+            <div class="phone-stat-num">3<span style="font-size:13px;color:var(--text-2)">週</span></div>
+          </div>
+          <div class="phone-stat">
+            <div class="phone-stat-label">THIS WEEK</div>
+            <div class="phone-stat-num s">2 / 3 日</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-tabs">
+        <div class="phone-tab active">BURN</div>
+        <div class="phone-tab">LOG</div>
+        <div class="phone-tab">ME</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-cell">
+      <div class="stat-num"><span class="accent">35%</span></div>
+      <div class="stat-label">3ヶ月で退会する人の割合</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="accent">¥3,278</span></div>
+      <div class="stat-label">chocoZAP 月会費(税込)</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="accent">12.7%</span></div>
+      <div class="stat-label">日本のフィットネス参加率</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="accent">2.4×</span></div>
+      <div class="stat-label">想定来館回数増加</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROBLEM ===== -->
+<section class="block">
+  <div class="eyebrow">— THE PROBLEM —</div>
+  <h2 class="h2">「行かないけど、<br>辞められない。」</h2>
+  <p class="lead">
+    日本のジムは退会率が高い。一方で、<strong>"幽霊会員"</strong>として残り続ける人も無数にいる。
+    自己嫌悪、退会手続きの煩わしさ、<br>「来月こそ行く」という淡い期待 — 払い続けた会費は、毎月静かに燃えている。
+  </p>
+
+  <div class="problem-block">
+    <div class="problem-text">
+      <h3>会費は毎日、<br>静かに燃えている</h3>
+      <p>
+        月会費 ¥3,278 のジムに入会して、月に1回しか行かなかった場合 — 1回あたりのコストは <strong>¥3,278</strong>。
+        高級寿司ランチが食べられる金額です。
+      </p>
+      <p>
+        でも、<strong>クレジットカードの自動引落</strong>のおかげで、その痛みを直接感じることはない。サブスクの中に紛れ、毎月静かに引き落とされていく。
+      </p>
+      <p>
+        既存の筋トレアプリは「行ったら褒める」モデルです。<strong>"行かない日"の動機保持</strong>には、ほぼ無力。<br>
+        GHOST CLUBは、その逆を行きます。
+      </p>
+    </div>
+    <div class="problem-numbers">
+      <div class="big-num">
+        <div class="big-num-val">¥39,336</div>
+        <div class="big-num-label">— 1年間の "燃やし額" 中央値 —</div>
+      </div>
+      <div class="big-num">
+        <div class="big-num-val">82%</div>
+        <div class="big-num-label">— ジム会員の "月3回未満" 率 —</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="block" id="how">
+  <div class="eyebrow">— HOW IT WORKS —</div>
+  <h2 class="h2">仕組みは、<br><span class="alt">4ステップ</span>だけ。</h2>
+  <p class="lead">
+    難しいセットアップも、AIメニュー生成も、サプリ提案もありません。<br>
+    GHOST CLUB は、<strong>機会損失メーター</strong>と、その周辺UXだけで構成されています。
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">— 01 —</div>
+      <div class="step-icon">¥</div>
+      <div class="step-title">会員証を<br>登録する</div>
+      <div class="step-desc">
+        所属ジムの会員証をカメラで撮影。<strong>OCRで月会費を自動取得</strong>します。
+        chocoZAP・エニタイム・ゴールド・市民ジムなど対応。手入力もOK。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">— 02 —</div>
+      <div class="step-icon">⏱</div>
+      <div class="step-title">燃焼を<br>見届ける</div>
+      <div class="step-desc">
+        ホーム画面に常時、<strong>今月の燃焼額</strong>が表示されます。
+        日割換算でリアルタイム加算。ロック画面ウィジェットでも確認可能。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">— 03 —</div>
+      <div class="step-icon">→</div>
+      <div class="step-title">ジムに<br>行く</div>
+      <div class="step-desc">
+        GPSで来館を自動検知。アプリを開かなくてもOK。
+        来館の瞬間、<strong>「+¥218 取り戻しました」</strong>のセレブレーション通知が届きます。
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">— 04 —</div>
+      <div class="step-icon">◉</div>
+      <div class="step-title">卒業 or<br>退会</div>
+      <div class="step-desc">
+        月3回以上で「卒業生バッジ」獲得。月0回の月は <strong>"GHOST OF THE MONTH"</strong> 称号(皮肉)。
+        ダラダラを許さず、選択を促します。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WIDGET DEMO ===== -->
+<section class="block">
+  <div class="widget-demo">
+    <div class="widget-demo-text">
+      <div class="eyebrow">— ALWAYS VISIBLE —</div>
+      <h3>ロック画面を、<br><span class="alt">あなたの抑止力</span>に。</h3>
+      <p>
+        スマホを取り出すたび、機会損失額が目に飛び込んできます。<br>
+        2サイズのウィジェット + 朝7時のPush通知で、<strong>「忘れる」を物理的に不可能</strong>にする。
+      </p>
+      <p>
+        Apple Watchのコンプリケーション(Phase 2)対応で、手元でも常時表示。<br>
+        通知は <strong>1日1回まで</strong>。アプリにスマホを支配されたくない人にも配慮した設計です。
+      </p>
+    </div>
+    <div class="lock-screen-mock">
+      <div class="lock-time">7:32</div>
+      <div class="lock-date">月曜日, 11月17日</div>
+      <div class="lock-widget-row">
+        <div class="lock-widget">
+          <div class="lock-widget-label">— BURN —</div>
+          <div class="lock-widget-num"><span class="yen">¥</span>1,860</div>
+          <div class="lock-widget-sub">17日経過 · 残 ¥1,418</div>
+        </div>
+        <div class="lock-widget lime">
+          <div class="lock-widget-label">— STREAK —</div>
+          <div class="lock-widget-num">3<span class="small">週</span></div>
+          <div class="lock-widget-sub">保険チケット 1枚</div>
+        </div>
+      </div>
+      <div class="lock-notification">
+        <div class="lock-notification-icon">¥</div>
+        <div class="lock-notification-text">
+          <div class="lock-notification-title">GHOST CLUB</div>
+          <div class="lock-notification-msg">今日行けば ¥218 取り戻せます</div>
+        </div>
+        <div class="lock-notification-time">7:00</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PSYCHOLOGY ===== -->
+<section class="block">
+  <div class="eyebrow">— THE PSYCHOLOGY —</div>
+  <h2 class="h2">なぜ、<br><span class="alt">これが効くか</span>。</h2>
+  <p class="lead">
+    GHOST CLUBは、行動経済学の知見を意図的に活用しています。<br>
+    "甘やかす"のではなく、<strong>あなたの脳の癖を、行動変容に逆利用する</strong>。
+  </p>
+
+  <div class="psych-grid">
+    <div class="psych-card">
+      <div class="psych-card-en">LOSS AVERSION</div>
+      <div class="psych-card-jp">損失回避バイアス</div>
+      <div class="psych-card-desc">
+        人は得る喜びよりも<strong>失う痛みを2.5倍強く感じる</strong>(Kahneman)。「行かないと損する」と感じさせることは、「行ったら褒められる」より2.5倍効く。
+      </div>
+    </div>
+    <div class="psych-card">
+      <div class="psych-card-en">SUNK COST FALLACY</div>
+      <div class="psych-card-jp">サンクコスト効果</div>
+      <div class="psych-card-desc">
+        払い続けた会費を可視化することで、<strong>「ここまで払ったから行かないと損」</strong>という認知を意図的に作る。本来は弱点とされる認知バイアスを、行動に逆活用。
+      </div>
+    </div>
+    <div class="psych-card">
+      <div class="psych-card-en">COMMITMENT DEVICE</div>
+      <div class="psych-card-jp">コミットメント装置</div>
+      <div class="psych-card-desc">
+        StickK や Beemindersで実証済の手法。<strong>逃げ場を意図的に減らす</strong>ことが行動継続を助ける。GHOST CLUBは、その装置を可愛らしいUIで提供する。
+      </div>
+    </div>
+    <div class="psych-card">
+      <div class="psych-card-en">IDENTITY FRAMING</div>
+      <div class="psych-card-jp">アイデンティティ・フレーミング</div>
+      <div class="psych-card-desc">
+        「ジムに行く人間/行かない人間」という<strong>自己定義を揺さぶる</strong>。"Ghost"という皮肉なラベリングが、卒業を望ませる。Atomic Habits の核心理論。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="block">
+  <div class="eyebrow">— PRICING —</div>
+  <h2 class="h2">月¥480。<br><span class="alt">サボった1日</span>で元が取れる。</h2>
+  <p class="lead">
+    パーソナルトレーナー(月4〜8万円)の<strong>1/100以下</strong>。<br>
+    広告も出ません。データも売りません。あなたが¥480を直接払う、健全な関係です。
+  </p>
+
+  <div class="pricing">
+    <div class="price-cell free">
+      <div class="price-tier">— FREE —</div>
+      <div class="price-amount">¥0</div>
+      <div class="price-period">永久無料 / クレジットカード不要</div>
+      <ul class="price-features">
+        <li>機会損失メーター(基本)</li>
+        <li>1ジム登録</li>
+        <li>朝7時のPush通知</li>
+        <li>直近4週のストリーク表示</li>
+        <li>シンプル記録(種目10件)</li>
+      </ul>
+    </div>
+    <div class="price-cell pro">
+      <div class="price-tier">— PRO —</div>
+      <div class="price-amount">¥480</div>
+      <div class="price-period">/ 月  ·  または ¥3,800 / 年(¥316/月相当)</div>
+      <ul class="price-features">
+        <li>複数ジム掛け持ち(パーソナル + 24h)</li>
+        <li>累計燃焼額(全期間レポート)</li>
+        <li>月次卒業レポート(SNS書き出し)</li>
+        <li>Apple Watch アプリ連携</li>
+        <li>高度ストリーク(休止チケット2枚/週)</li>
+        <li>ロック画面ウィジェット 全サイズ対応</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EMAIL CTA / WAITLIST ===== -->
+<section class="block" id="waitlist">
+  <div class="email-cta">
+    <div class="email-inner">
+      <div class="email-eye">— BETA INVITATIONS · SUMMER 2026 —</div>
+      <h3 class="email-h">
+        卒業の準備、<br>
+        始めますか？
+      </h3>
+      <p class="email-sub">
+        TestFlight β版の招待を、先行登録者に順次お送りします。
+        登録は無料で、いつでも解除可能。スパムなし。月1回程度の進捗メールのみ。
+      </p>
+      <form class="email-form" action="https://formspree.io/f/mojygwaj" method="POST">
+        <input type="email" class="email-input" name="email" placeholder="your.email@example.com" required>
+        <button type="submit" class="email-submit">REGISTER →</button>
+      </form>
+      <div class="email-note">
+        ※ 個人プロジェクトとして開発中。期日は前後する可能性があります。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="block">
+  <div class="eyebrow">— FAQ —</div>
+  <h2 class="h2">よくある<br><span class="alt">疑問</span>。</h2>
+
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-num">Q1</div>
+      <div class="faq-q">皮肉なトーンが、メンタルに来そう。</div>
+      <div class="faq-a">
+        オンボーディングで <strong>「優しめモード」</strong> を選択できます。"GHOST"認定の代わりに、励まし系メッセージに切り替わります。<br>
+        ただし、本アプリの本領は突きつけるトーンです。優しさを求める方は、別のアプリの方が合うかもしれません。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-num">Q2</div>
+      <div class="faq-q">GPS自動チェックインって、電池すごく食う?</div>
+      <div class="faq-a">
+        iOS純正の <strong>Region Monitoring</strong> を使うため、電池消費はほぼゼロです。常時GPSではなく、登録ジム周辺50m圏内に近づいた時だけ起動する仕組み。<br>
+        手動チェックインも併設しています。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-num">Q3</div>
+      <div class="faq-q">Androidは出ないの?</div>
+      <div class="faq-a">
+        個人プロジェクトのため、<strong>iOSのみ</strong>です。<br>
+        Apple純正のAPI(Vision・CoreLocation・WidgetKit・WatchKit)に深く依存することで、開発・運用コストを最小化しています。Android版の予定は今のところありません。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-num">Q4</div>
+      <div class="faq-q">退会率が下がるって、ジム経営の妨害?</div>
+      <div class="faq-a">
+        逆です。<strong>来館頻度を上げる</strong>のが目的です。実際に通うことで、ジム会員制度の本来の価値を取り戻させます。<br>
+        「行かないまま辞めずに惰性で会費を払う」状態は、ユーザーとジムの双方にとって不健全です。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-num">Q5</div>
+      <div class="faq-q">データはどこに保存される?</div>
+      <div class="faq-a">
+        <strong>あなたのiCloud内のみ</strong>です。GHOST CLUBは独自サーバーを持ちません。CloudKitで端末間同期されるだけ。<br>
+        広告SDKもアナリティクスも、最小限のもの(TelemetryDeck)のみ。プライバシーはAppleの仕組みに依存して保護されます。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-num">Q6</div>
+      <div class="faq-q">本気でジムに行く気がない人にも効く?</div>
+      <div class="faq-a">
+        正直に言うと、<strong>「行く気はある、でも行けてない」</strong>人にしか効きません。<br>
+        本気で辞めたい人には、月初に届く <strong>"退会を検討する"</strong> ボタンが用意されています。ダラダラを終わらせる手伝いも、本アプリの役割です。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bottom">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">
+        <div class="logo-mark">¥</div>
+        <div class="logo-text">GHOST CLUB</div>
+      </div>
+      <div class="footer-tagline">
+        小さく、鋭く、長く。<br>
+        個人プロジェクトとして、月会費の燃焼を止めるためのアプリを作っています。
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>— PRODUCT —</h4>
+      <a href="#how">仕組み</a>
+      <a href="#waitlist">事前登録</a>
+      <a href="#">ロードマップ</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>— LEGAL —</h4>
+      <a href="#">プライバシーポリシー</a>
+      <a href="#">利用規約</a>
+      <a href="#">お問い合わせ</a>
+      <a href="#">特定商取引法</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 GHOST CLUB · A SOLO PROJECT BY RYO · OSAKA, JAPAN</div>
+    <div>BUILT WITH SWIFTUI · CLOUDKIT · STOREKIT 2</div>
+  </div>
+</footer>
+
+</body>
+</html>
