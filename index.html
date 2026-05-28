@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GHOST CLUB — ジム会費を、無駄にさせない。</title>
 <meta name="description" content="日本のジム退会率は3ヶ月で35%。GHOST CLUBは、月会費を可視化することで「行く理由」を作る。たった一つの機能を持つ、皮肉でドライな筋トレアプリ。">
+<meta name="theme-color" content="#060606">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23ff3a1f'/><text x='16' y='25' font-family='sans-serif' font-weight='900' font-size='22' text-anchor='middle' fill='%23000'>¥</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GHOST CLUB">
+<meta property="og:title" content="GHOST CLUB — ジム会費を、無駄にさせない。">
+<meta property="og:description" content="行かないけど辞められない「幽霊会員」のためのアプリ。たった一つの機能で、月会費を“行く理由”に変える。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GHOST CLUB — ジム会費を、無駄にさせない。">
+<meta name="twitter:description" content="行かないけど辞められない「幽霊会員」のためのアプリ。たった一つの機能で、月会費を“行く理由”に変える。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Text:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Antonio:wght@400;700&display=swap" rel="stylesheet">
@@ -25,6 +35,23 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+
+/* ===== ACCESSIBILITY ===== */
+:focus-visible {
+  outline: 2px solid var(--burn);
+  outline-offset: 3px;
+}
+.skip-link {
+  position: absolute; left: 12px; top: -64px;
+  z-index: 200;
+  background: var(--ash); color: #000;
+  font-family: 'IBM Plex Mono'; font-size: 12px;
+  letter-spacing: 0.14em;
+  padding: 12px 18px;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 12px; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -86,6 +113,7 @@ nav.top {
   position: relative;
   z-index: 2;
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 48px;
@@ -124,6 +152,7 @@ nav.top {
   line-height: 0.88; letter-spacing: -0.01em;
   margin-bottom: 32px;
   text-transform: uppercase;
+  text-wrap: balance;
   animation: titleIn 0.9s ease-out;
 }
 @keyframes titleIn {
@@ -185,7 +214,9 @@ nav.top {
   text-decoration: none;
   padding: 16px 4px;
 }
+.cta-secondary { transition: color 0.2s, transform 0.1s; }
 .cta-secondary:hover { color: var(--text); }
+.cta-primary:active, .nav-cta:active, .cta-secondary:active { transform: translateY(1px); }
 
 /* HERO PHONE MOCKUP */
 .phone-mock {
@@ -397,6 +428,7 @@ section.block {
   line-height: 0.95; letter-spacing: -0.01em;
   margin-bottom: 24px;
   text-transform: uppercase;
+  text-wrap: balance;
   max-width: 920px;
 }
 .h2 .alt { color: var(--burn); }
@@ -407,6 +439,7 @@ section.block {
   line-height: 1.7;
   max-width: 720px;
   margin-bottom: 64px;
+  text-wrap: pretty;
 }
 .lead strong { color: var(--burn); }
 
@@ -702,6 +735,7 @@ section.block {
   font-family: 'IBM Plex Mono'; font-size: 11px;
   color: var(--text-3); letter-spacing: 0.12em;
   margin-bottom: 28px;
+  min-height: 2.6em;
 }
 .price-features {
   list-style: none;
@@ -889,9 +923,20 @@ footer.bottom {
   .email-cta { padding: 56px 28px; }
   .email-form { flex-direction: column; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
 <body>
+
+<a class="skip-link" href="#main">本文へスキップ</a>
 
 <!-- ===== NAV ===== -->
 <nav class="top">
@@ -903,6 +948,8 @@ footer.bottom {
     <a href="https://apps.apple.com/jp/app/ghost-club/id6764429402" class="nav-cta" target="_blank" rel="noopener">App Storeで開く →</a>
   </div>
 </nav>
+
+<main id="main">
 
 <!-- ===== HERO ===== -->
 <section class="hero">
@@ -1198,7 +1245,7 @@ footer.bottom {
 </section>
 
 <!-- ===== FAQ ===== -->
-<section class="block">
+<section class="block" id="faq">
   <div class="eyebrow">— FAQ —</div>
   <h2 class="h2">よくある<br><span class="alt">疑問</span>。</h2>
 
@@ -1253,6 +1300,8 @@ footer.bottom {
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- ===== FOOTER ===== -->
 <footer class="bottom">
