@@ -42,6 +42,13 @@ struct MapTabView: View {
             }
             .navigationTitle("地図")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        ShootingSpotListView()
+                    } label: {
+                        Label("撮影地", systemImage: "camera")
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Toggle(isOn: $showAbandoned) {
                         Label("廃線", systemImage: "point.topleft.down.curvedto.point.bottomright.up")

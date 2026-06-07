@@ -2,12 +2,15 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
-/// 遭遇記録の入力シート。OCR・EXIF・ガチ鉄フィールドを統合。
+/// 遭遇記録の入力シート。新規追加と既存編集の両対応。
 struct AddSightingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
 
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
+
+    /// 編集対象。nilなら新規。
+    var editing: Sighting?
 
     @State private var selectedClass: VehicleClass?
     @State private var selectedFormation: Formation?
@@ -32,6 +35,8 @@ struct AddSightingView: View {
     @State private var latitude: Double = 0
     @State private var longitude: Double = 0
 
+    @State private var loaded = false
+
     var body: some View {
         NavigationStack {
             Form {
@@ -43,7 +48,7 @@ struct AddSightingView: View {
                         }
                     }
                     if selectedClass != nil {
-                        Picker("編成", selection: $selectedFormation) {
+                        Picker(selectedClass!.unitType.unitLabel, selection: $selectedFormation) {
                             Text("選択").tag(Formation?.none)
                             ForEach(formations) { f in
                                 Text(f.code).tag(Formation?.some(f))
@@ -108,8 +113,19 @@ struct AddSightingView: View {
                 Section {
                     TextField("メモ", text: $note, axis: .vertical)
                 }
+
+                if editing != nil {
+                    Section {
+                        Button(role: .destructive) {
+                            deleteRecord()
+                        } label: {
+                            Label("この記録を削除", systemImage: "trash")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
             }
-            .navigationTitle("記録を追加")
+            .navigationTitle(editing == nil ? "記録を追加" : "記録を編集")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -129,11 +145,39 @@ struct AddSightingView: View {
                 guard let newItem else { return }
                 Task { await loadPhotoMetadata(newItem) }
             }
+            .onAppear { loadEditingIfNeeded() }
         }
     }
 
     private var formations: [Formation] {
         (selectedClass?.formations ?? []).sorted { $0.code < $1.code }
+    }
+
+    // MARK: - 編集ロード
+
+    private func loadEditingIfNeeded() {
+        guard !loaded, let s = editing else { loaded = true; return }
+        selectedFormation = s.formation
+        selectedClass = s.formation?.vehicleClass
+        carNumber = s.carNumber
+        stationName = s.stationName
+        lineName = s.lineName
+        date = s.date
+        trainNumber = s.trainNumber
+        kind = s.kind
+        headmark = s.headmark
+        livery = s.livery
+        weather = s.weather
+        isLastRun = s.isLastRun
+        note = s.note
+        latitude = s.latitude
+        longitude = s.longitude
+        if let file = s.photoFilenames.first {
+            savedPhotoFilename = file
+            previewImage = PhotoStore.load(file)
+            photoAttached = previewImage != nil
+        }
+        loaded = true
     }
 
     /// スキャン候補を形式・編成へ照合してフォームに反映
@@ -172,7 +216,6 @@ struct AddSightingView: View {
                 latitude = c.latitude
                 longitude = c.longitude
             }
-            // 旧写真を差し替え時に掃除
             if let old = savedPhotoFilename { PhotoStore.delete(old) }
             savedPhotoFilename = filename
             previewImage = image
@@ -182,7 +225,10 @@ struct AddSightingView: View {
     }
 
     private func save() {
-        let s = Sighting(date: date, stationName: stationName, lineName: lineName)
+        let s = editing ?? Sighting()
+        s.date = date
+        s.stationName = stationName
+        s.lineName = lineName
         s.formation = selectedFormation
         s.carNumber = carNumber
         s.trainNumber = trainNumber
@@ -195,21 +241,30 @@ struct AddSightingView: View {
         s.latitude = latitude
         s.longitude = longitude
         if let savedPhotoFilename { s.photoFilenames = [savedPhotoFilename] }
-        context.insert(s)
+
+        if editing == nil { context.insert(s) }
         try? context.save()
 
-        // 廃車進行中の編成を記録した時は別ハプティクス（情緒設計）
-        if selectedClass?.isRetiring == true || isLastRun {
-            Haptics.farewell()
+        if editing == nil {
+            if selectedClass?.isRetiring == true || isLastRun {
+                Haptics.farewell()
+            } else {
+                Haptics.success()
+            }
+            if selectedClass?.isComplete == true { Haptics.celebrate() }
         } else {
             Haptics.success()
         }
 
-        // 直後にコンプリート達成したか確認
-        if selectedClass?.isComplete == true {
-            Haptics.celebrate()
-        }
+        dismiss()
+    }
 
+    private func deleteRecord() {
+        guard let s = editing else { return }
+        for file in s.photoFilenames { PhotoStore.delete(file) }
+        context.delete(s)
+        try? context.save()
+        Haptics.tick()
         dismiss()
     }
 }
