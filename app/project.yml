@@ -50,6 +50,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
 
   TetsuLogTests:
     type: bundle.unit-test
