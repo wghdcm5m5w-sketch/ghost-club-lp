@@ -18,20 +18,14 @@
 
 ## STEP 1: 最小構成で実機にインストール
 
-### 1-1. リポジトリを Mac に取得
+### 1-1. リポジトリを Mac に取得して開く
+**Xcodeプロジェクトはコミット済み**なので、生成作業は不要です。
 ```bash
 git clone <このリポジトリのURL>
 cd ghost-club-lp/app
+open TetsuLog.xcodeproj      # ダブルクリックでも可
 ```
-
-### 1-2. Xcodeプロジェクトを生成（XcodeGen 推奨）
-手作業のファイル取り込みを避けるため XcodeGen を使います。
-```bash
-brew install xcodegen      # 未導入なら
-xcodegen generate          # app/ ディレクトリで実行 → TetsuLog.xcodeproj が出来る
-open TetsuLog.xcodeproj
-```
-> XcodeGen を使わない場合は `app/README.md` の手動手順（新規Appプロジェクトにファイルをドラッグ）でもOK。
+> 全Swiftファイルはフォルダ同期で自動取り込み済み。ファイルのドラッグ＆ドロップは不要です。
 
 ### 1-3. 署名（Signing）を設定
 1. Xcode左のプロジェクト → TARGETS の **TetsuLog** を選択
