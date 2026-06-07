@@ -28,14 +28,21 @@ struct TetsuLogApp: App {
     }
 
     @State private var rideManager = RideManager()
+    @AppStorage("tetsulog.onboardingDone") private var onboardingDone = false
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
-                .environment(rideManager)
-                .task {
-                    await SeedData.seedIfNeeded(container.mainContext)
+            Group {
+                if onboardingDone {
+                    RootTabView()
+                        .environment(rideManager)
+                } else {
+                    OnboardingView()
                 }
+            }
+            .task {
+                await SeedData.seedIfNeeded(container.mainContext)
+            }
         }
         .modelContainer(container)
     }

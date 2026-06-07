@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 /// 乗車セッションの状態管理。ライブアクティビティ制御と記録保存を担う。
+/// アプリ強制終了後も復元できるよう UserDefaults に永続化する。
 @MainActor
 @Observable
 final class RideManager {
@@ -13,6 +14,13 @@ final class RideManager {
     var nextStation = ""
     var startDate: Date?
 
+    private let defaults = UserDefaults.standard
+    private let key = "tetsulog.rideSession"
+
+    init() {
+        restore()
+    }
+
     func start(className: String, formationCode: String, lineName: String,
                fromStation: String, nextStation: String) {
         self.className = className
@@ -22,6 +30,7 @@ final class RideManager {
         self.nextStation = nextStation
         self.startDate = .now
         self.isActive = true
+        persist()
 
         RideSessionController.shared.start(
             className: className, formationCode: formationCode,
@@ -38,6 +47,7 @@ final class RideManager {
         seg.durationSec = duration
         context.insert(seg)
         try? context.save()
+        Haptics.success()
 
         await RideSessionController.shared.end()
         reset()
@@ -47,6 +57,45 @@ final class RideManager {
         isActive = false
         className = ""; formationCode = ""; lineName = ""
         fromStation = ""; nextStation = ""; startDate = nil
+        defaults.removeObject(forKey: key)
+    }
+
+    // MARK: - 永続化
+
+    private struct Persisted: Codable {
+        var className: String
+        var formationCode: String
+        var lineName: String
+        var fromStation: String
+        var nextStation: String
+        var startDate: Date
+    }
+
+    private func persist() {
+        guard let startDate else { return }
+        let p = Persisted(className: className, formationCode: formationCode,
+                          lineName: lineName, fromStation: fromStation,
+                          nextStation: nextStation, startDate: startDate)
+        if let data = try? JSONEncoder().encode(p) {
+            defaults.set(data, forKey: key)
+        }
+    }
+
+    private func restore() {
+        guard let data = defaults.data(forKey: key),
+              let p = try? JSONDecoder().decode(Persisted.self, from: data) else { return }
+        // 24時間以上経過しているセッションは破棄（誤起動の救済）
+        if Date.now.timeIntervalSince(p.startDate) > 24 * 3600 {
+            defaults.removeObject(forKey: key)
+            return
+        }
+        self.className = p.className
+        self.formationCode = p.formationCode
+        self.lineName = p.lineName
+        self.fromStation = p.fromStation
+        self.nextStation = p.nextStation
+        self.startDate = p.startDate
+        self.isActive = true
     }
 }
 

@@ -35,12 +35,35 @@ enum PreviewData {
             ctx.insert(f)
         }
 
-        // サンプル遭遇記録
-        let s = Sighting(date: .now, stationName: "新宿", lineName: "山手線")
-        s.formation = sampleFormation
-        s.latitude = 35.690921
-        s.longitude = 139.700258
-        ctx.insert(s)
+        // サンプル遭遇記録（複数日付・装飾あり）
+        let cal = Calendar.current
+        let s1 = Sighting(date: .now, stationName: "新宿", lineName: "山手線")
+        s1.formation = sampleFormation
+        s1.latitude = 35.690921; s1.longitude = 139.700258
+        s1.headmark = "○周年HM"
+        s1.weather = "晴れ"
+        ctx.insert(s1)
+
+        let s2 = Sighting(date: cal.date(byAdding: .day, value: -3, to: .now)!,
+                          stationName: "渋谷", lineName: "山手線")
+        s2.formation = sampleFormation
+        s2.kind = .deadhead
+        ctx.insert(s2)
+
+        let s3 = Sighting(date: cal.date(byAdding: .month, value: -2, to: .now)!,
+                          stationName: "立川", lineName: "中央本線")
+        s3.formation = (n189.formations ?? []).first
+        s3.isLastRun = true
+        s3.kind = .lastRun
+        s3.livery = "リバイバル"
+        ctx.insert(s3)
+
+        // 乗車記録
+        let r = RideSegment(fromStation: "東京", toStation: "新宿", lineName: "中央線")
+        r.distanceKm = 10.3
+        r.durationSec = 17 * 60
+        r.date = .now
+        ctx.insert(r)
 
         try? ctx.save()
         return container

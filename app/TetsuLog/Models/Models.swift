@@ -48,9 +48,42 @@ final class Formation {
 
     /// このユーザーが遭遇済みか
     var isCollected: Bool { !(sightings?.isEmpty ?? true) }
+
+    /// 最終遭遇日
+    var lastSeen: Date? {
+        sightings?.map(\.date).max()
+    }
+
+    /// 初遭遇日
+    var firstSeen: Date? {
+        sightings?.map(\.date).min()
+    }
+
+    /// 遭遇回数
+    var sightingCount: Int { sightings?.count ?? 0 }
+}
+
+extension VehicleClass {
+    var collectedCount: Int { (formations ?? []).filter { $0.isCollected }.count }
+    var totalCount: Int { formations?.count ?? 0 }
+    var collectionRatio: Double {
+        totalCount == 0 ? 0 : Double(collectedCount) / Double(totalCount)
+    }
+    var isComplete: Bool { totalCount > 0 && collectedCount == totalCount }
 }
 
 // MARK: - 遭遇記録
+
+/// 列車運転種別（ガチ鉄が区別したい単位）
+enum TrainKind: String, Codable, CaseIterable {
+    case scheduled  = "定期"
+    case extra      = "臨時"
+    case deadhead   = "回送"
+    case test       = "試運転"
+    case delivery   = "配給"
+    case charter    = "団体"
+    case lastRun    = "ラストラン"
+}
 
 @Model
 final class Sighting {
@@ -67,6 +100,14 @@ final class Sighting {
     var formation: Formation?
     var shootingSpot: ShootingSpot?
 
+    // ガチ鉄向け拡張フィールド（既存記録との互換のためデフォルト値）
+    var carNumber: String = ""        // 撮った車両の車番（クハE235-1247 等）
+    var headmark: String = ""         // ○周年HM / 装飾サボ
+    var livery: String = ""           // 塗装・ラッピング（リバイバル, 銀河鉄道等）
+    var weather: String = ""          // 晴/曇/雨/雪/夕焼け
+    var trainNumber: String = ""      // 2024M / 9501M / 試8520 など
+    var kindRaw: String = TrainKind.scheduled.rawValue  // 定期/臨時/回送/...
+
     init(date: Date = .now, stationName: String = "", lineName: String = "") {
         self.date = date
         self.stationName = stationName
@@ -75,6 +116,11 @@ final class Sighting {
 
     var coordinate: CLLocationCoordinate2D {
         .init(latitude: latitude, longitude: longitude)
+    }
+
+    var kind: TrainKind {
+        get { TrainKind(rawValue: kindRaw) ?? .scheduled }
+        set { kindRaw = newValue.rawValue }
     }
 }
 

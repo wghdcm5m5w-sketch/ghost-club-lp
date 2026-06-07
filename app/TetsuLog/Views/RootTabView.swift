@@ -12,6 +12,9 @@ struct RootTabView: View {
             MapTabView()
                 .tabItem { Label("地図", systemImage: "map") }
 
+            StatsView()
+                .tabItem { Label("統計", systemImage: "chart.bar.fill") }
+
             SettingsView()
                 .tabItem { Label("設定", systemImage: "gearshape") }
         }

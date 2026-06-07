@@ -1,7 +1,8 @@
 import SwiftUI
 import SwiftData
+import PhotosUI
 
-/// 遭遇記録の入力シート。OCR(v1.1)はここに統合する想定。
+/// 遭遇記録の入力シート。OCR・EXIF・ガチ鉄フィールドを統合。
 struct AddSightingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
@@ -10,17 +11,24 @@ struct AddSightingView: View {
 
     @State private var selectedClass: VehicleClass?
     @State private var selectedFormation: Formation?
+    @State private var carNumber = ""
     @State private var stationName = ""
     @State private var lineName = ""
     @State private var date = Date.now
+    @State private var trainNumber = ""
+    @State private var kind: TrainKind = .scheduled
+    @State private var headmark = ""
+    @State private var livery = ""
+    @State private var weather = ""
     @State private var isLastRun = false
     @State private var note = ""
     @State private var showingScanner = false
     @State private var scannedText: String?
 
-    private var formations: [Formation] {
-        (selectedClass?.formations ?? []).sorted { $0.code < $1.code }
-    }
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var photoAttached = false
+    @State private var latitude: Double = 0
+    @State private var longitude: Double = 0
 
     var body: some View {
         NavigationStack {
@@ -40,6 +48,41 @@ struct AddSightingView: View {
                             }
                         }
                     }
+                    TextField("車番（クハE235-1247 等）", text: $carNumber)
+                        .font(.body.monospaced())
+                }
+
+                Section {
+                    Button {
+                        showingScanner = true
+                    } label: {
+                        Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
+                    }
+                    PhotosPicker(selection: $pickerItem, matching: .images) {
+                        Label(photoAttached ? "写真添付済（位置・日時を自動取得）" : "写真を添付（EXIFから自動入力）",
+                              systemImage: "photo.on.rectangle")
+                    }
+                    if let scannedText {
+                        LabeledContent("スキャン結果", value: scannedText)
+                            .font(.callout.monospaced())
+                    }
+                }
+
+                Section("運転") {
+                    TextField("列車番号（2024M 等）", text: $trainNumber)
+                        .font(.body.monospaced())
+                    Picker("種別", selection: $kind) {
+                        ForEach(TrainKind.allCases, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }
+                    Toggle("ラストラン", isOn: $isLastRun)
+                }
+
+                Section("装飾・条件") {
+                    TextField("ヘッドマーク（○周年HM 等）", text: $headmark)
+                    TextField("塗装・ラッピング（リバイバル 等）", text: $livery)
+                    TextField("天候（晴/曇/雨/雪/夕焼け）", text: $weather)
                 }
 
                 Section("場所・日時") {
@@ -49,20 +92,7 @@ struct AddSightingView: View {
                 }
 
                 Section {
-                    Toggle("ラストラン", isOn: $isLastRun)
                     TextField("メモ", text: $note, axis: .vertical)
-                }
-
-                Section {
-                    Button {
-                        showingScanner = true
-                    } label: {
-                        Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
-                    }
-                    if let scannedText {
-                        LabeledContent("スキャン結果", value: scannedText)
-                            .font(.callout.monospaced())
-                    }
                 }
             }
             .navigationTitle("記録を追加")
@@ -81,23 +111,31 @@ struct AddSightingView: View {
                     apply(candidate)
                 }
             }
+            .onChange(of: pickerItem) { _, newItem in
+                guard let newItem else { return }
+                Task { await loadPhotoMetadata(newItem) }
+            }
         }
+    }
+
+    private var formations: [Formation] {
+        (selectedClass?.formations ?? []).sorted { $0.code < $1.code }
     }
 
     /// スキャン候補を形式・編成へ照合してフォームに反映
     private func apply(_ candidate: FormationNumberParser.Candidate) {
         scannedText = candidate.raw
+        Haptics.tick()
 
         switch candidate.kind {
         case .carNumber:
-            // 形式手がかり(E235等)から VehicleClass を推定
+            carNumber = candidate.raw
             if let hint = candidate.classHint {
                 if let match = classes.first(where: { $0.name.contains(hint) }) {
                     selectedClass = match
                 }
             }
         case .formationCode:
-            // 編成記号で全形式の編成を横断検索
             for vc in classes {
                 if let f = vc.formations?.first(where: { $0.code == candidate.raw }) {
                     selectedClass = vc
@@ -108,13 +146,49 @@ struct AddSightingView: View {
         }
     }
 
+    /// 添付写真のEXIFから日時・位置を読み取る（端末内処理）
+    private func loadPhotoMetadata(_ item: PhotosPickerItem) async {
+        guard let data = try? await item.loadTransferable(type: Data.self) else { return }
+        let info = PhotoMetadata.read(from: data)
+        await MainActor.run {
+            if let d = info.date { date = d }
+            if let c = info.coordinate {
+                latitude = c.latitude
+                longitude = c.longitude
+            }
+            photoAttached = true
+            Haptics.tick()
+        }
+    }
+
     private func save() {
         let s = Sighting(date: date, stationName: stationName, lineName: lineName)
         s.formation = selectedFormation
+        s.carNumber = carNumber
+        s.trainNumber = trainNumber
+        s.kind = isLastRun ? .lastRun : kind
         s.isLastRun = isLastRun
+        s.headmark = headmark
+        s.livery = livery
+        s.weather = weather
         s.note = note
+        s.latitude = latitude
+        s.longitude = longitude
         context.insert(s)
         try? context.save()
+
+        // 廃車進行中の編成を記録した時は別ハプティクス（情緒設計）
+        if selectedClass?.isRetiring == true || isLastRun {
+            Haptics.farewell()
+        } else {
+            Haptics.success()
+        }
+
+        // 直後にコンプリート達成したか確認
+        if selectedClass?.isComplete == true {
+            Haptics.celebrate()
+        }
+
         dismiss()
     }
 }
