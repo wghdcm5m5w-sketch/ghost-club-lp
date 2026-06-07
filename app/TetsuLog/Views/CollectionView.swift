@@ -304,6 +304,9 @@ struct FormationDetailView: View {
                                     if !s.livery.isEmpty { tag(s.livery, color: .purple) }
                                 }
                             }
+                            ForEach(s.audioFilenames, id: \.self) { file in
+                                AudioPlayerRow(filename: file)
+                            }
                         }
                         .padding(.vertical, 2)
                     }

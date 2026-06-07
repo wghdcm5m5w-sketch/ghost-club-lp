@@ -43,6 +43,9 @@ struct AddSightingView: View {
     @State private var latitude: Double = 0
     @State private var longitude: Double = 0
 
+    @State private var audioFilenames: [String] = []
+    @State private var showingRecorder = false
+
     @State private var loaded = false
     @State private var saveError: String?
 
@@ -94,6 +97,32 @@ struct AddSightingView: View {
                     if photoAttached {
                         Text("写真は端末内に保存されます（容量のためiCloud同期対象外）。")
                     }
+                }
+
+                Section {
+                    Button {
+                        showingRecorder = true
+                    } label: {
+                        Label(audioFilenames.isEmpty ? "走行音を録音" : "もう1本録音する",
+                              systemImage: "mic.circle")
+                    }
+                    ForEach(audioFilenames, id: \.self) { file in
+                        HStack {
+                            AudioPlayerRow(filename: file)
+                            Button {
+                                AudioStore.delete(file)
+                                audioFilenames.removeAll { $0 == file }
+                                Haptics.tick()
+                            } label: {
+                                Image(systemName: "trash").foregroundStyle(.red)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                } header: {
+                    Text("音鉄")
+                } footer: {
+                    Text("録音は端末内に保存されます。容量のためiCloud同期・JSON書き出しには含まれません。")
                 }
 
                 Section("運転") {
@@ -150,6 +179,11 @@ struct AddSightingView: View {
                     apply(candidate)
                 }
             }
+            .sheet(isPresented: $showingRecorder) {
+                AudioRecorderSheet { filename in
+                    audioFilenames.append(filename)
+                }
+            }
             .onChange(of: pickerItem) { _, newItem in
                 guard let newItem else { return }
                 Task { await loadPhotoMetadata(newItem) }
@@ -191,6 +225,7 @@ struct AddSightingView: View {
             previewImage = PhotoStore.load(file)
             photoAttached = previewImage != nil
         }
+        audioFilenames = s.audioFilenames
         loaded = true
     }
 
@@ -255,6 +290,7 @@ struct AddSightingView: View {
         s.latitude = latitude
         s.longitude = longitude
         if let savedPhotoFilename { s.photoFilenames = [savedPhotoFilename] }
+        s.audioFilenames = audioFilenames
 
         if editing == nil { context.insert(s) }
         do {
@@ -284,6 +320,7 @@ struct AddSightingView: View {
     private func deleteRecord() {
         guard let s = editing else { return }
         for file in s.photoFilenames { PhotoStore.delete(file) }
+        for file in s.audioFilenames { AudioStore.delete(file) }
         context.delete(s)
         try? context.save()
         Haptics.tick()

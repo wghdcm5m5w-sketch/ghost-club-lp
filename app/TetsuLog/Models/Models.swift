@@ -140,6 +140,7 @@ final class Sighting {
     var weather: String = ""          // 晴/曇/雨/雪/夕焼け
     var trainNumber: String = ""      // 2024M / 9501M / 試8520 など
     var kindRaw: String = TrainKind.scheduled.rawValue  // 定期/臨時/回送/...
+    var audioFilenames: [String] = []   // 音鉄用: 走行音・車内放送・駅メロ等
 
     init(date: Date = .now, stationName: String = "", lineName: String = "") {
         self.date = date

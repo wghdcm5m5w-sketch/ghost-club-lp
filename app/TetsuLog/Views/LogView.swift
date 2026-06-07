@@ -211,6 +211,7 @@ struct LogView: View {
 
     private func delete(_ s: Sighting) {
         for file in s.photoFilenames { PhotoStore.delete(file) }
+        for file in s.audioFilenames { AudioStore.delete(file) }
         context.delete(s); try? context.save(); Haptics.tick()
     }
     private func delete(_ r: RideSegment) {
@@ -232,6 +233,11 @@ private struct SightingRow: View {
                         .font(.caption).foregroundStyle(.secondary)
                     if !sighting.headmark.isEmpty { miniTag(sighting.headmark, color: .orange) }
                     if !sighting.livery.isEmpty { miniTag(sighting.livery, color: .purple) }
+                    if !sighting.audioFilenames.isEmpty {
+                        Image(systemName: "waveform")
+                            .font(.caption2)
+                            .foregroundStyle(.green)
+                    }
                 }
             }
             Spacer()

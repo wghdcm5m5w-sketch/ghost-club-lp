@@ -25,6 +25,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>編成番号を読み取って記録するためにカメラを使用します。画像は端末内でのみ処理されます。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>走行音や駅メロディなどを録音して記録するためにマイクを使用します。音声は端末内にのみ保存されます。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。</string>
 	<key>NSPhotoLibraryUsageDescription</key>

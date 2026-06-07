@@ -11,6 +11,15 @@
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "편성 번호를 읽어 기록하기 위해 카메라를 사용합니다. 이미지는 기기 내에서만 처리됩니다." } }
       }
     },
+    "NSMicrophoneUsageDescription" : {
+      "comment" : "マイク利用目的",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "走行音や駅メロディなどを録音して記録するためにマイクを使用します。音声は端末内にのみ保存されます。" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to record train sounds, station melodies, etc. Audio is stored only on your device." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于录制行驶音、车站旋律等。音频仅保存在您的设备上。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "주행음·역 멜로디 등을 녹음하기 위해 마이크를 사용합니다. 오디오는 기기 내에만 저장됩니다." } }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "位置情報利用目的",
       "localizations" : {
