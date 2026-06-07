@@ -1,0 +1,202 @@
+{
+  "sourceLanguage" : "ja",
+  "version" : "1.0",
+  "strings" : {
+    "図鑑" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collection" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图鉴" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "도감" } }
+      }
+    },
+    "記録" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Log" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "记录" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "기록" } }
+      }
+    },
+    "地図" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Map" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "地图" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "지도" } }
+      }
+    },
+    "設定" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정" } }
+      }
+    },
+    "記録を追加" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add Record" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "添加记录" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "기록 추가" } }
+      }
+    },
+    "遭遇を記録" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Log a Sighting" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "记录遇见" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "조우 기록" } }
+      }
+    },
+    "乗車を開始" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start a Ride" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开始乘车" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "승차 시작" } }
+      }
+    },
+    "乗車中" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Riding" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "乘车中" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "승차 중" } }
+      }
+    },
+    "乗車を終了して記録" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "End Ride & Save" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "结束乘车并保存" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "승차 종료 후 저장" } }
+      }
+    },
+    "形式" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Class" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "车型" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "형식" } }
+      }
+    },
+    "編成" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Formation" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "编组" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "편성" } }
+      }
+    },
+    "編成番号（任意）" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Formation code (optional)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "编组编号（可选）" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "편성 번호 (선택)" } }
+      }
+    },
+    "路線名" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Line" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "线路" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "노선" } }
+      }
+    },
+    "駅名" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Station" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "车站" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "역" } }
+      }
+    },
+    "日時" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date & Time" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "日期时间" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "일시" } }
+      }
+    },
+    "ラストラン" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last Run" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最后运行" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "라스트런" } }
+      }
+    },
+    "メモ" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "备注" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "메모" } }
+      }
+    },
+    "カメラで編成番号をスキャン" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Scan formation number" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "扫描编组编号" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "편성 번호 스캔" } }
+      }
+    },
+    "保存" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Save" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "保存" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "저장" } }
+      }
+    },
+    "キャンセル" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "取消" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "취소" } }
+      }
+    },
+    "開始" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开始" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "시작" } }
+      }
+    },
+    "ウォッチリスト" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Watchlist" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关注列表" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "관심 목록" } }
+      }
+    },
+    "接近アラート" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Approach Alert" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "接近提醒" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "접근 알림" } }
+      }
+    },
+    "プライバシー" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Privacy" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐私" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "개인정보" } }
+      }
+    },
+    "iCloudにのみ保存されています" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stored only in your iCloud" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "仅保存在您的 iCloud 中" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "iCloud에만 저장됩니다" } }
+      }
+    },
+    "あなたの記録" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your Records" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "您的记录" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "내 기록" } }
+      }
+    },
+    "まだ記録がありません" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No records yet" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂无记录" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "아직 기록이 없습니다" } }
+      }
+    },
+    "廃線" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Abandoned Lines" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "废线" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "폐선" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "sourceLanguage" : "ja",
+  "version" : "1.0",
+  "strings" : {
+    "NSCameraUsageDescription" : {
+      "comment" : "カメラ利用目的",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "編成番号を読み取って記録するためにカメラを使用します。画像は端末内でのみ処理されます。" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to read formation numbers for logging. Images are processed only on your device." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于读取编组编号以进行记录。图像仅在您的设备上处理。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "편성 번호를 읽어 기록하기 위해 카메라를 사용합니다. 이미지는 기기 내에서만 처리됩니다." } }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "位置情報利用目的",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to log shooting spots and to alert you when a watched train may approach. Your location never leaves your device." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于记录拍摄地点以及在关注的列车可能接近时提醒您。您的位置信息绝不会被发送到外部。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "촬영지 기록과 관심 편성의 접근 알림에 위치 정보를 사용합니다. 위치 정보는 외부로 전송되지 않습니다." } }
+      }
+    },
+    "NSPhotoLibraryUsageDescription" : {
+      "comment" : "写真利用目的",
+      "localizations" : {
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "記録に写真を添付するためにフォトライブラリへアクセスします。" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to attach photos to your records." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于将照片附加到您的记录中。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "기록에 사진을 첨부하기 위해 사진 보관함에 접근합니다." } }
+      }
+    }
+  }
+}
