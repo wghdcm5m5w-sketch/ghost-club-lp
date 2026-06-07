@@ -1,0 +1,52 @@
+# XcodeGen 設定ファイル
+# Mac で `brew install xcodegen` 後、この app/ ディレクトリで `xcodegen generate` を実行すると
+# TetsuLog.xcodeproj が生成される。手作業のファイル取り込み・ターゲット設定が不要になる。
+#
+# ▼ まず動かす（最小構成・推奨）
+#   この設定は「本体アプリのみ・ローカル保存」。無料Apple IDでも実機で動く。
+#   CloudKit / ウィジェット / ライブアクティビティは含めない（後述の手順で追加）。
+#
+# ▼ Bundle ID と開発チーム
+#   PRODUCT_BUNDLE_IDENTIFIER と DEVELOPMENT_TEAM を自分のものに変更すること。
+#   （Xcode で一度ターゲットの Signing で Team を選べば DEVELOPMENT_TEAM は空でも可）
+
+name: TetsuLog
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""          # ←自分のTeam IDを入れるか、Xcodeで選択
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: NO
+
+targets:
+  TetsuLog:
+    type: application
+    platform: iOS
+    sources:
+      # 本体ソースのみ（ウィジェット用フォルダは最小構成では含めない）
+      - path: TetsuLog
+        excludes:
+          # ウィジェットは別ターゲット。最小構成では除外。
+          - "**/TetsuLogWidgets/**"
+    info:
+      path: TetsuLog/Info.plist
+      properties:
+        CFBundleDisplayName: TetsuLog
+        UILaunchScreen: {}
+        NSCameraUsageDescription: "編成番号を読み取って記録するためにカメラを使用します。画像は端末内でのみ処理されます。"
+        NSLocationWhenInUseUsageDescription: "撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。"
+        NSPhotoLibraryUsageDescription: "記録に写真を添付するためにフォトライブラリへアクセスします。"
+        NSSupportsLiveActivities: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
