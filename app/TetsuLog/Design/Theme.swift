@@ -7,8 +7,9 @@ enum Theme {
     enum Palette {
         static let navy      = Color(hex: 0x10243F)   // 基調（背景・濃い面）
         static let navyDeep  = Color(hex: 0x0A1A30)   // さらに濃い背景
-        static let paper     = Color(hex: 0xF2EAD8)   // 紙（カード面）
-        static let paperEdge = Color(hex: 0xE2D6BC)   // 紙の境界
+        static let paper      = Color(hex: 0xF2EAD8)   // 紙（カード面）
+        static let paperAged  = Color(hex: 0xDDC592)   // 経年した黄ばみ紙（廃車カード用）
+        static let paperEdge  = Color(hex: 0xE2D6BC)   // 紙の境界
         static let red       = Color(hex: 0xC0392B)   // 朱（アクセント・廃車・ゲージ）
         static let ink       = Color(hex: 0x10243F)   // 紙の上の文字（紺）
         static let inkSub    = Color(hex: 0x6B5A3C)   // 紙の上の副文字（セピア）
@@ -48,15 +49,35 @@ extension Color {
 // MARK: - 共通コンポーネント
 
 /// 紙の質感を表現する塗り（テクスチャ＋色ムラ＋紙の縁）。
-/// 単色塗りではなく、実際の紙テクスチャ画像をタイル敷きして本物の質感を出す。
+/// `aged`=true で経年した黄ばみ紙（廃車カード等の差分用）になる。
 struct PaperSurface: View {
+    var aged: Bool = false
+
     var body: some View {
         ZStack {
-            Theme.Palette.paper                                   // ベース色
-            Image("PaperTexture")                                 // 繊維・色ムラ
+            (aged ? Theme.Palette.paperAged : Theme.Palette.paper)
+            Image("PaperTexture")
                 .resizable(resizingMode: .tile)
-                .opacity(0.55)
+                .opacity(aged ? 0.7 : 0.55)
                 .blendMode(.multiply)
+            // 経年版のみ、黄ばみのオーバーレイ＋角のシミ
+            if aged {
+                // 全体の黄ばみ
+                LinearGradient(
+                    colors: [Color(hex: 0xd8a44a, alpha: 0.18),
+                             Color(hex: 0xc8923a, alpha: 0.10),
+                             Color(hex: 0xb88438, alpha: 0.20)],
+                    startPoint: .topLeading, endPoint: .bottomTrailing
+                ).blendMode(.multiply)
+                // 角の経年シミ（4隅にラジアル）
+                ForEach(0..<4) { idx in
+                    let pts: [UnitPoint] = [.topLeading, .topTrailing, .bottomLeading, .bottomTrailing]
+                    RadialGradient(
+                        colors: [Color(hex: 0x8a5a20, alpha: 0.25), .clear],
+                        center: pts[idx], startRadius: 0, endRadius: 90
+                    ).blendMode(.multiply)
+                }
+            }
             // ごく淡い対角グラデで自然な陰影
             LinearGradient(
                 colors: [Color.white.opacity(0.10), .clear, Color(hex: 0x8a, alpha: 0.05)],
@@ -66,11 +87,85 @@ struct PaperSurface: View {
     }
 }
 
+/// カードの4隅に置く「紙の反り影」。実物の紙は完全には平らでなく、
+/// 隅がわずかに浮いて落ち影が発生する。それを4隅のラジアルグラデで再現。
+struct PaperCornerCurl: View {
+    var body: some View {
+        ZStack {
+            curl(at: .topLeading,     angle: 135)
+            curl(at: .topTrailing,    angle: 225)
+            curl(at: .bottomLeading,  angle: 45)
+            curl(at: .bottomTrailing, angle: 315)
+        }
+        .allowsHitTesting(false)
+    }
+    @ViewBuilder
+    private func curl(at corner: UnitPoint, angle: Double) -> some View {
+        RadialGradient(
+            colors: [Color.black.opacity(0.18), .clear],
+            center: corner, startRadius: 0, endRadius: 36
+        )
+        .blendMode(.multiply)
+    }
+}
+
+/// タップ時にインクが染み込むエフェクト。
+/// pressed フラグが立つと小さな朱の円が現れて広がり、にじみつつ消える。
+struct InkBleedOverlay: View {
+    var pressed: Bool
+    @State private var scale: CGFloat = 0
+    @State private var opacity: Double = 0
+    @State private var origin: UnitPoint = .center
+
+    var body: some View {
+        GeometryReader { geo in
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [Theme.Palette.red.opacity(0.55),
+                                 Theme.Palette.red.opacity(0.25),
+                                 Theme.Palette.red.opacity(0.0)],
+                        center: .center, startRadius: 0, endRadius: 80
+                    )
+                )
+                .frame(width: max(geo.size.width, geo.size.height) * 1.6,
+                       height: max(geo.size.width, geo.size.height) * 1.6)
+                .position(x: geo.size.width * origin.x, y: geo.size.height * origin.y)
+                .scaleEffect(scale)
+                .opacity(opacity)
+                .blendMode(.multiply)
+                .allowsHitTesting(false)
+                .onChange(of: pressed) { _, isDown in
+                    if isDown {
+                        // ランダム位置にインクが落ちるイメージ
+                        origin = UnitPoint(x: .random(in: 0.3...0.7),
+                                           y: .random(in: 0.3...0.7))
+                        scale = 0.05; opacity = 0
+                        withAnimation(.easeOut(duration: 0.35)) {
+                            scale = 1.0; opacity = 0.9
+                        }
+                    } else {
+                        withAnimation(.easeOut(duration: 0.55)) {
+                            opacity = 0
+                            scale = 1.15
+                        }
+                    }
+                }
+        }
+    }
+}
+
 /// 紙質のカード（左に紺帯のオプション付き）。
 /// 紙テクスチャ・厚みのエッジ・二層の柔らかい影で「本物の紙片」に仕上げる。
+/// `aged`=true で廃車カード用の経年黄ばみ紙に切替。
+/// `interactive`=true でタップ時のインク染み込みエフェクトを有効化。
 struct PaperCard<Content: View>: View {
     var accent: Bool = true
+    var aged: Bool = false
+    var interactive: Bool = false
     @ViewBuilder var content: Content
+
+    @State private var isPressed = false
 
     private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous) }
 
@@ -78,21 +173,29 @@ struct PaperCard<Content: View>: View {
         HStack(spacing: 0) {
             if accent {
                 Rectangle()
-                    .fill(Theme.Palette.navy)
-                    .overlay(Rectangle().fill(.white.opacity(0.08)))   // 帯のわずかな光沢
+                    .fill(aged ? Theme.Palette.navy.opacity(0.78) : Theme.Palette.navy)
+                    .overlay(Rectangle().fill(.white.opacity(0.08)))
                     .frame(width: 8)
             }
             content
                 .padding(Theme.cardPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .background(PaperSurface())
+        .background(PaperSurface(aged: aged))
+        .overlay(PaperCornerCurl())                          // 4隅の反り影
+        .overlay(InkBleedOverlay(pressed: isPressed))        // インク染み込み
         .clipShape(shape)
         // 紙の縁（上は明るく＝光、下は濃く＝厚み）
         .overlay(
             shape.stroke(
                 LinearGradient(
-                    colors: [.white.opacity(0.45), Theme.Palette.paperEdge, Color(hex: 0x9a8a5a, alpha: 0.6)],
+                    colors: aged
+                        ? [Color(hex: 0xd9c08a).opacity(0.7),
+                           Color(hex: 0xa88a48, alpha: 0.9),
+                           Color(hex: 0x6b4a18, alpha: 0.8)]
+                        : [.white.opacity(0.45),
+                           Theme.Palette.paperEdge,
+                           Color(hex: 0x9a8a5a, alpha: 0.6)],
                     startPoint: .top, endPoint: .bottom
                 ),
                 lineWidth: 1
@@ -101,6 +204,17 @@ struct PaperCard<Content: View>: View {
         // 二層の影：近く濃い＋遠く広い＝紙が浮いている自然な影
         .shadow(color: .black.opacity(0.28), radius: 3, x: 0, y: 2)
         .shadow(color: .black.opacity(0.18), radius: 14, x: 0, y: 10)
+        // 押下時のわずかな沈み込み
+        .scaleEffect(isPressed ? 0.985 : 1)
+        .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
+        // タップジェスチャ
+        .gesture(
+            interactive
+            ? DragGesture(minimumDistance: 0)
+                .onChanged { _ in if !isPressed { isPressed = true } }
+                .onEnded { _ in isPressed = false }
+            : nil
+        )
     }
 }
 

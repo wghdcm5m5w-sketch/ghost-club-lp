@@ -142,7 +142,7 @@ private struct ClassCard: View {
     let vehicleClass: VehicleClass
 
     var body: some View {
-        PaperCard {
+        PaperCard(accent: true, aged: vehicleClass.isRetiring, interactive: true) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
                     Text(vehicleClass.name)
@@ -245,7 +245,9 @@ private struct FormationRow: View {
     let formation: Formation
     let unit: UnitType
     var body: some View {
-        PaperCard(accent: formation.isCollected) {
+        PaperCard(accent: formation.isCollected,
+                  aged: !formation.isActive,
+                  interactive: true) {
             HStack {
                 Image(systemName: formation.isCollected ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(formation.isCollected ? Theme.Palette.red : Theme.Palette.inkSub)

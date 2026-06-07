@@ -185,7 +185,9 @@ struct LogView: View {
 private struct SightingCard: View {
     let sighting: Sighting
     var body: some View {
-        PaperCard(accent: true) {
+        PaperCard(accent: true,
+                  aged: sighting.isLastRun || sighting.formation?.vehicleClass?.isRetiring == true,
+                  interactive: true) {
             HStack(spacing: 12) {
                 Image(systemName: iconName).foregroundStyle(iconColor).frame(width: 28)
                 VStack(alignment: .leading, spacing: 3) {
@@ -231,7 +233,7 @@ private struct SightingCard: View {
 private struct RideCard: View {
     let ride: RideSegment
     var body: some View {
-        PaperCard(accent: true) {
+        PaperCard(accent: true, interactive: true) {
             HStack(spacing: 12) {
                 Image(systemName: "figure.seated.side").foregroundStyle(Theme.Palette.navy).frame(width: 28)
                 VStack(alignment: .leading, spacing: 3) {
