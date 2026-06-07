@@ -28,22 +28,48 @@ struct LogView: View {
     @State private var showingActiveRide = false
     @State private var editingSighting: Sighting?
     @State private var editingRide: RideSegment?
+    @State private var query = ""
 
     private var grouping: LogGrouping { LogGrouping(rawValue: groupingRaw) ?? .year }
 
+    /// 検索フィルタ済みの遭遇記録（編成・形式・駅・路線・車番・装飾・メモを横断）
+    private var filteredSightings: [Sighting] {
+        guard !query.isEmpty else { return sightings }
+        let q = query
+        return sightings.filter { s in
+            let hay = [
+                s.formation?.code ?? "",
+                s.formation?.vehicleClass?.name ?? "",
+                s.stationName, s.lineName, s.carNumber,
+                s.headmark, s.livery, s.trainNumber, s.note
+            ]
+            return hay.contains { $0.localizedCaseInsensitiveContains(q) }
+        }
+    }
+
+    private var filteredRides: [RideSegment] {
+        guard !query.isEmpty else { return rides }
+        let q = query
+        return rides.filter { r in
+            [r.fromStation, r.toStation, r.lineName, r.formationCode, r.note]
+                .contains { $0.localizedCaseInsensitiveContains(q) }
+        }
+    }
+
     private var groups: [(key: String, items: [Sighting])] {
         let cal = Calendar.current
+        let source = filteredSightings
         let dict: [String: [Sighting]]
         switch grouping {
         case .year:
-            dict = Dictionary(grouping: sightings) { "\(cal.component(.year, from: $0.date))" }
+            dict = Dictionary(grouping: source) { "\(cal.component(.year, from: $0.date))" }
         case .month:
             let fmt = DateFormatter(); fmt.dateFormat = "yyyy / MM"
-            dict = Dictionary(grouping: sightings) { fmt.string(from: $0.date) }
+            dict = Dictionary(grouping: source) { fmt.string(from: $0.date) }
         case .className:
-            dict = Dictionary(grouping: sightings) { $0.formation?.vehicleClass?.name ?? "（未設定）" }
+            dict = Dictionary(grouping: source) { $0.formation?.vehicleClass?.name ?? "（未設定）" }
         case .lineName:
-            dict = Dictionary(grouping: sightings) { $0.lineName.isEmpty ? "（未設定）" : $0.lineName }
+            dict = Dictionary(grouping: source) { $0.lineName.isEmpty ? "（未設定）" : $0.lineName }
         }
         return dict.keys.sorted(by: >).map { (key: $0, items: dict[$0] ?? []) }
     }
@@ -99,6 +125,7 @@ struct LogView: View {
                     }
                 }
             }
+            .searchable(text: $query, prompt: "編成・駅・路線・車番・メモで検索")
             .sheet(isPresented: $showingAdd) { AddSightingView() }
             .sheet(item: $editingSighting) { AddSightingView(editing: $0) }
             .sheet(item: $editingRide) { RideEditView(ride: $0) }
@@ -111,11 +138,11 @@ struct LogView: View {
 
     @ViewBuilder
     private var sightingsList: some View {
-        if sightings.isEmpty {
+        if filteredSightings.isEmpty {
             ContentUnavailableView(
-                "まだ記録がありません",
+                query.isEmpty ? "まだ記録がありません" : "該当する記録がありません",
                 systemImage: "tram",
-                description: Text("右上の＋から、出会った編成を記録しましょう。")
+                description: Text(query.isEmpty ? "右上の＋から、出会った編成を記録しましょう。" : "検索条件を変えてみてください。")
             )
         } else {
             List {
@@ -142,15 +169,15 @@ struct LogView: View {
 
     @ViewBuilder
     private var ridesList: some View {
-        if rides.isEmpty {
+        if filteredRides.isEmpty {
             ContentUnavailableView(
-                "乗車記録がありません",
+                query.isEmpty ? "乗車記録がありません" : "該当する乗車記録がありません",
                 systemImage: "figure.seated.side",
-                description: Text("「乗車を開始」または＋から記録できます。")
+                description: Text(query.isEmpty ? "「乗車を開始」または＋から記録できます。" : "検索条件を変えてみてください。")
             )
         } else {
             List {
-                ForEach(rides) { r in
+                ForEach(filteredRides) { r in
                     Button { editingRide = r } label: {
                         RideRow(ride: r)
                     }
