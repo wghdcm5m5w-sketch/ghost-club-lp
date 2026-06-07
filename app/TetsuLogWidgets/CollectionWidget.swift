@@ -20,13 +20,13 @@ struct CollectionWidget: Widget {
 
 struct CollectionEntry: TimelineEntry {
     let date: Date
-    let monthCount: Int
-    let totalFormations: Int
+    let monthCount: Int        // 今月の遭遇件数
+    let uniqueFormations: Int  // 遭遇済みのユニーク編成数
 }
 
 struct CollectionProvider: TimelineProvider {
     func placeholder(in context: Context) -> CollectionEntry {
-        .init(date: .now, monthCount: 12, totalFormations: 248)
+        .init(date: .now, monthCount: 12, uniqueFormations: 142)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (CollectionEntry) -> Void) {
@@ -42,19 +42,20 @@ struct CollectionProvider: TimelineProvider {
 
     private func loadEntry() -> CollectionEntry {
         guard let container = SharedStore.container else {
-            return .init(date: .now, monthCount: 0, totalFormations: 0)
+            return .init(date: .now, monthCount: 0, uniqueFormations: 0)
         }
         let context = ModelContext(container)
 
-        // 今月の遭遇数
+        // 今月の遭遇件数
         let startOfMonth = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
         let monthPredicate = #Predicate<Sighting> { $0.date >= startOfMonth }
         let monthCount = (try? context.fetchCount(FetchDescriptor(predicate: monthPredicate))) ?? 0
 
-        // 遭遇済み編成数（重複排除は簡略化し総 Sighting に紐づく Formation 数で近似）
-        let totalFormations = (try? context.fetchCount(FetchDescriptor<Sighting>())) ?? 0
+        // 遭遇済みのユニーク編成数（同一編成の重複を排除）
+        let all = (try? context.fetch(FetchDescriptor<Sighting>())) ?? []
+        let uniqueFormations = Set(all.compactMap { $0.formation?.persistentModelID }).count
 
-        return .init(date: .now, monthCount: monthCount, totalFormations: totalFormations)
+        return .init(date: .now, monthCount: monthCount, uniqueFormations: uniqueFormations)
     }
 }
 
@@ -65,12 +66,12 @@ struct CollectionWidgetView: View {
     var body: some View {
         switch family {
         case .accessoryInline:
-            Text("今月 \(entry.monthCount) 編成")
+            Text("今月 \(entry.monthCount) 件")
         case .accessoryRectangular:
             VStack(alignment: .leading) {
                 Text("TetsuLog").font(.caption2).foregroundStyle(.secondary)
-                Text("今月 \(entry.monthCount) 編成").font(.headline)
-                Text("累計 \(entry.totalFormations) 件").font(.caption)
+                Text("今月 \(entry.monthCount) 件").font(.headline)
+                Text("集めた編成 \(entry.uniqueFormations)").font(.caption)
             }
         default:
             VStack(alignment: .leading, spacing: 6) {
@@ -79,7 +80,7 @@ struct CollectionWidgetView: View {
                 Text("\(entry.monthCount)")
                     .font(.system(size: 38, weight: .bold, design: .rounded))
                 Text("今月の遭遇").font(.caption).foregroundStyle(.secondary)
-                Text("累計 \(entry.totalFormations) 件")
+                Text("集めた編成 \(entry.uniqueFormations)")
                     .font(.caption2.monospaced()).foregroundStyle(.secondary)
             }
         }

@@ -8,9 +8,17 @@ struct AddSightingView: View {
     @Environment(\.modelContext) private var context
 
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
+    @Query private var allSightings: [Sighting]
 
     /// 編集対象。nilなら新規。
     var editing: Sighting?
+
+    private var stationSuggestions: [String] {
+        Array(Set(allSightings.map(\.stationName).filter { !$0.isEmpty })).sorted()
+    }
+    private var lineSuggestions: [String] {
+        Array(Set(allSightings.map(\.lineName).filter { !$0.isEmpty })).sorted()
+    }
 
     @State private var selectedClass: VehicleClass?
     @State private var selectedFormation: Formation?
@@ -36,6 +44,7 @@ struct AddSightingView: View {
     @State private var longitude: Double = 0
 
     @State private var loaded = false
+    @State private var saveError: String?
 
     var body: some View {
         NavigationStack {
@@ -105,8 +114,8 @@ struct AddSightingView: View {
                 }
 
                 Section("場所・日時") {
-                    TextField("路線名", text: $lineName)
-                    TextField("駅名", text: $stationName)
+                    SuggestField(title: "路線名", text: $lineName, suggestions: lineSuggestions)
+                    SuggestField(title: "駅名", text: $stationName, suggestions: stationSuggestions)
                     DatePicker("日時", selection: $date)
                 }
 
@@ -146,6 +155,11 @@ struct AddSightingView: View {
                 Task { await loadPhotoMetadata(newItem) }
             }
             .onAppear { loadEditingIfNeeded() }
+            .alert("保存できませんでした", isPresented: .constant(saveError != nil)) {
+                Button("OK") { saveError = nil }
+            } message: {
+                Text(saveError ?? "")
+            }
         }
     }
 
@@ -243,7 +257,15 @@ struct AddSightingView: View {
         if let savedPhotoFilename { s.photoFilenames = [savedPhotoFilename] }
 
         if editing == nil { context.insert(s) }
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            // 新規挿入が失敗したらロールバックしてユーザーに通知（静かな消失を防ぐ）
+            if editing == nil { context.delete(s) }
+            saveError = "記録を保存できませんでした。空き容量やiCloudの状態をご確認ください。(\(error.localizedDescription))"
+            Haptics.tick()
+            return
+        }
 
         if editing == nil {
             if selectedClass?.isRetiring == true || isLastRun {

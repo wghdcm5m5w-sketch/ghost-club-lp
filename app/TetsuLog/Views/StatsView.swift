@@ -136,6 +136,9 @@ struct StatsView: View {
                             .font(.caption2.monospaced())
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(point.month, format: .dateTime.year().month()))
+                    .accessibilityValue("\(point.count)件")
                 }
             }
             .frame(maxWidth: .infinity)
