@@ -47,28 +47,60 @@ extension Color {
 
 // MARK: - 共通コンポーネント
 
-/// 紙質のカード（左に紺帯のオプション付き）
+/// 紙の質感を表現する塗り（テクスチャ＋色ムラ＋紙の縁）。
+/// 単色塗りではなく、実際の紙テクスチャ画像をタイル敷きして本物の質感を出す。
+struct PaperSurface: View {
+    var body: some View {
+        ZStack {
+            Theme.Palette.paper                                   // ベース色
+            Image("PaperTexture")                                 // 繊維・色ムラ
+                .resizable(resizingMode: .tile)
+                .opacity(0.55)
+                .blendMode(.multiply)
+            // ごく淡い対角グラデで自然な陰影
+            LinearGradient(
+                colors: [Color.white.opacity(0.10), .clear, Color(hex: 0x8a, alpha: 0.05)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+        }
+    }
+}
+
+/// 紙質のカード（左に紺帯のオプション付き）。
+/// 紙テクスチャ・厚みのエッジ・二層の柔らかい影で「本物の紙片」に仕上げる。
 struct PaperCard<Content: View>: View {
     var accent: Bool = true
     @ViewBuilder var content: Content
+
+    private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous) }
 
     var body: some View {
         HStack(spacing: 0) {
             if accent {
                 Rectangle()
                     .fill(Theme.Palette.navy)
+                    .overlay(Rectangle().fill(.white.opacity(0.08)))   // 帯のわずかな光沢
                     .frame(width: 8)
             }
             content
                 .padding(Theme.cardPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .background(Theme.Palette.paper)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+        .background(PaperSurface())
+        .clipShape(shape)
+        // 紙の縁（上は明るく＝光、下は濃く＝厚み）
         .overlay(
-            RoundedRectangle(cornerRadius: Theme.cardRadius)
-                .stroke(Theme.Palette.paperEdge, lineWidth: 1)
+            shape.stroke(
+                LinearGradient(
+                    colors: [.white.opacity(0.45), Theme.Palette.paperEdge, Color(hex: 0x9a8a5a, alpha: 0.6)],
+                    startPoint: .top, endPoint: .bottom
+                ),
+                lineWidth: 1
+            )
         )
+        // 二層の影：近く濃い＋遠く広い＝紙が浮いている自然な影
+        .shadow(color: .black.opacity(0.28), radius: 3, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.18), radius: 14, x: 0, y: 10)
     }
 }
 
@@ -96,8 +128,10 @@ struct MakuHeader: View {
             .padding(.vertical, 16)
             Rectangle().fill(Theme.Palette.red).frame(height: 4)
         }
-        .background(Theme.Palette.paper)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+        .background(PaperSurface())
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
+        .shadow(color: .black.opacity(0.22), radius: 3, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.14), radius: 12, x: 0, y: 8)
     }
 }
 
