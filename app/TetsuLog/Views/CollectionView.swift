@@ -35,11 +35,18 @@ struct CollectionView: View {
             ScrollView {
                 filterChips
                 if filtered.isEmpty {
-                    ContentUnavailableView(
-                        "該当する形式がありません",
-                        systemImage: "magnifyingglass",
-                        description: Text("検索条件を変えてみてください。")
-                    )
+                    ContentUnavailableView {
+                        Label("該当する形式がありません", systemImage: "magnifyingglass")
+                    } description: {
+                        Text("載っていない車両は、右上の＋から自分で追加できます。")
+                    } actions: {
+                        NavigationLink {
+                            AddVehicleClassView()
+                        } label: {
+                            Text("形式を追加")
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
                     .padding(.top, 60)
                 } else {
                     LazyVGrid(columns: columns, spacing: 14) {
@@ -55,6 +62,15 @@ struct CollectionView: View {
             }
             .navigationTitle("図鑑")
             .searchable(text: $query, prompt: "形式名・事業者で検索")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        AddVehicleClassView()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
             .navigationDestination(for: VehicleClass.self) { vc in
                 ClassDetailView(vehicleClass: vc)
             }
@@ -122,7 +138,7 @@ private struct ClassCard: View {
                 .tint(vehicleClass.isComplete ? .yellow : .orange)
 
             HStack {
-                Text("\(vehicleClass.collectedCount) / \(vehicleClass.totalCount)")
+                Text("\(vehicleClass.collectedCount) / \(vehicleClass.totalCount) \(vehicleClass.unitType.counter)")
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -159,10 +175,20 @@ struct ClassDetailView: View {
                     }
                 }
             } header: {
-                Text("\(formations.count) 編成")
+                Text("\(formations.count) \(vehicleClass.unitType.counter)")
+            }
+
+            if vehicleClass.isUserAdded || true {
+                Section {
+                    NavigationLink {
+                        AddFormationView(vehicleClass: vehicleClass)
+                    } label: {
+                        Label("\(vehicleClass.unitType.unitLabel)を追加", systemImage: "plus.circle")
+                    }
+                }
             }
         }
-        .searchable(text: $query, prompt: "編成番号で検索")
+        .searchable(text: $query, prompt: "\(vehicleClass.unitType.unitLabel)で検索")
         .navigationTitle(vehicleClass.name)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Formation.self) { FormationDetailView(formation: $0) }
@@ -250,7 +276,7 @@ struct FormationDetailView: View {
                     Text("まだ記録がありません").foregroundStyle(.secondary)
                 } else {
                     ForEach(sightings) { s in
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             HStack {
                                 Text(s.date, format: .dateTime.year().month().day())
                                     .font(.caption.monospaced())
@@ -259,16 +285,23 @@ struct FormationDetailView: View {
                                     Text("ラストラン").font(.caption2.bold()).foregroundStyle(.red)
                                 }
                             }
+                            if let file = s.photoFilenames.first, let img = PhotoStore.load(file) {
+                                Image(uiImage: img)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 150)
+                                    .frame(maxWidth: .infinity)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
                             Text("\(s.lineName) · \(s.stationName)")
                                 .font(.subheadline)
+                            if !s.carNumber.isEmpty {
+                                Text(s.carNumber).font(.caption.monospaced()).foregroundStyle(.secondary)
+                            }
                             if !s.headmark.isEmpty || !s.livery.isEmpty {
                                 HStack(spacing: 6) {
-                                    if !s.headmark.isEmpty {
-                                        tag(s.headmark, color: .orange)
-                                    }
-                                    if !s.livery.isEmpty {
-                                        tag(s.livery, color: .purple)
-                                    }
+                                    if !s.headmark.isEmpty { tag(s.headmark, color: .orange) }
+                                    if !s.livery.isEmpty { tag(s.livery, color: .purple) }
                                 }
                             }
                         }

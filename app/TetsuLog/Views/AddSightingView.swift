@@ -27,6 +27,8 @@ struct AddSightingView: View {
 
     @State private var pickerItem: PhotosPickerItem?
     @State private var photoAttached = false
+    @State private var savedPhotoFilename: String?
+    @State private var previewImage: UIImage?
     @State private var latitude: Double = 0
     @State private var longitude: Double = 0
 
@@ -59,12 +61,24 @@ struct AddSightingView: View {
                         Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
                     }
                     PhotosPicker(selection: $pickerItem, matching: .images) {
-                        Label(photoAttached ? "写真添付済（位置・日時を自動取得）" : "写真を添付（EXIFから自動入力）",
+                        Label(photoAttached ? "写真を変更" : "写真を添付（EXIFから自動入力）",
                               systemImage: "photo.on.rectangle")
+                    }
+                    if let previewImage {
+                        Image(uiImage: previewImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 160)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     if let scannedText {
                         LabeledContent("スキャン結果", value: scannedText)
                             .font(.callout.monospaced())
+                    }
+                } footer: {
+                    if photoAttached {
+                        Text("写真は端末内に保存されます（容量のためiCloud同期対象外）。")
                     }
                 }
 
@@ -146,17 +160,23 @@ struct AddSightingView: View {
         }
     }
 
-    /// 添付写真のEXIFから日時・位置を読み取る（端末内処理）
+    /// 添付写真のEXIFから日時・位置を読み取り、画像を端末内に保存（すべて端末内処理）
     private func loadPhotoMetadata(_ item: PhotosPickerItem) async {
         guard let data = try? await item.loadTransferable(type: Data.self) else { return }
         let info = PhotoMetadata.read(from: data)
+        let filename = PhotoStore.save(data)
+        let image = UIImage(data: data)
         await MainActor.run {
             if let d = info.date { date = d }
             if let c = info.coordinate {
                 latitude = c.latitude
                 longitude = c.longitude
             }
-            photoAttached = true
+            // 旧写真を差し替え時に掃除
+            if let old = savedPhotoFilename { PhotoStore.delete(old) }
+            savedPhotoFilename = filename
+            previewImage = image
+            photoAttached = filename != nil
             Haptics.tick()
         }
     }
@@ -174,6 +194,7 @@ struct AddSightingView: View {
         s.note = note
         s.latitude = latitude
         s.longitude = longitude
+        if let savedPhotoFilename { s.photoFilenames = [savedPhotoFilename] }
         context.insert(s)
         try? context.save()
 

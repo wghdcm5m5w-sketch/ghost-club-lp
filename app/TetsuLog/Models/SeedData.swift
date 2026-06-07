@@ -18,6 +18,7 @@ enum SeedData {
         let lines: [String]
         let cars: Int
         let retiring: Bool
+        let unitType: String?     // "編成"/"機関車"/"気動車"。省略時は編成
         // 編成は「prefix+範囲」または「明示コード」のどちらかで指定
         let formationPrefix: String?
         let from: Int?
@@ -29,6 +30,10 @@ enum SeedData {
             guard let from, let to else { return [] }
             let prefix = formationPrefix ?? ""
             return (from...to).map { "\(prefix)\($0)" }
+        }
+
+        var resolvedUnitType: UnitType {
+            UnitType(rawValue: unitType ?? "") ?? .formation
         }
     }
 
@@ -43,6 +48,7 @@ enum SeedData {
             let vc = VehicleClass(name: spec.name, operatorName: spec.operator, category: spec.category)
             vc.lineNames = spec.lines
             vc.isRetiring = spec.retiring
+            vc.unitType = spec.resolvedUnitType
             context.insert(vc)
 
             for code in spec.resolvedCodes {

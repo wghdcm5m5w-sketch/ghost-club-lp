@@ -80,8 +80,8 @@ final class ApproachMonitor: NSObject {
 
     private func notify(className: String, spotName: String, lineName: String) {
         let content = UNMutableNotificationContent()
-        content.title = "\(className) が近いかも"
-        content.body = "\(lineName)・\(spotName)付近。ダイヤ上、まもなく通過予定です。"
+        content.title = "\(className) を狙うなら今かも"
+        content.body = "\(lineName)・\(spotName)付近です。ウォッチ中の車両を思い出させました。（在線位置ではなく目安です）"
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: UUID().uuidString, content: content, trigger: nil

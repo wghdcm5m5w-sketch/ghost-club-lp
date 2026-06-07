@@ -107,4 +107,88 @@ enum ExportService {
             return nil
         }
     }
+
+    // MARK: - インポート（移行・復元）
+
+    struct ImportResult {
+        var sightings: Int
+        var rides: Int
+        var spots: Int
+    }
+
+    /// JSONを読み込み、記録を追加する。形式・編成は名称で既存に照合し、
+    /// 無ければ「インポート」形式の下に編成を自動生成する（記録を失わせない）。
+    @MainActor
+    @discardableResult
+    static func importAll(from url: URL, into context: ModelContext) -> ImportResult? {
+        guard url.startAccessingSecurityScopedResource() else { return nil }
+        defer { url.stopAccessingSecurityScopedResource() }
+
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let payload = try? decoder.decode(Export.self, from: data) else { return nil }
+
+        let allClasses = (try? context.fetch(FetchDescriptor<VehicleClass>())) ?? []
+        var classByName = Dictionary(grouping: allClasses, by: \.name).compactMapValues { $0.first }
+
+        func formation(for className: String, code: String) -> Formation? {
+            guard !code.isEmpty else { return nil }
+            let vc: VehicleClass
+            if let existing = classByName[className] {
+                vc = existing
+            } else {
+                let created = VehicleClass(name: className.isEmpty ? "（インポート）" : className,
+                                           operatorName: "", category: "")
+                created.isUserAdded = true
+                context.insert(created)
+                classByName[className] = created
+                vc = created
+            }
+            if let f = vc.formations?.first(where: { $0.code == code }) { return f }
+            let f = Formation(code: code, carCount: 0)
+            f.vehicleClass = vc
+            context.insert(f)
+            return f
+        }
+
+        for s in payload.sightings {
+            let sighting = Sighting(date: s.date, stationName: s.stationName, lineName: s.lineName)
+            sighting.formation = formation(for: s.className, code: s.formationCode)
+            sighting.carNumber = s.carNumber
+            sighting.headmark = s.headmark
+            sighting.livery = s.livery
+            sighting.weather = s.weather
+            sighting.trainNumber = s.trainNumber
+            sighting.kindRaw = s.kind
+            sighting.isLastRun = s.isLastRun
+            sighting.latitude = s.latitude
+            sighting.longitude = s.longitude
+            sighting.note = s.note
+            context.insert(sighting)
+        }
+
+        for r in payload.rides {
+            let ride = RideSegment(fromStation: r.fromStation, toStation: r.toStation, lineName: r.lineName)
+            ride.date = r.date
+            ride.formationCode = r.formationCode
+            ride.distanceKm = r.distanceKm
+            ride.durationSec = r.durationSec
+            ride.note = r.note
+            context.insert(ride)
+        }
+
+        for sp in payload.spots {
+            let spot = ShootingSpot(name: sp.name, latitude: sp.latitude, longitude: sp.longitude)
+            spot.bearingToTrack = sp.bearingToTrack
+            spot.bestHours = sp.bestHours
+            spot.note = sp.note
+            context.insert(spot)
+        }
+
+        try? context.save()
+        return ImportResult(sightings: payload.sightings.count,
+                            rides: payload.rides.count,
+                            spots: payload.spots.count)
+    }
 }

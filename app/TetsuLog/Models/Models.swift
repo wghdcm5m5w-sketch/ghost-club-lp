@@ -2,6 +2,32 @@ import Foundation
 import SwiftData
 import CoreLocation
 
+// MARK: - 車両の管理単位（ガチ鉄は編成と機関車・気動車を厳密に区別する）
+
+enum UnitType: String, Codable, CaseIterable {
+    case formation  = "編成"   // 編成番号で管理（トウ47 等）
+    case locomotive = "機関車" // 号機で管理（EF65 2065号機 等）
+    case railcar    = "気動車" // 車番で管理（キハ40 2095 等）
+
+    /// 個体を数える単位
+    var counter: String {
+        switch self {
+        case .formation: return "編成"
+        case .locomotive: return "両"
+        case .railcar: return "両"
+        }
+    }
+
+    /// 個体ラベル
+    var unitLabel: String {
+        switch self {
+        case .formation: return "編成"
+        case .locomotive: return "号機"
+        case .railcar: return "車番"
+        }
+    }
+}
+
 // MARK: - 形式マスタ
 
 @Model
@@ -15,6 +41,8 @@ final class VehicleClass {
     var introducedYear: Int?
     var retiredYear: Int?
     var note: String = ""
+    var unitTypeRaw: String = UnitType.formation.rawValue
+    var isUserAdded: Bool = false   // ユーザーが追加した形式か
 
     @Relationship(deleteRule: .cascade, inverse: \Formation.vehicleClass)
     var formations: [Formation]?
@@ -23,6 +51,11 @@ final class VehicleClass {
         self.name = name
         self.operatorName = operatorName
         self.category = category
+    }
+
+    var unitType: UnitType {
+        get { UnitType(rawValue: unitTypeRaw) ?? .formation }
+        set { unitTypeRaw = newValue.rawValue }
     }
 }
 
