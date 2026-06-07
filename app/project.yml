@@ -66,3 +66,18 @@ targets:
         SWIFT_VERSION: "5.0"
     dependencies:
       - target: TetsuLog
+
+  TetsuLogWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "11.0"
+    sources:
+      - path: TetsuLogWatch
+      # 共有モデル（本体と同じ実装を参照）
+      - path: TetsuLog/Models/Models.swift
+      - path: TetsuLog/Models/SharedStore.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog.watchapp
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "4"   # Apple Watch
