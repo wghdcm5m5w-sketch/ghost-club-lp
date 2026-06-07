@@ -25,7 +25,7 @@
 ghost-club-lp/
 ├── README.md                      ← このファイル（プロジェクト全体の入口）
 │
-├── tetsulog.html                  ← ランディングページ（9機能・完成）
+├── tetsulog.html                  ← ランディングページ（10機能・完成）
 ├── tetsulog-privacy.html          ← プライバシーポリシー
 ├── tetsulog-terms.html            ← 利用規約
 ├── tetsulog-tokushoho.html        ← 特定商取引法に基づく表記
@@ -49,7 +49,7 @@ ghost-club-lp/
 
 ---
 
-## 🚆 機能（LP掲載の9本柱・すべて骨格実装済み）
+## 🚆 機能（LP掲載の10本柱・すべて骨格実装済み）
 
 | # | 機能 | 概要 | 実装 |
 |---|---|---|---|
@@ -62,8 +62,9 @@ ghost-club-lp/
 | 7 | ライブアクティビティ | 乗車中をDynamic Island/ロック画面に | `RideActivityAttributes` / `RideLiveActivity` |
 | 8 | 接近アラート | 狙いの編成をGPS×位置で思い出させる | `ApproachMonitor` |
 | 9 | 統計 | 累計距離/Top形式・路線・駅/月別推移/ラストラン集計 | `StatsView` / `Statistics` |
+| 10 | 音鉄 | 走行音・駅メロ・車内放送を遭遇に添付（端末内） | `AudioRecorderView` / `AudioPlayerView` / `AudioStore` |
 
-加えて: 記録の編集・削除 / 検索 / 形式・編成のユーザー追加 / データのJSON書き出し・読み込み /
+加えて: 記録の編集・削除 / 検索 / 形式・編成のユーザー追加 / JSON書き出し・読み込み / **CSV取り込み（他サービスから移行）** /
 ウィジェット / Spotlight / Siri(App Intents) / Apple Watch / 多言語(日英中韓)。
 
 ---

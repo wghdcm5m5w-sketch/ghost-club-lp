@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var exportURL: URL?
     @State private var showingShare = false
     @State private var showingImporter = false
+    @State private var showingCSVImport = false
     @State private var importMessage: String?
 
     private var appVersion: String {
@@ -46,6 +47,11 @@ struct SettingsView: View {
                         showingImporter = true
                     } label: {
                         Label("JSONから読み込む（移行・復元）", systemImage: "square.and.arrow.down")
+                    }
+                    Button {
+                        showingCSVImport = true
+                    } label: {
+                        Label("CSVから取り込む（他サービスから移行）", systemImage: "tablecells")
                     }
                     if let importMessage {
                         Text(importMessage).font(.caption).foregroundStyle(.green)
@@ -84,6 +90,9 @@ struct SettingsView: View {
             .fileImporter(isPresented: $showingImporter,
                           allowedContentTypes: [.json]) { result in
                 handleImport(result)
+            }
+            .sheet(isPresented: $showingCSVImport) {
+                CSVImportSheet()
             }
         }
     }
