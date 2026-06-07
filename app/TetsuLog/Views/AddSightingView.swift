@@ -15,6 +15,8 @@ struct AddSightingView: View {
     @State private var date = Date.now
     @State private var isLastRun = false
     @State private var note = ""
+    @State private var showingScanner = false
+    @State private var scannedText: String?
 
     private var formations: [Formation] {
         (selectedClass?.formations ?? []).sorted { $0.code < $1.code }
@@ -51,10 +53,16 @@ struct AddSightingView: View {
                     TextField("メモ", text: $note, axis: .vertical)
                 }
 
-                // v1.1: OCRボタンをここに配置
                 Section {
-                    Label("写真から編成番号を読み取る（v1.1）", systemImage: "text.viewfinder")
-                        .foregroundStyle(.secondary)
+                    Button {
+                        showingScanner = true
+                    } label: {
+                        Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
+                    }
+                    if let scannedText {
+                        LabeledContent("スキャン結果", value: scannedText)
+                            .font(.callout.monospaced())
+                    }
                 }
             }
             .navigationTitle("記録を追加")
@@ -66,6 +74,35 @@ struct AddSightingView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") { save() }
                         .disabled(selectedFormation == nil)
+                }
+            }
+            .sheet(isPresented: $showingScanner) {
+                FormationScanSheet { candidate in
+                    apply(candidate)
+                }
+            }
+        }
+    }
+
+    /// スキャン候補を形式・編成へ照合してフォームに反映
+    private func apply(_ candidate: FormationNumberParser.Candidate) {
+        scannedText = candidate.raw
+
+        switch candidate.kind {
+        case .carNumber:
+            // 形式手がかり(E235等)から VehicleClass を推定
+            if let hint = candidate.classHint {
+                if let match = classes.first(where: { $0.name.contains(hint) }) {
+                    selectedClass = match
+                }
+            }
+        case .formationCode:
+            // 編成記号で全形式の編成を横断検索
+            for vc in classes {
+                if let f = vc.formations?.first(where: { $0.code == candidate.raw }) {
+                    selectedClass = vc
+                    selectedFormation = f
+                    return
                 }
             }
         }
