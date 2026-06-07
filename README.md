@@ -25,7 +25,7 @@
 ghost-club-lp/
 ├── README.md                      ← このファイル（プロジェクト全体の入口）
 │
-├── tetsulog.html                  ← ランディングページ（8機能・完成）
+├── tetsulog.html                  ← ランディングページ（9機能・完成）
 ├── tetsulog-privacy.html          ← プライバシーポリシー
 ├── tetsulog-terms.html            ← 利用規約
 ├── tetsulog-tokushoho.html        ← 特定商取引法に基づく表記
@@ -49,20 +49,22 @@ ghost-club-lp/
 
 ---
 
-## 🚆 機能（LP掲載の8本柱・すべて骨格実装済み）
+## 🚆 機能（LP掲載の9本柱・すべて骨格実装済み）
 
 | # | 機能 | 概要 | 実装 |
 |---|---|---|---|
-| 1 | 図鑑 | 編成番号レベルで車両を個体収集 | `CollectionView` |
+| 1 | 図鑑 | 編成番号レベルで車両を個体収集（編成/号機/車番を区別） | `CollectionView` |
 | 2 | OCR | 写真から編成番号を端末内で自動読み取り | `FormationScannerView` / `FormationNumberParser` |
 | 3 | 地図 | 遭遇地点・撮影地・廃線オーバーレイ | `MapTabView` |
-| 4 | 順光計算 | 太陽方位から順光/逆光を判定 | `SunCalculator`（NOAA算法） |
-| 5 | タイムライン | 記録から鉄道人生を年表化 | `LogView` |
+| 4 | 順光計算 | 太陽方位から順光/逆光を判定 | `SunCalculator`（NOAA算法）/ `SpotDetailView` |
+| 5 | タイムライン | 記録から鉄道人生を年表化（編集・削除可） | `LogView` |
 | 6 | 廃線 | 過去の路線を地図に重ね合わせ | `PolylineCodec` + `MapTabView` |
 | 7 | ライブアクティビティ | 乗車中をDynamic Island/ロック画面に | `RideActivityAttributes` / `RideLiveActivity` |
-| 8 | 接近アラート | 狙いの編成をGPS×ダイヤで予測通知 | `ApproachMonitor` |
+| 8 | 接近アラート | 狙いの編成をGPS×位置で思い出させる | `ApproachMonitor` |
+| 9 | 統計 | 累計距離/Top形式・路線・駅/月別推移/ラストラン集計 | `StatsView` / `Statistics` |
 
-加えて: ウィジェット / Spotlight / Siri(App Intents) / Apple Watch / 多言語(日英中韓)。
+加えて: 記録の編集・削除 / 検索 / 形式・編成のユーザー追加 / データのJSON書き出し・読み込み /
+ウィジェット / Spotlight / Siri(App Intents) / Apple Watch / 多言語(日英中韓)。
 
 ---
 
