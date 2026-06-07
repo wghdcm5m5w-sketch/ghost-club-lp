@@ -35,6 +35,7 @@ struct ShootingSpotListView: View {
                 }
             }
         }
+        .tetsuFormStyle()
         .navigationTitle("撮影地")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -82,6 +83,7 @@ struct SpotEditView: View {
                     TextField("メモ", text: $note, axis: .vertical)
                 }
             }
+            .tetsuFormStyle()
             .navigationTitle(spot == nil ? "撮影地を追加" : "撮影地を編集")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -160,6 +162,7 @@ struct SpotDetailView: View {
                 Section("メモ") { Text(spot.bestHours) }
             }
         }
+        .tetsuFormStyle()
         .navigationTitle(spot.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

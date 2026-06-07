@@ -163,6 +163,7 @@ struct AddSightingView: View {
                     }
                 }
             }
+            .tetsuFormStyle()
             .navigationTitle(editing == nil ? "記録を追加" : "記録を編集")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -46,6 +46,7 @@ struct RideEditView: View {
                     }
                 }
             }
+            .tetsuFormStyle()
             .navigationTitle(ride == nil ? "乗車を記録" : "乗車を編集")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -100,6 +100,7 @@ struct CSVImportSheet: View {
                     }
                 }
             }
+            .tetsuFormStyle()
             .navigationTitle("CSVから取り込み")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

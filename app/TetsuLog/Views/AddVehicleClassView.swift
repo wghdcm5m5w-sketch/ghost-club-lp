@@ -45,6 +45,7 @@ struct AddVehicleClassView: View {
                 Text("例: 接頭辞「トウ」開始1終了50 で トウ1〜トウ50 を自動作成。あとから個別に追加・編集もできます。")
             }
         }
+        .tetsuFormStyle()
         .navigationTitle("形式を追加")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -98,6 +99,7 @@ struct AddFormationView: View {
                 TextField("所属（任意）", text: $depot)
             }
         }
+        .tetsuFormStyle()
         .navigationTitle("\(vehicleClass.unitType.unitLabel)を追加")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

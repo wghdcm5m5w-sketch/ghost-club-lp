@@ -127,6 +127,7 @@ struct StartRideView: View {
                     TextField("次の停車駅", text: $nextStation)
                 }
             }
+            .tetsuFormStyle()
             .navigationTitle("乗車を開始")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -162,59 +163,96 @@ struct ActiveRideView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                Image(systemName: "tram.fill")
-                    .font(.system(size: 44))
-                    .foregroundStyle(.orange)
+            ZStack {
+                NavyBackground()
+                ScrollView {
+                    VStack(spacing: 18) {
+                        // 進行中インジケータ
+                        HStack(spacing: 8) {
+                            Circle().fill(Theme.Palette.red)
+                                .frame(width: 8, height: 8)
+                                .opacity(0.9)
+                            Text("LIVE")
+                                .font(.system(size: 12, weight: .heavy, design: .serif))
+                                .tracking(4)
+                                .foregroundStyle(Theme.Palette.red)
+                        }
+                        .padding(.top, 4)
 
-                VStack(spacing: 4) {
-                    Text("\(manager.className) \(manager.formationCode)")
-                        .font(.title2.bold())
-                    Text(manager.lineName)
-                        .foregroundStyle(.secondary)
-                }
+                        // 編成情報カード
+                        PaperCard(accent: true) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("\(manager.className) \(manager.formationCode)")
+                                    .font(.system(size: 24, weight: .heavy, design: .serif))
+                                    .foregroundStyle(Theme.Palette.ink)
+                                Text(manager.lineName)
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(Theme.Palette.inkSub)
+                            }
+                        }
 
-                // 経過時間をリアルタイム表示
-                TimelineView(.periodic(from: .now, by: 1)) { _ in
-                    Text(elapsedString)
-                        .font(.system(size: 48, weight: .bold, design: .rounded).monospacedDigit())
-                }
+                        // 経過時間カード
+                        PaperCard(accent: false) {
+                            VStack(spacing: 12) {
+                                Text("経過時間")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .tracking(4)
+                                    .foregroundStyle(Theme.Palette.inkSub)
+                                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                                    Text(elapsedString)
+                                        .font(.system(size: 64, weight: .heavy, design: .serif).monospacedDigit())
+                                        .foregroundStyle(Theme.Palette.red)
+                                }
+                                HStack(spacing: 6) {
+                                    Image(systemName: "tram.fill")
+                                        .foregroundStyle(Theme.Palette.navy)
+                                    Text("\(manager.fromStation) を出発")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(Theme.Palette.inkSub)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                        }
 
-                Text("\(manager.fromStation) を出発")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                        // 降車入力
+                        PaperCard(accent: false) {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("降車時に記録").font(Theme.Font.headline(16)).foregroundStyle(Theme.Palette.ink)
+                                TextField("降車駅", text: $toStation)
+                                    .textFieldStyle(.roundedBorder)
+                                TextField("乗車距離 (km)", text: $distanceKm)
+                                    .textFieldStyle(.roundedBorder)
+                                    .keyboardType(.decimalPad)
+                            }
+                        }
 
-                Spacer()
-
-                Form {
-                    Section("降車時に記録") {
-                        TextField("降車駅", text: $toStation)
-                        TextField("乗車距離 (km)", text: $distanceKm)
-                            .keyboardType(.decimalPad)
+                        // 終了ボタン
+                        Button {
+                            Task {
+                                await manager.end(toStation: toStation, distanceKm: Double(distanceKm) ?? 0, context: context)
+                                dismiss()
+                            }
+                        } label: {
+                            Text("乗車を終了して記録")
+                                .font(.system(size: 16, weight: .heavy, design: .serif))
+                                .tracking(2)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.red))
+                                .foregroundStyle(Theme.Palette.paper)
+                                .shadow(color: Theme.Palette.red.opacity(0.35), radius: 10, x: 0, y: 5)
+                        }
+                        .padding(.top, 4)
                     }
+                    .padding(Theme.screenPadding)
                 }
-                .frame(height: 160)
-                .scrollDisabled(true)
-
-                Button(role: .destructive) {
-                    Task {
-                        await manager.end(
-                            toStation: toStation,
-                            distanceKm: Double(distanceKm) ?? 0,
-                            context: context
-                        )
-                        dismiss()
-                    }
-                } label: {
-                    Text("乗車を終了して記録")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .padding(.horizontal)
             }
-            .padding()
             .navigationTitle("乗車中")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 
