@@ -37,8 +37,10 @@ struct SettingsView: View {
 
                 Section("アプリ") {
                     LabeledContent("バージョン", value: "1.0.0")
-                    Link("プライバシーポリシー", destination: URL(string: "https://yourname.github.io/tetsulog/privacy")!)
-                    Link("利用規約", destination: URL(string: "https://yourname.github.io/tetsulog/terms")!)
+                    // 公開URLは GitHub Pages のホスト名に合わせて差し替える
+                    Link("プライバシーポリシー", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-privacy.html")!)
+                    Link("利用規約", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-terms.html")!)
+                    Link("特定商取引法に基づく表記", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-tokushoho.html")!)
                 }
             }
             .navigationTitle("設定")
