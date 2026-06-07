@@ -1032,6 +1032,205 @@ nav.top {
   line-height: 1.7;
 }
 
+/* ===== Live Activity section ===== */
+.live-section {
+  background:
+    radial-gradient(ellipse at center top, rgba(45, 187, 111, 0.07) 0%, transparent 55%);
+  border-top: 1px solid var(--line);
+}
+.live-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+  margin-top: 56px;
+}
+.live-stage {
+  position: relative;
+  min-height: 560px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 28px;
+}
+.live-phone-frame {
+  width: 330px;
+  background: linear-gradient(180deg, #12151c 0%, #090b10 100%);
+  border-radius: 46px;
+  border: 1.5px solid var(--line-2);
+  padding: 14px;
+  box-shadow: 0 50px 100px rgba(0,0,0,0.55), 0 0 60px rgba(45, 187, 111, 0.06);
+  position: relative;
+}
+.live-lockscreen {
+  background:
+    linear-gradient(180deg, #1a2230 0%, #0e131c 70%, #161d28 100%);
+  border-radius: 34px;
+  padding: 26px 18px 22px;
+  position: relative;
+  overflow: hidden;
+  min-height: 480px;
+}
+.live-lockscreen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.03'/></svg>");
+  pointer-events: none;
+}
+/* Dynamic Island */
+.dynamic-island {
+  width: 200px;
+  margin: 0 auto 40px;
+  background: #000;
+  border-radius: 26px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+}
+.di-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--rail-green), #1a8a52);
+  display: grid; place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.di-info { flex: 1; min-width: 0; }
+.di-line1 {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.di-line2 {
+  font-family: 'JetBrains Mono';
+  font-size: 9px; color: var(--rail-green);
+  letter-spacing: 0.04em;
+  margin-top: 1px;
+}
+.di-timer {
+  font-family: 'JetBrains Mono';
+  font-size: 13px; font-weight: 700;
+  color: var(--rail-amber);
+  flex-shrink: 0;
+}
+/* Lock clock */
+.lock-clock {
+  text-align: center;
+  position: relative; z-index: 2;
+  margin-bottom: 28px;
+}
+.lock-date {
+  font-size: 13px; color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.lock-time {
+  font-family: 'Inter';
+  font-size: 64px; font-weight: 600;
+  line-height: 1; letter-spacing: -0.02em;
+  color: #fff;
+}
+/* Live Activity card on lock screen */
+.la-card {
+  background: rgba(15, 19, 27, 0.82);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(45, 187, 111, 0.3);
+  border-radius: 22px;
+  padding: 16px;
+  position: relative; z-index: 2;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.la-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.la-head-icon {
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--rail-green), #1a8a52);
+  display: grid; place-items: center;
+  font-size: 13px;
+}
+.la-head-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+}
+.la-head-live {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono';
+  font-size: 9px; color: var(--rail-green);
+  letter-spacing: 0.1em;
+}
+.la-head-live::before {
+  content: ''; width: 5px; height: 5px;
+  background: var(--rail-green); border-radius: 50%;
+  box-shadow: 0 0 8px var(--rail-green);
+  animation: blink 1.4s ease-in-out infinite;
+}
+.la-train {
+  font-family: 'Noto Sans JP';
+  font-size: 17px; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.la-route {
+  font-size: 11.5px; color: var(--text-2);
+  margin-bottom: 16px;
+}
+/* progress line between stations */
+.la-progress {
+  display: flex; align-items: center;
+  margin-bottom: 16px;
+}
+.la-stop {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+}
+.la-stop-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 2px solid var(--rail-green);
+  background: var(--bg);
+}
+.la-stop-dot.done { background: var(--rail-green); }
+.la-stop-dot.current {
+  background: var(--rail-amber); border-color: var(--rail-amber);
+  box-shadow: 0 0 12px var(--rail-amber);
+}
+.la-stop-label {
+  font-size: 9px; color: var(--text-2);
+  margin-top: 5px; white-space: nowrap;
+}
+.la-stop-label.current { color: var(--rail-amber); font-weight: 700; }
+.la-track {
+  flex: 1; height: 2px;
+  background: var(--line);
+  position: relative;
+}
+.la-track.done { background: var(--rail-green); }
+.la-track.active::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 55%;
+  background: var(--rail-amber);
+}
+.la-footer {
+  display: flex; justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.la-foot-item { }
+.la-foot-label {
+  font-family: 'JetBrains Mono';
+  font-size: 9px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.la-foot-val {
+  font-family: 'JetBrains Mono';
+  font-size: 14px; font-weight: 700; color: var(--text);
+  margin-top: 2px;
+}
+.la-foot-val.green { color: var(--rail-green); }
+.la-foot-val.amber { color: var(--rail-amber); }
+
 /* ===== Privacy section ===== */
 .privacy-section {
   background: linear-gradient(180deg, transparent 0%, rgba(45, 187, 111, 0.04) 50%, transparent 100%);
@@ -1404,6 +1603,8 @@ footer {
   .feature-row.reverse { direction: ltr; }
   .promise-grid, .ios-grid { grid-template-columns: repeat(2, 1fr); }
   .privacy-grid { grid-template-columns: 1fr; gap: 40px; }
+  .live-grid { grid-template-columns: 1fr; gap: 40px; }
+  .live-stage { min-height: auto; }
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
   .compare-row { grid-template-columns: 1.5fr 1fr 1fr 1fr; }
   .compare-cell { padding: 14px 12px; font-size: 12.5px; }
@@ -1431,6 +1632,7 @@ footer {
     <ul class="nav-links">
       <li><a href="#problem">問題</a></li>
       <li><a href="#features">機能</a></li>
+      <li><a href="#live">ライブ</a></li>
       <li><a href="#privacy">プライバシー</a></li>
       <li><a href="#pricing">価格</a></li>
     </ul>
@@ -1862,6 +2064,100 @@ footer {
   </div>
 </section>
 
+<!-- ===== LIVE ACTIVITY ===== -->
+<section class="section live-section" id="live">
+  <div class="section-eyebrow" style="color: var(--rail-green);">FEATURE 07 · LIVE ACTIVITY</div>
+  <h2 class="section-title">乗車中は、ロック画面が<br>「運転台」になる。</h2>
+  <p class="section-sub">
+    乗車を開始すると、Dynamic Island とロック画面にライブアクティビティが出現。
+    今乗っている編成・通過した駅・次の停車駅・経過時間が、画面を開かなくてもリアルタイムで更新される。
+    すべて端末内処理、外部通信ゼロ。
+  </p>
+  <div class="live-grid">
+    <div>
+      <div class="feature-tag" style="color: var(--rail-green); border-color: rgba(45,187,111,0.25); background: rgba(45,187,111,0.05);">乗車セッション</div>
+      <h3 class="feature-title" style="font-size: 32px;">ポケットの中で、<br>旅が進んでいく。</h3>
+      <p class="feature-desc">
+        記録した編成で乗車を始めれば、あとはポケットに入れたまま。
+        Dynamic Island をちらっと見るだけで、次の駅も、乗車時間も、走行距離もわかる。
+        降りたら自動でその区間が記録に残る。
+      </p>
+      <ul class="feature-bullets">
+        <li><strong>Dynamic Island</strong> に今乗っている編成番号を常時表示</li>
+        <li>ロック画面で通過駅・次駅・経過時間をライブ更新</li>
+        <li>降車時に乗車区間・距離を自動で図鑑へ記録</li>
+        <li>ActivityKit による端末内駆動・通信ゼロ・電池に優しい</li>
+        <li>Apple Watch のスマートスタックにも同時表示</li>
+      </ul>
+    </div>
+    <div class="live-stage">
+      <div class="live-phone-frame">
+        <div class="live-lockscreen">
+          <!-- Dynamic Island -->
+          <div class="dynamic-island">
+            <div class="di-icon">🚆</div>
+            <div class="di-info">
+              <div class="di-line1">E235系 トウ47</div>
+              <div class="di-line2">山手線 · 内回り</div>
+            </div>
+            <div class="di-timer">12:43</div>
+          </div>
+          <!-- Lock clock -->
+          <div class="lock-clock">
+            <div class="lock-date">6月7日 土曜日</div>
+            <div class="lock-time">9:41</div>
+          </div>
+          <!-- Live Activity card -->
+          <div class="la-card">
+            <div class="la-head">
+              <div class="la-head-icon">🚆</div>
+              <div class="la-head-title">乗車中</div>
+              <div class="la-head-live">LIVE</div>
+            </div>
+            <div class="la-train">E235系 トウ47編成</div>
+            <div class="la-route">山手線（内回り）· 14両</div>
+            <div class="la-progress">
+              <div class="la-stop">
+                <div class="la-stop-dot done"></div>
+                <div class="la-stop-label">渋谷</div>
+              </div>
+              <div class="la-track done"></div>
+              <div class="la-stop">
+                <div class="la-stop-dot current"></div>
+                <div class="la-stop-label current">原宿</div>
+              </div>
+              <div class="la-track active"></div>
+              <div class="la-stop">
+                <div class="la-stop-dot"></div>
+                <div class="la-stop-label">代々木</div>
+              </div>
+              <div class="la-track"></div>
+              <div class="la-stop">
+                <div class="la-stop-dot"></div>
+                <div class="la-stop-label">新宿</div>
+              </div>
+            </div>
+            <div class="la-footer">
+              <div class="la-foot-item">
+                <div class="la-foot-label">次の停車</div>
+                <div class="la-foot-val">代々木</div>
+              </div>
+              <div class="la-foot-item">
+                <div class="la-foot-label">乗車時間</div>
+                <div class="la-foot-val amber">12:43</div>
+              </div>
+              <div class="la-foot-item">
+                <div class="la-foot-label">この乗車</div>
+                <div class="la-foot-val green">8.2 km</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== iOS Integration ===== -->
 <section class="section ios-section">
   <div class="section-eyebrow" style="color: var(--rail-blue);">DEEP iOS INTEGRATION</div>
@@ -1889,6 +2185,26 @@ footer {
       <div class="ios-icon-wrap">⌚️</div>
       <div class="ios-title">Apple Watch</div>
       <div class="ios-desc">駅で記録ボタンを押すだけで、位置と時刻が自動で残る。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">🏝</div>
+      <div class="ios-title">Dynamic Island</div>
+      <div class="ios-desc">乗車中の編成と次駅を、画面上部に常時ピン留め表示。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">📡</div>
+      <div class="ios-title">ライブアクティビティ</div>
+      <div class="ios-desc">ロック画面で乗車の進行をリアルタイム更新。開かなくても旅がわかる。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">📤</div>
+      <div class="ios-title">共有シート</div>
+      <div class="ios-desc">写真アプリから直接1タップで記録に追加。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">🔒</div>
+      <div class="ios-title">ロック画面ウィジェット</div>
+      <div class="ios-desc">お気に入り編成の最終遭遇日を、ロック画面にいつでも。</div>
     </div>
   </div>
 </section>
