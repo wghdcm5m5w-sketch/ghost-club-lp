@@ -5,6 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TetsuLog — 鉄道の、すべてを、図鑑にする。</title>
 <meta name="description" content="撮った編成、乗った区間、追いかけた憧れ。あなたの鉄道人生のすべてを、ひとつのアプリに。データはあなたのiCloudの中にだけ。Apple純正技術で作られた、ガチ鉄のための信頼できる道具。">
+<meta name="theme-color" content="#10243F">
+<!-- ファビコン（国鉄ネイビーのエンブレム動輪アイコン） -->
+<link rel="icon" type="image/png" sizes="32x32" href="lp-assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="lp-assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="lp-assets/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="lp-assets/favicon-180.png">
+<link rel="shortcut icon" href="lp-assets/favicon.ico">
+<!-- Open Graph / Twitter Card -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TetsuLog">
+<meta property="og:title" content="TetsuLog — 鉄道の、すべてを、図鑑にする。">
+<meta property="og:description" content="編成番号レベルで車両を個体収集。撮影地・順光計算・廃線まで、ガチ鉄のためのライフログ。データは100%あなたのiCloudの中に。">
+<meta property="og:image" content="lp-assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TetsuLog — 鉄道の、すべてを、図鑑にする。">
+<meta name="twitter:description" content="編成番号レベルで車両を個体収集。撮影地・順光計算・廃線まで、ガチ鉄のためのライフログ。">
+<meta name="twitter:image" content="lp-assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -255,6 +275,14 @@ nav.top {
   border-radius: 38px;
   overflow: hidden;
   position: relative;
+}
+.iphone-screen.shot { background: #0a1626; }
+.iphone-screen.shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border-radius: 38px;
 }
 .status-bar {
   padding: 16px 24px 8px;
@@ -1977,59 +2005,8 @@ footer {
 
   <div class="hero-visual">
     <div class="iphone">
-      <div class="iphone-screen">
-        <div class="status-bar">
-          <span>9:41</span>
-          <span>●●● ●</span>
-        </div>
-        <div class="app-content">
-          <div class="app-header">
-            <div>
-              <div class="app-title-sub">My Collection</div>
-              <div class="app-title">図鑑</div>
-            </div>
-            <div class="stat-circle">
-              <span class="stat-num">68%</span>
-            </div>
-          </div>
-          <div class="app-recent-label">最近の遭遇</div>
-          <div class="record-card">
-            <div class="record-icon r1">🚆</div>
-            <div class="record-info">
-              <div class="record-title">E235系 トウ47編成</div>
-              <div class="record-meta">山手線 · 新宿駅</div>
-            </div>
-            <div class="record-time">2分前</div>
-          </div>
-          <div class="record-card">
-            <div class="record-icon r2">🚄</div>
-            <div class="record-info">
-              <div class="record-title">N700S系 J36編成</div>
-              <div class="record-meta">東海道新幹線 · 品川</div>
-            </div>
-            <div class="record-time">2時間前</div>
-          </div>
-          <div class="record-card">
-            <div class="record-icon r3">🚞</div>
-            <div class="record-info">
-              <div class="record-title">189系 N102編成（廃車前）</div>
-              <div class="record-meta">中央本線 · 立川駅</div>
-            </div>
-            <div class="record-time">昨日</div>
-          </div>
-          <div class="record-card">
-            <div class="record-icon r4">🚇</div>
-            <div class="record-info">
-              <div class="record-title">京急2100形 2157編成</div>
-              <div class="record-meta">京急本線 · 横浜駅</div>
-            </div>
-            <div class="record-time">3日前</div>
-          </div>
-          <div class="app-quick-action">
-            <span class="app-quick-action-text">＋ 編成を記録する</span>
-            <span class="app-quick-action-arrow">›</span>
-          </div>
-        </div>
+      <div class="iphone-screen shot">
+        <img src="lp-assets/lp-zukan.png" alt="TetsuLog 図鑑画面（国鉄レトロ・上質）">
       </div>
     </div>
     <div class="float-card fc1">
