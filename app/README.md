@@ -73,6 +73,7 @@ TetsuLog/                          （本体ターゲット）
     ├── FormationNumberParser.swift 編成番号抽出（純粋ロジック・テスト可）
     ├── FormationScannerView.swift  VisionKit DataScanner ラッパー
     ├── PolylineCodec.swift         廃線軌跡のエンコード/デコード
+    ├── TetsuLogIntents.swift       Siri / ショートカット（App Intents）
     ├── RideActivityAttributes.swift ActivityKit属性 ★Widgetと共有
     └── ApproachMonitor.swift      接近アラート（GPS×ダイヤ）
 
