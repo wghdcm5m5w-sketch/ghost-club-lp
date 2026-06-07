@@ -50,3 +50,17 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
+
+  TetsuLogTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: TetsuLogTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog.tests
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TetsuLog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TetsuLog"
+        SWIFT_VERSION: "5.0"
+    dependencies:
+      - target: TetsuLog
