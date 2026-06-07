@@ -25,8 +25,35 @@ enum SeedData {
             }
         }
 
+        for line in sampleAbandonedLines {
+            let al = AbandonedLine(name: line.name)
+            al.openedYear = line.opened
+            al.closedYear = line.closed
+            al.encodedPolyline = line.polyline
+            al.note = line.note
+            context.insert(al)
+        }
+
         try? context.save()
     }
+
+    private struct AbandonedSpec {
+        let name: String
+        let opened: Int
+        let closed: Int
+        let polyline: String   // "lat,lon lat,lon ..."
+        let note: String
+    }
+
+    // サンプル（座標は概略）。本番は GeoJSON / 有志データから生成。
+    private static let sampleAbandonedLines: [AbandonedSpec] = [
+        .init(name: "国鉄 士幌線（糠平〜十勝三股）", opened: 1939, closed: 1987,
+              polyline: "43.305,143.142 43.330,143.150 43.360,143.160 43.398,143.175",
+              note: "タウシュベツ川橋梁で知られる区間"),
+        .init(name: "国鉄 篠ノ井線 旧線（明科〜西条）", opened: 1900, closed: 1988,
+              polyline: "36.345,137.930 36.360,137.945 36.375,137.960",
+              note: "三五山トンネル等の遺構が残る"),
+    ]
 
     private struct ClassSpec {
         let name: String

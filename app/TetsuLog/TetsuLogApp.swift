@@ -27,9 +27,12 @@ struct TetsuLogApp: App {
         }
     }
 
+    @State private var rideManager = RideManager()
+
     var body: some Scene {
         WindowGroup {
             RootTabView()
+                .environment(rideManager)
                 .task {
                     await SeedData.seedIfNeeded(container.mainContext)
                 }

@@ -64,13 +64,15 @@ TetsuLog/                          （本体ターゲット）
 │   ├── RootTabView.swift          4タブ
 │   ├── CollectionView.swift       図鑑
 │   ├── LogView.swift              記録タイムライン
-│   ├── MapTabView.swift           地図
+│   ├── MapTabView.swift           地図（廃線オーバーレイ込み）
 │   ├── SettingsView.swift         設定・ウォッチリスト
-│   └── AddSightingView.swift      遭遇記録入力（OCR統合済み）
+│   ├── AddSightingView.swift      遭遇記録入力（OCR統合済み）
+│   └── RideSessionView.swift      乗車セッション（開始/乗車中、ライブ起動）
 └── Features/
     ├── SunCalculator.swift        順光/逆光計算（NOAA）
     ├── FormationNumberParser.swift 編成番号抽出（純粋ロジック・テスト可）
     ├── FormationScannerView.swift  VisionKit DataScanner ラッパー
+    ├── PolylineCodec.swift         廃線軌跡のエンコード/デコード
     ├── RideActivityAttributes.swift ActivityKit属性 ★Widgetと共有
     └── ApproachMonitor.swift      接近アラート（GPS×ダイヤ）
 

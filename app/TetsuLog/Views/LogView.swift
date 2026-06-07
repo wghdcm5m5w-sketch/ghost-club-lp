@@ -4,7 +4,10 @@ import SwiftData
 /// 記録タブ: 遭遇記録を年・月でグルーピングしたタイムライン
 struct LogView: View {
     @Query(sort: \Sighting.date, order: .reverse) private var sightings: [Sighting]
+    @Environment(RideManager.self) private var rideManager
     @State private var showingAdd = false
+    @State private var showingStartRide = false
+    @State private var showingActiveRide = false
 
     private var grouped: [(year: Int, items: [Sighting])] {
         let cal = Calendar.current
@@ -34,9 +37,30 @@ struct LogView: View {
                 }
             }
             .navigationTitle("記録")
+            .safeAreaInset(edge: .top) {
+                if rideManager.isActive {
+                    activeRideBanner
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { showingAdd = true } label: {
+                    Menu {
+                        Button {
+                            showingAdd = true
+                        } label: {
+                            Label("遭遇を記録", systemImage: "tram")
+                        }
+                        Button {
+                            if rideManager.isActive {
+                                showingActiveRide = true
+                            } else {
+                                showingStartRide = true
+                            }
+                        } label: {
+                            Label(rideManager.isActive ? "乗車中の画面" : "乗車を開始",
+                                  systemImage: "play.circle")
+                        }
+                    } label: {
                         Image(systemName: "plus")
                     }
                 }
@@ -44,7 +68,32 @@ struct LogView: View {
             .sheet(isPresented: $showingAdd) {
                 AddSightingView()
             }
+            .sheet(isPresented: $showingStartRide) {
+                StartRideView(manager: rideManager)
+            }
+            .sheet(isPresented: $showingActiveRide) {
+                ActiveRideView(manager: rideManager)
+            }
         }
+    }
+
+    private var activeRideBanner: some View {
+        Button {
+            showingActiveRide = true
+        } label: {
+            HStack {
+                Image(systemName: "tram.fill")
+                Text("乗車中: \(rideManager.className) \(rideManager.formationCode)")
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(.orange.opacity(0.18), in: RoundedRectangle(cornerRadius: 12))
+            .foregroundStyle(.orange)
+            .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -87,4 +136,5 @@ private struct SightingRow: View {
 #Preview {
     LogView()
         .modelContainer(PreviewData.container)
+        .environment(RideManager())
 }
