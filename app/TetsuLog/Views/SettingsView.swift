@@ -6,7 +6,6 @@ struct SettingsView: View {
     @Query private var watchItems: [WatchItem]
     @Query private var sightings: [Sighting]
     @Query private var rides: [RideSegment]
-
     @AppStorage("tetsulog.lastSyncAt") private var lastSyncAt: Double = 0
 
     @State private var exportURL: URL?
@@ -23,107 +22,120 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("あなたの記録") {
-                    LabeledContent("遭遇記録", value: "\(sightings.count)件")
-                    LabeledContent("乗車記録", value: "\(rides.count)件")
-                    let km = rides.map(\.distanceKm).reduce(0, +)
-                    LabeledContent("累計乗車距離", value: String(format: "%.1f km", km))
-                }
+            ZStack {
+                NavyBackground()
+                ScrollView {
+                    VStack(spacing: 16) {
+                        MakuHeader(title: "設 定").padding(.top, 8)
 
-                Section {
-                    Label("iCloudにのみ保存されています", systemImage: "lock.icloud")
-                        .foregroundStyle(.green)
-                    if lastSyncAt > 0 {
-                        LabeledContent("最終同期", value: Date(timeIntervalSince1970: lastSyncAt)
-                            .formatted(date: .abbreviated, time: .shortened))
-                    }
-                    Button {
-                        export()
-                    } label: {
-                        Label("データをJSONで書き出す", systemImage: "square.and.arrow.up")
-                    }
-                    Button {
-                        showingImporter = true
-                    } label: {
-                        Label("JSONから読み込む（移行・復元）", systemImage: "square.and.arrow.down")
-                    }
-                    Button {
-                        showingCSVImport = true
-                    } label: {
-                        Label("CSVから取り込む（他サービスから移行）", systemImage: "tablecells")
-                    }
-                    if let importMessage {
-                        Text(importMessage).font(.caption).foregroundStyle(.green)
-                    }
-                } header: {
-                    Text("プライバシー・データ")
-                } footer: {
-                    Text("あなたのデータは運営者のサーバーに送信されません。記録（編成・乗車・撮影地）はiCloudで端末間同期され、JSONで書き出し・読み込みできます。\n※添付の写真・録音は端末内保存のためJSONには含まれません。別途バックアップをおすすめします。")
-                }
+                        section("あなたの記録") {
+                            row("遭遇記録", "\(sightings.count)件")
+                            line
+                            row("乗車記録", "\(rides.count)件")
+                            line
+                            row("累計乗車距離", String(format:"%.1f km", rides.map(\.distanceKm).reduce(0,+)))
+                        }
 
-                Section {
-                    NavigationLink {
-                        WatchListView()
-                    } label: {
-                        Label("ウォッチリストを編集", systemImage: "bell.badge")
-                    }
-                } header: {
-                    Text("狙いの編成リマインダー")
-                } footer: {
-                    Text("登録した形式・編成にちなんだ撮影地・駅に近づくと、思い出させる通知を出します。※リアルタイムの在線位置ではありません。ダイヤ照合は対応路線で順次有効化されます。")
-                }
+                        section("狙いの編成リマインダー") {
+                            NavigationLink { WatchListView() } label: {
+                                navRow("ウォッチリストを編集", "bell.badge")
+                            }
+                            caption("登録した形式・編成にちなんだ撮影地・駅に近づくと通知します。※リアルタイムの在線位置ではありません。")
+                        }
 
-                Section("アプリ") {
-                    LabeledContent("バージョン", value: appVersion)
-                    Link("プライバシーポリシー", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-privacy.html")!)
-                    Link("利用規約", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-terms.html")!)
-                    Link("特定商取引法に基づく表記", destination: URL(string: "https://example.github.io/ghost-club-lp/tetsulog-tokushoho.html")!)
+                        section("プライバシー・データ") {
+                            HStack {
+                                Label("iCloudにのみ保存", systemImage: "lock.icloud").foregroundStyle(Theme.Palette.navy)
+                                    .font(Theme.Font.body(15))
+                                Spacer()
+                            }
+                            if lastSyncAt > 0 {
+                                line
+                                row("最終同期", Date(timeIntervalSince1970: lastSyncAt).formatted(date:.abbreviated, time:.shortened))
+                            }
+                            line
+                            actionRow("データをJSONで書き出す", "square.and.arrow.up"){ export() }
+                            line
+                            actionRow("JSONから読み込む（移行・復元）", "square.and.arrow.down"){ showingImporter = true }
+                            line
+                            actionRow("CSVから取り込む（他サービス）", "tablecells"){ showingCSVImport = true }
+                            if let importMessage {
+                                caption(importMessage, color: Theme.Palette.navy)
+                            }
+                            caption("運営者のサーバーには送信されません。※写真・録音は端末内保存のためJSONには含まれません。")
+                        }
+
+                        section("アプリ") {
+                            row("バージョン", appVersion)
+                            line
+                            linkRow("プライバシーポリシー", "https://example.github.io/ghost-club-lp/tetsulog-privacy.html")
+                            line
+                            linkRow("利用規約", "https://example.github.io/ghost-club-lp/tetsulog-terms.html")
+                            line
+                            linkRow("特定商取引法に基づく表記", "https://example.github.io/ghost-club-lp/tetsulog-tokushoho.html")
+                        }
+                    }
+                    .padding(Theme.screenPadding)
                 }
             }
-            .navigationTitle("設定")
-            .sheet(isPresented: $showingShare) {
-                if let exportURL {
-                    ShareSheet(items: [exportURL])
-                }
-            }
-            .fileImporter(isPresented: $showingImporter,
-                          allowedContentTypes: [.json]) { result in
-                handleImport(result)
-            }
-            .sheet(isPresented: $showingCSVImport) {
-                CSVImportSheet()
-            }
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .sheet(isPresented: $showingShare) { if let exportURL { ShareSheet(items: [exportURL]) } }
+            .sheet(isPresented: $showingCSVImport) { CSVImportSheet() }
+            .fileImporter(isPresented: $showingImporter, allowedContentTypes: [.json]) { handleImport($0) }
         }
     }
 
+    // MARK: コンポーネント
+    private func section<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title).font(Theme.Font.mono(13)).foregroundStyle(Theme.Palette.creamSub).padding(.leading, 6)
+            PaperCard(accent: false) { VStack(spacing: 12) { content() } }
+        }
+    }
+    private func row(_ k: String, _ v: String) -> some View {
+        HStack { Text(k).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
+            Spacer(); Text(v).font(Theme.Font.mono(14)).foregroundStyle(Theme.Palette.inkSub) }
+    }
+    private func navRow(_ k: String, _ icon: String) -> some View {
+        HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+            Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub).font(.system(size:13)) }
+    }
+    private func actionRow(_ k: String, _ icon: String, _ act: @escaping ()->Void) -> some View {
+        Button(action: act) {
+            HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+                Spacer() }
+        }.buttonStyle(.plain)
+    }
+    private func linkRow(_ k: String, _ url: String) -> some View {
+        Link(destination: URL(string: url)!) {
+            HStack { Text(k).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+                Spacer(); Image(systemName: "arrow.up.right").foregroundStyle(Theme.Palette.inkSub).font(.system(size:12)) }
+        }
+    }
+    private func caption(_ t: String, color: Color = Theme.Palette.inkSub) -> some View {
+        Text(t).font(Theme.Font.body(12)).foregroundStyle(color).frame(maxWidth:.infinity, alignment:.leading)
+    }
+    private var line: some View { Rectangle().fill(Theme.Palette.paperEdge).frame(height:1) }
+
+    private func export() {
+        if let url = ExportService.exportAll(context) { exportURL = url; showingShare = true; Haptics.success(); lastSyncAt = Date.now.timeIntervalSince1970 }
+    }
     private func handleImport(_ result: Result<URL, Error>) {
         guard case let .success(url) = result else { return }
         if let r = ExportService.importAll(from: url, into: context) {
-            importMessage = "読み込み完了: 遭遇\(r.sightings)件・乗車\(r.rides)件・撮影地\(r.spots)件"
-            Haptics.success()
-        } else {
-            importMessage = "読み込みに失敗しました。ファイル形式をご確認ください。"
-        }
-    }
-
-    private func export() {
-        if let url = ExportService.exportAll(context) {
-            exportURL = url
-            showingShare = true
-            Haptics.success()
-            lastSyncAt = Date.now.timeIntervalSince1970
-        }
+            importMessage = "読み込み完了: 遭遇\(r.sightings)件・乗車\(r.rides)件・撮影地\(r.spots)件"; Haptics.success()
+        } else { importMessage = "読み込みに失敗しました。ファイル形式をご確認ください。" }
     }
 }
 
-/// 共有シート
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+    func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: items, applicationActivities: nil) }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
 
 /// ウォッチリスト管理（形式と編成番号の両対応）
@@ -131,74 +143,64 @@ struct WatchListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \WatchItem.createdAt, order: .reverse) private var items: [WatchItem]
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
-
     @State private var newClassName = ""
     @State private var newFormationCode = ""
 
     var body: some View {
-        List {
-            Section {
-                Picker("形式", selection: $newClassName) {
-                    Text("選択").tag("")
-                    ForEach(classes) { Text($0.name).tag($0.name) }
-                }
-                TextField("編成番号（任意・例: ナノN102）", text: $newFormationCode)
-                    .font(.body.monospaced())
-                Button("ウォッチリストに追加") { add() }
-                    .disabled(newClassName.isEmpty)
-            } header: {
-                Text("追加")
-            } footer: {
-                Text("編成番号を指定すると、その編成だけにアラートが絞られます。")
-            }
-
-            Section("登録中") {
-                if items.isEmpty {
-                    Text("まだ登録がありません")
-                        .foregroundStyle(.secondary)
-                }
-                ForEach(items) { item in
-                    HStack {
-                        Image(systemName: "bell.fill").foregroundStyle(.orange)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.targetClassName)
-                            if !item.targetFormationCode.isEmpty {
-                                Text(item.targetFormationCode)
-                                    .font(.caption.monospaced())
-                                    .foregroundStyle(.secondary)
-                            }
+        ZStack {
+            NavyBackground()
+            ScrollView {
+                VStack(spacing: 16) {
+                    PaperCard(accent: false) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("追加").font(Theme.Font.headline(16)).foregroundStyle(Theme.Palette.ink)
+                            Picker("形式", selection: $newClassName) {
+                                Text("選択").tag("")
+                                ForEach(classes){ Text($0.name).tag($0.name) }
+                            }.tint(Theme.Palette.navy)
+                            TextField("編成番号（任意・例: ナノN102）", text: $newFormationCode)
+                                .font(Theme.Font.mono(15)).foregroundStyle(Theme.Palette.ink)
+                            Button { add() } label: {
+                                Text("ウォッチリストに追加").font(.system(size:15,weight:.bold))
+                                    .frame(maxWidth:.infinity).padding(.vertical,10)
+                                    .background(RoundedRectangle(cornerRadius:10).fill(newClassName.isEmpty ? Theme.Palette.rail : Theme.Palette.red))
+                                    .foregroundStyle(Theme.Palette.paper)
+                            }.disabled(newClassName.isEmpty).buttonStyle(.plain)
                         }
-                        Spacer()
-                        Toggle("", isOn: Binding(
-                            get: { item.enabled },
-                            set: { item.enabled = $0; try? context.save() }
-                        ))
-                        .labelsHidden()
+                    }
+                    if items.isEmpty {
+                        Text("まだ登録がありません").font(Theme.Font.body(14)).foregroundStyle(Theme.Palette.creamSub).padding(.top, 20)
+                    } else {
+                        ForEach(items) { item in
+                            PaperCard {
+                                HStack {
+                                    Image(systemName: "bell.fill").foregroundStyle(Theme.Palette.red)
+                                    VStack(alignment:.leading, spacing:2){
+                                        Text(item.targetClassName).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
+                                        if !item.targetFormationCode.isEmpty {
+                                            Text(item.targetFormationCode).font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
+                                        }
+                                    }
+                                    Spacer()
+                                    Toggle("", isOn: Binding(get:{item.enabled}, set:{item.enabled=$0; try? context.save()})).labelsHidden().tint(Theme.Palette.red)
+                                }
+                            }
+                            .contextMenu { Button(role:.destructive){ context.delete(item); try? context.save() } label:{ Label("削除",systemImage:"trash") } }
+                        }
                     }
                 }
-                .onDelete(perform: delete)
+                .padding(Theme.screenPadding)
             }
         }
         .navigationTitle("ウォッチリスト")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
     }
-
     private func add() {
-        let item = WatchItem(targetClassName: newClassName,
-                             targetFormationCode: newFormationCode)
-        context.insert(item)
-        try? context.save()
-        Haptics.tick()
-        newClassName = ""
-        newFormationCode = ""
-    }
-
-    private func delete(_ offsets: IndexSet) {
-        for i in offsets { context.delete(items[i]) }
-        try? context.save()
+        let item = WatchItem(targetClassName: newClassName, targetFormationCode: newFormationCode)
+        context.insert(item); try? context.save(); Haptics.tick()
+        newClassName=""; newFormationCode=""
     }
 }
 
-#Preview {
-    SettingsView()
-        .modelContainer(PreviewData.container)
-}
+#Preview { SettingsView().modelContainer(PreviewData.container) }

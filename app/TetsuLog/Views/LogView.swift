@@ -2,20 +2,15 @@ import SwiftUI
 import SwiftData
 
 enum LogGrouping: String, CaseIterable, Identifiable {
-    case year = "年"
-    case month = "月"
-    case className = "形式"
-    case lineName = "路線"
+    case year = "年"; case month = "月"; case className = "形式"; case lineName = "路線"
     var id: String { rawValue }
 }
-
 enum LogMode: String, CaseIterable, Identifiable {
-    case sightings = "遭遇"
-    case rides = "乗車"
+    case sightings = "遭遇"; case rides = "乗車"
     var id: String { rawValue }
 }
 
-/// 記録タブ: 遭遇記録／乗車記録の一覧・編集・削除。
+/// 記録タブ: 国鉄レトロ・上質デザイン。
 struct LogView: View {
     @Query(sort: \Sighting.date, order: .reverse) private var sightings: [Sighting]
     @Query(sort: \RideSegment.date, order: .reverse) private var rides: [RideSegment]
@@ -32,162 +27,125 @@ struct LogView: View {
 
     private var grouping: LogGrouping { LogGrouping(rawValue: groupingRaw) ?? .year }
 
-    /// 検索フィルタ済みの遭遇記録（編成・形式・駅・路線・車番・装飾・メモを横断）
     private var filteredSightings: [Sighting] {
         guard !query.isEmpty else { return sightings }
-        let q = query
         return sightings.filter { s in
-            let hay = [
-                s.formation?.code ?? "",
-                s.formation?.vehicleClass?.name ?? "",
-                s.stationName, s.lineName, s.carNumber,
-                s.headmark, s.livery, s.trainNumber, s.note
-            ]
-            return hay.contains { $0.localizedCaseInsensitiveContains(q) }
+            [s.formation?.code ?? "", s.formation?.vehicleClass?.name ?? "",
+             s.stationName, s.lineName, s.carNumber, s.headmark, s.livery, s.trainNumber, s.note]
+                .contains { $0.localizedCaseInsensitiveContains(query) }
         }
     }
-
     private var filteredRides: [RideSegment] {
         guard !query.isEmpty else { return rides }
-        let q = query
         return rides.filter { r in
             [r.fromStation, r.toStation, r.lineName, r.formationCode, r.note]
-                .contains { $0.localizedCaseInsensitiveContains(q) }
+                .contains { $0.localizedCaseInsensitiveContains(query) }
         }
     }
-
     private var groups: [(key: String, items: [Sighting])] {
-        let cal = Calendar.current
-        let source = filteredSightings
-        let dict: [String: [Sighting]]
+        let cal = Calendar.current; let src = filteredSightings
+        let dict: [String:[Sighting]]
         switch grouping {
-        case .year:
-            dict = Dictionary(grouping: source) { "\(cal.component(.year, from: $0.date))" }
+        case .year: dict = Dictionary(grouping: src){ "\(cal.component(.year,from:$0.date))" }
         case .month:
-            let fmt = DateFormatter(); fmt.dateFormat = "yyyy / MM"
-            dict = Dictionary(grouping: source) { fmt.string(from: $0.date) }
-        case .className:
-            dict = Dictionary(grouping: source) { $0.formation?.vehicleClass?.name ?? "（未設定）" }
-        case .lineName:
-            dict = Dictionary(grouping: source) { $0.lineName.isEmpty ? "（未設定）" : $0.lineName }
+            let f=DateFormatter(); f.dateFormat="yyyy / MM"
+            dict = Dictionary(grouping: src){ f.string(from:$0.date) }
+        case .className: dict = Dictionary(grouping: src){ $0.formation?.vehicleClass?.name ?? "（未設定）" }
+        case .lineName: dict = Dictionary(grouping: src){ $0.lineName.isEmpty ? "（未設定）" : $0.lineName }
         }
-        return dict.keys.sorted(by: >).map { (key: $0, items: dict[$0] ?? []) }
+        return dict.keys.sorted(by:>).map{ ($0, dict[$0] ?? []) }
     }
 
     var body: some View {
         NavigationStack {
-            Group {
-                if mode == .sightings {
-                    sightingsList
-                } else {
-                    ridesList
+            ZStack {
+                NavyBackground()
+                ScrollView {
+                    VStack(spacing: 14) {
+                        if rideManager.isActive { activeRideBanner }
+                        modePicker
+                        if mode == .sightings { sightingsContent } else { ridesContent }
+                    }
+                    .padding(Theme.screenPadding)
                 }
             }
             .navigationTitle("記録")
-            .safeAreaInset(edge: .top) {
-                VStack(spacing: 8) {
-                    if rideManager.isActive { activeRideBanner }
-                    Picker("モード", selection: $mode) {
-                        ForEach(LogMode.allCases) { Text($0.rawValue).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                }
-                .padding(.bottom, 4)
-                .background(.bar)
-            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 if mode == .sightings {
                     ToolbarItem(placement: .topBarLeading) {
                         Menu {
                             Picker("グルーピング", selection: $groupingRaw) {
-                                ForEach(LogGrouping.allCases) { Text($0.rawValue).tag($0.rawValue) }
+                                ForEach(LogGrouping.allCases){ Text($0.rawValue).tag($0.rawValue) }
                             }
                         } label: {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            Image(systemName: "line.3.horizontal.decrease.circle").foregroundStyle(Theme.Palette.cream)
                         }
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        Button { showingAdd = true } label: { Label("遭遇を記録", systemImage: "tram") }
                         Button {
-                            showingAdd = true
-                        } label: { Label("遭遇を記録", systemImage: "tram") }
-                        Button {
-                            if rideManager.isActive { showingActiveRide = true }
-                            else { showingStartRide = true }
-                        } label: {
-                            Label(rideManager.isActive ? "乗車中の画面" : "乗車を開始",
-                                  systemImage: "play.circle")
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+                            if rideManager.isActive { showingActiveRide = true } else { showingStartRide = true }
+                        } label: { Label(rideManager.isActive ? "乗車中の画面" : "乗車を開始", systemImage: "play.circle") }
+                    } label: { Image(systemName: "plus").foregroundStyle(Theme.Palette.cream) }
                 }
             }
             .searchable(text: $query, prompt: "編成・駅・路線・車番・メモで検索")
-            .sheet(isPresented: $showingAdd) { AddSightingView() }
-            .sheet(item: $editingSighting) { AddSightingView(editing: $0) }
-            .sheet(item: $editingRide) { RideEditView(ride: $0) }
-            .sheet(isPresented: $showingStartRide) { StartRideView(manager: rideManager) }
-            .sheet(isPresented: $showingActiveRide) { ActiveRideView(manager: rideManager) }
+            .sheet(isPresented: $showingAdd){ AddSightingView() }
+            .sheet(item: $editingSighting){ AddSightingView(editing: $0) }
+            .sheet(item: $editingRide){ RideEditView(ride: $0) }
+            .sheet(isPresented: $showingStartRide){ StartRideView(manager: rideManager) }
+            .sheet(isPresented: $showingActiveRide){ ActiveRideView(manager: rideManager) }
         }
     }
 
-    // MARK: - 遭遇リスト
+    private var modePicker: some View {
+        Picker("モード", selection: $mode) {
+            ForEach(LogMode.allCases){ Text($0.rawValue).tag($0) }
+        }
+        .pickerStyle(.segmented)
+    }
 
-    @ViewBuilder
-    private var sightingsList: some View {
+    @ViewBuilder private var sightingsContent: some View {
         if filteredSightings.isEmpty {
-            ContentUnavailableView(
-                query.isEmpty ? "まだ記録がありません" : "該当する記録がありません",
-                systemImage: "tram",
-                description: Text(query.isEmpty ? "右上の＋から、出会った編成を記録しましょう。" : "検索条件を変えてみてください。")
-            )
+            emptyState(icon: "tram",
+                       title: query.isEmpty ? "まだ記録がありません" : "該当する記録がありません",
+                       msg: query.isEmpty ? "右上の＋から、出会った編成を記録しましょう。" : "検索条件を変えてみてください。")
         } else {
-            List {
-                ForEach(groups, id: \.key) { group in
-                    Section("\(group.key) · \(group.items.count)件") {
-                        ForEach(group.items) { s in
-                            Button { editingSighting = s } label: {
-                                SightingRow(sighting: s)
-                            }
+            ForEach(groups, id: \.key) { group in
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("\(group.key) · \(group.items.count)件")
+                        .font(Theme.Font.mono(13)).foregroundStyle(Theme.Palette.creamSub)
+                        .padding(.leading, 4).padding(.top, 6)
+                    ForEach(group.items) { s in
+                        Button { editingSighting = s } label: { SightingCard(sighting: s) }
                             .buttonStyle(.plain)
-                            .swipeActions {
-                                Button(role: .destructive) { delete(s) } label: {
-                                    Label("削除", systemImage: "trash")
-                                }
+                            .contextMenu {
+                                Button(role: .destructive){ delete(s) } label: { Label("削除", systemImage:"trash") }
                             }
-                        }
                     }
                 }
             }
         }
     }
 
-    // MARK: - 乗車リスト
-
-    @ViewBuilder
-    private var ridesList: some View {
+    @ViewBuilder private var ridesContent: some View {
         if filteredRides.isEmpty {
-            ContentUnavailableView(
-                query.isEmpty ? "乗車記録がありません" : "該当する乗車記録がありません",
-                systemImage: "figure.seated.side",
-                description: Text(query.isEmpty ? "「乗車を開始」または＋から記録できます。" : "検索条件を変えてみてください。")
-            )
+            emptyState(icon: "figure.seated.side",
+                       title: query.isEmpty ? "乗車記録がありません" : "該当する乗車記録がありません",
+                       msg: query.isEmpty ? "「乗車を開始」または＋から記録できます。" : "検索条件を変えてみてください。")
         } else {
-            List {
-                ForEach(filteredRides) { r in
-                    Button { editingRide = r } label: {
-                        RideRow(ride: r)
-                    }
+            ForEach(filteredRides) { r in
+                Button { editingRide = r } label: { RideCard(ride: r) }
                     .buttonStyle(.plain)
-                    .swipeActions {
-                        Button(role: .destructive) { delete(r) } label: {
-                            Label("削除", systemImage: "trash")
-                        }
+                    .contextMenu {
+                        Button(role: .destructive){ delete(r) } label: { Label("削除", systemImage:"trash") }
                     }
-                }
             }
         }
     }
@@ -197,109 +155,95 @@ struct LogView: View {
             HStack {
                 Image(systemName: "tram.fill")
                 Text("乗車中: \(rideManager.className) \(rideManager.formationCode)")
-                    .font(.subheadline.weight(.semibold)).lineLimit(1)
+                    .font(.system(size:15,weight:.bold)).lineLimit(1)
                 Spacer()
                 Image(systemName: "chevron.right")
             }
-            .padding(.horizontal, 14).padding(.vertical, 10)
-            .background(.orange.opacity(0.18), in: RoundedRectangle(cornerRadius: 12))
-            .foregroundStyle(.orange)
-            .padding(.horizontal)
+            .padding(.horizontal,16).padding(.vertical,12)
+            .background(RoundedRectangle(cornerRadius: Theme.cardRadius).fill(Theme.Palette.red))
+            .foregroundStyle(Theme.Palette.paper)
         }
         .buttonStyle(.plain)
     }
 
-    private func delete(_ s: Sighting) {
-        for file in s.photoFilenames { PhotoStore.delete(file) }
-        for file in s.audioFilenames { AudioStore.delete(file) }
+    private func emptyState(icon: String, title: String, msg: String) -> some View {
+        VStack(spacing: 14) {
+            Image(systemName: icon).font(.system(size:44)).foregroundStyle(Theme.Palette.creamSub)
+            Text(title).font(Theme.Font.headline(18)).foregroundStyle(Theme.Palette.cream)
+            Text(msg).font(Theme.Font.body(14)).foregroundStyle(Theme.Palette.creamSub).multilineTextAlignment(.center)
+        }.padding(.top, 80)
+    }
+
+    private func delete(_ s: Sighting){
+        for f in s.photoFilenames { PhotoStore.delete(f) }
+        for f in s.audioFilenames { AudioStore.delete(f) }
         context.delete(s); try? context.save(); Haptics.tick()
     }
-    private func delete(_ r: RideSegment) {
-        context.delete(r); try? context.save(); Haptics.tick()
-    }
+    private func delete(_ r: RideSegment){ context.delete(r); try? context.save(); Haptics.tick() }
 }
 
-private struct SightingRow: View {
+private struct SightingCard: View {
     let sighting: Sighting
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: iconName)
-                .foregroundStyle(iconColor)
-                .frame(width: 32)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(formationLabel).font(.subheadline.weight(.semibold))
-                HStack(spacing: 6) {
-                    Text("\(sighting.lineName) · \(sighting.stationName)")
-                        .font(.caption).foregroundStyle(.secondary)
-                    if !sighting.headmark.isEmpty { miniTag(sighting.headmark, color: .orange) }
-                    if !sighting.livery.isEmpty { miniTag(sighting.livery, color: .purple) }
-                    if !sighting.audioFilenames.isEmpty {
-                        Image(systemName: "waveform")
-                            .font(.caption2)
-                            .foregroundStyle(.green)
+        PaperCard(accent: true) {
+            HStack(spacing: 12) {
+                Image(systemName: iconName).foregroundStyle(iconColor).frame(width: 28)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(label).font(Theme.Font.headline(17)).foregroundStyle(Theme.Palette.ink)
+                    HStack(spacing: 6) {
+                        Text("\(sighting.lineName) · \(sighting.stationName)")
+                            .font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)
+                        if !sighting.headmark.isEmpty { dot(sighting.headmark) }
+                        if !sighting.livery.isEmpty { dot(sighting.livery) }
+                        if !sighting.audioFilenames.isEmpty {
+                            Image(systemName: "waveform").font(.system(size:12)).foregroundStyle(Theme.Palette.red)
+                        }
+                    }
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text(sighting.date, format: .dateTime.month().day())
+                        .font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
+                    if sighting.isLastRun { InkBadge(text: "ラストラン") }
+                    else if sighting.kind != .scheduled {
+                        Text(sighting.kind.rawValue).font(.system(size:11,weight:.bold)).foregroundStyle(Theme.Palette.navy)
                     }
                 }
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(sighting.date, format: .dateTime.month().day())
-                    .font(.caption.monospaced()).foregroundStyle(.secondary)
-                if sighting.isLastRun {
-                    Text("ラストラン").font(.caption2.bold()).foregroundStyle(.red)
-                } else if sighting.kind != .scheduled {
-                    Text(sighting.kind.rawValue).font(.caption2.bold()).foregroundStyle(.blue)
-                }
-            }
         }
     }
-    private func miniTag(_ text: String, color: Color) -> some View {
-        Text(text).font(.caption2)
-            .padding(.horizontal, 5).padding(.vertical, 1)
-            .background(color.opacity(0.18), in: Capsule()).foregroundStyle(color)
+    private func dot(_ t:String)->some View {
+        Text(t).font(.system(size:11)).padding(.horizontal,5).padding(.vertical,1)
+            .background(Capsule().fill(Theme.Palette.navy.opacity(0.1))).foregroundStyle(Theme.Palette.navy)
     }
-    private var formationLabel: String {
-        guard let f = sighting.formation else { return "（編成未設定）" }
-        return "\(f.vehicleClass?.name ?? "") \(f.code)"
+    private var label:String { guard let f=sighting.formation else {return "（編成未設定）"}; return "\(f.vehicleClass?.name ?? "") \(f.code)" }
+    private var iconName:String {
+        switch sighting.kind { case .scheduled:return "tram.fill"; case .extra:return "sparkles"
+        case .deadhead:return "arrow.left.arrow.right"; case .test:return "wrench.and.screwdriver"
+        case .delivery:return "shippingbox"; case .charter:return "person.3.fill"; case .lastRun:return "star.fill" }
     }
-    private var iconName: String {
-        switch sighting.kind {
-        case .scheduled: return "tram.fill"
-        case .extra: return "sparkles"
-        case .deadhead: return "arrow.left.arrow.right"
-        case .test: return "wrench.and.screwdriver"
-        case .delivery: return "shippingbox"
-        case .charter: return "person.3.fill"
-        case .lastRun: return "star.fill"
-        }
-    }
-    private var iconColor: Color {
-        switch sighting.kind {
-        case .scheduled: return .orange
-        case .lastRun: return .red
-        case .extra: return .purple
-        default: return .blue
-        }
+    private var iconColor:Color {
+        switch sighting.kind { case .scheduled:return Theme.Palette.navy; case .lastRun:return Theme.Palette.red
+        case .extra:return Theme.Palette.gold; default:return Theme.Palette.rail }
     }
 }
 
-private struct RideRow: View {
+private struct RideCard: View {
     let ride: RideSegment
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "figure.seated.side").foregroundStyle(.green).frame(width: 32)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("\(ride.fromStation) → \(ride.toStation)")
-                    .font(.subheadline.weight(.semibold))
-                Text(ride.lineName.isEmpty ? "—" : ride.lineName)
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(ride.date, format: .dateTime.year().month().day())
-                    .font(.caption.monospaced()).foregroundStyle(.secondary)
-                if ride.distanceKm > 0 {
-                    Text(String(format: "%.1f km", ride.distanceKm))
-                        .font(.caption2.monospaced()).foregroundStyle(.green)
+        PaperCard(accent: true) {
+            HStack(spacing: 12) {
+                Image(systemName: "figure.seated.side").foregroundStyle(Theme.Palette.navy).frame(width: 28)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("\(ride.fromStation) → \(ride.toStation)").font(Theme.Font.headline(17)).foregroundStyle(Theme.Palette.ink)
+                    Text(ride.lineName.isEmpty ? "—" : ride.lineName).font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text(ride.date, format: .dateTime.year().month().day()).font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
+                    if ride.distanceKm > 0 {
+                        Text(String(format:"%.1f km",ride.distanceKm)).font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.red)
+                    }
                 }
             }
         }
@@ -307,7 +251,5 @@ private struct RideRow: View {
 }
 
 #Preview {
-    LogView()
-        .modelContainer(PreviewData.container)
-        .environment(RideManager())
+    LogView().modelContainer(PreviewData.container).environment(RideManager())
 }

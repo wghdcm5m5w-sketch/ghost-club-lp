@@ -1,195 +1,141 @@
 import SwiftUI
 import SwiftData
 
-/// 統計タブ: 累計距離・最頻出形式・最頻出路線・月別推移など、
-/// 鉄ヲタの自己満足の中核を提供する画面。
+/// 統計タブ: 国鉄レトロ・上質デザイン。
 struct StatsView: View {
     @Query private var sightings: [Sighting]
     @Query private var rides: [RideSegment]
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
 
+    private var overview: Statistics.Overview { Statistics.overview(sightings: sightings, rides: rides) }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 18, pinnedViews: []) {
-                    overviewSection
-                    completionSection
-                    topClassesSection
-                    topLinesSection
-                    topStationsSection
-                    monthlyChartSection
-                    lastRunSection
+            ZStack {
+                NavyBackground()
+                ScrollView {
+                    VStack(spacing: 16) {
+                        MakuHeader(title: "記 録 統 計").padding(.top, 8)
+                        overviewCard
+                        completionCard
+                        rankCard("よく出会う形式", Statistics.topClasses(sightings: sightings))
+                        rankCard("よく訪れる路線", Statistics.topLines(sightings: sightings))
+                        rankCard("よく行く駅", Statistics.topStations(sightings: sightings))
+                        monthlyCard
+                        lastRunCard
+                    }
+                    .padding(Theme.screenPadding)
                 }
-                .padding()
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("統計")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 
-    private var overview: Statistics.Overview {
-        Statistics.overview(sightings: sightings, rides: rides)
-    }
-
-    // MARK: - セクション
-
-    private var overviewSection: some View {
+    private var overviewCard: some View {
         let o = overview
-        return statCard {
-            HStack(alignment: .top, spacing: 14) {
-                statTile(value: "\(o.totalSightings)", label: "遭遇")
-                statTile(value: "\(o.collectedFormations)", label: "編成")
-                statTile(value: String(format: "%.0f", o.totalRideKm), label: "km")
-                statTile(value: String(format: "%.0f", o.totalRideHours), label: "時間")
+        return PaperCard(accent: false) {
+            HStack(alignment: .top) {
+                tile("\(o.totalSightings)", "遭遇")
+                divider; tile("\(o.collectedFormations)", "編成")
+                divider; tile(String(format:"%.0f",o.totalRideKm), "km")
+                divider; tile(String(format:"%.0f",o.totalRideHours), "時間")
             }
-        } title: "サマリー"
+        }
     }
 
-    private var completionSection: some View {
-        let complete = classes.filter { $0.isComplete && $0.totalCount > 0 }
-        let partial = classes.filter { !$0.isComplete && $0.collectedCount > 0 }
-        return statCard {
-            HStack {
-                Label("コンプリート", systemImage: "checkmark.seal.fill")
-                    .foregroundStyle(.green)
-                Spacer()
-                Text("\(complete.count) 形式").font(.headline.monospaced())
-            }
-            Divider()
-            HStack {
-                Label("収集中", systemImage: "circle.dotted")
-                    .foregroundStyle(.orange)
-                Spacer()
-                Text("\(partial.count) 形式").font(.headline.monospaced())
-            }
-        } title: "コレクション"
-    }
-
-    private var topClassesSection: some View {
-        let top = Statistics.topClasses(sightings: sightings)
-        return statCard {
-            if top.isEmpty {
-                Text("まだ記録がありません").foregroundStyle(.secondary).font(.caption)
-            } else {
-                ForEach(Array(top.enumerated()), id: \.offset) { idx, item in
-                    HStack {
-                        Text("\(idx + 1)").font(.caption.monospaced()).foregroundStyle(.secondary)
-                        Text(item.name)
-                        Spacer()
-                        Text("\(item.count)回").font(.caption.monospaced()).foregroundStyle(.secondary)
-                    }
-                    if idx < top.count - 1 { Divider() }
+    private var completionCard: some View {
+        let complete = classes.filter { $0.isComplete && $0.totalCount > 0 }.count
+        let partial = classes.filter { !$0.isComplete && $0.collectedCount > 0 }.count
+        return PaperCard {
+            VStack(spacing: 12) {
+                HStack {
+                    Label("コンプリート", systemImage: "checkmark.seal.fill").foregroundStyle(Theme.Palette.gold)
+                        .font(Theme.Font.body(15))
+                    Spacer()
+                    Text("\(complete) 形式").font(Theme.Font.mono(18)).foregroundStyle(Theme.Palette.ink)
+                }
+                Rectangle().fill(Theme.Palette.paperEdge).frame(height:1)
+                HStack {
+                    Label("収集中", systemImage: "circle.dotted").foregroundStyle(Theme.Palette.red)
+                        .font(Theme.Font.body(15))
+                    Spacer()
+                    Text("\(partial) 形式").font(Theme.Font.mono(18)).foregroundStyle(Theme.Palette.ink)
                 }
             }
-        } title: "よく出会う形式"
+        }
     }
 
-    private var topLinesSection: some View {
-        let top = Statistics.topLines(sightings: sightings)
-        return statCard {
-            if top.isEmpty {
-                Text("まだ記録がありません").foregroundStyle(.secondary).font(.caption)
-            } else {
-                ForEach(Array(top.enumerated()), id: \.offset) { idx, item in
-                    HStack {
-                        Text("\(idx + 1)").font(.caption.monospaced()).foregroundStyle(.secondary)
-                        Text(item.name)
-                        Spacer()
-                        Text("\(item.count)回").font(.caption.monospaced()).foregroundStyle(.secondary)
+    private func rankCard(_ title: String, _ items: [(name:String,count:Int)]) -> some View {
+        PaperCard {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(title).font(Theme.Font.headline(16)).foregroundStyle(Theme.Palette.ink)
+                if items.isEmpty {
+                    Text("まだ記録がありません").font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)
+                } else {
+                    ForEach(Array(items.enumerated()), id: \.offset) { i, it in
+                        HStack {
+                            Text("\(i+1)").font(Theme.Font.mono(13)).foregroundStyle(Theme.Palette.red).frame(width: 22)
+                            Text(it.name).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
+                            Spacer()
+                            Text("\(it.count)回").font(Theme.Font.mono(13)).foregroundStyle(Theme.Palette.inkSub)
+                        }
                     }
-                    if idx < top.count - 1 { Divider() }
                 }
             }
-        } title: "よく訪れる路線"
+        }
     }
 
-    private var topStationsSection: some View {
-        let top = Statistics.topStations(sightings: sightings)
-        return statCard {
-            if top.isEmpty {
-                Text("まだ記録がありません").foregroundStyle(.secondary).font(.caption)
-            } else {
-                ForEach(Array(top.enumerated()), id: \.offset) { idx, item in
-                    HStack {
-                        Text("\(idx + 1)").font(.caption.monospaced()).foregroundStyle(.secondary)
-                        Text(item.name)
-                        Spacer()
-                        Text("\(item.count)回").font(.caption.monospaced()).foregroundStyle(.secondary)
-                    }
-                    if idx < top.count - 1 { Divider() }
-                }
-            }
-        } title: "よく行く駅"
-    }
-
-    private var monthlyChartSection: some View {
+    private var monthlyCard: some View {
         let series = Statistics.monthlySightings(sightings: sightings)
-        let maxCount = max(series.map(\.count).max() ?? 0, 1)
-        return statCard {
-            HStack(alignment: .bottom, spacing: 6) {
-                ForEach(Array(series.enumerated()), id: \.offset) { _, point in
-                    VStack(spacing: 4) {
-                        Rectangle()
-                            .fill(.orange.gradient)
-                            .frame(width: 18, height: max(4, CGFloat(point.count) / CGFloat(maxCount) * 90))
-                        Text(point.month, format: .dateTime.month(.narrow))
-                            .font(.caption2.monospaced())
-                            .foregroundStyle(.secondary)
+        let maxC = max(series.map(\.count).max() ?? 0, 1)
+        return PaperCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("直近12ヶ月の遭遇").font(Theme.Font.headline(16)).foregroundStyle(Theme.Palette.ink)
+                HStack(alignment: .bottom, spacing: 6) {
+                    ForEach(Array(series.enumerated()), id: \.offset) { _, p in
+                        VStack(spacing: 4) {
+                            Rectangle().fill(Theme.Palette.red)
+                                .frame(width: 16, height: max(4, CGFloat(p.count)/CGFloat(maxC)*90))
+                            Text(p.month, format: .dateTime.month(.narrow))
+                                .font(.system(size:10,design:.monospaced)).foregroundStyle(Theme.Palette.inkSub)
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text(p.month, format: .dateTime.year().month()))
+                        .accessibilityValue("\(p.count)件")
                     }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text(point.month, format: .dateTime.year().month()))
-                    .accessibilityValue("\(point.count)件")
+                }.frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    private var lastRunCard: some View {
+        let c = Statistics.lastRunCount(sightings: sightings)
+        return PaperCard {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Label("見送った車両たち", systemImage: "star.fill").foregroundStyle(Theme.Palette.red)
+                        .font(Theme.Font.headline(16))
+                    Spacer()
+                    Text("\(c) 件").font(Theme.Font.mono(18)).foregroundStyle(Theme.Palette.ink)
                 }
+                Text("引退するその瞬間を、あなたは見届けた。")
+                    .font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)
             }
-            .frame(maxWidth: .infinity)
-        } title: "直近12ヶ月の遭遇"
-    }
-
-    private var lastRunSection: some View {
-        let count = Statistics.lastRunCount(sightings: sightings)
-        return statCard {
-            HStack {
-                Label("ラストラン記録", systemImage: "star.fill")
-                    .foregroundStyle(.red)
-                Spacer()
-                Text("\(count) 件").font(.headline.monospaced())
-            }
-            Text("引退するその瞬間を、あなたは見届けた。")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        } title: "見送った車両たち"
-    }
-
-    // MARK: - スタイル
-
-    @ViewBuilder
-    private func statCard<Content: View>(@ViewBuilder content: () -> Content, title: String) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(title)
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
-            content()
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
     }
 
-    private func statTile(value: String, label: String) -> some View {
-        VStack(spacing: 2) {
-            Text(value)
-                .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
-                .foregroundStyle(.orange)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
+    private func tile(_ v: String, _ l: String) -> some View {
+        VStack(spacing: 4) {
+            Text(v).font(.system(size: 28, weight: .heavy, design: .serif).monospacedDigit())
+                .foregroundStyle(Theme.Palette.red)
+            Text(l).font(Theme.Font.body(12)).foregroundStyle(Theme.Palette.inkSub)
+        }.frame(maxWidth: .infinity)
     }
+    private var divider: some View { Rectangle().fill(Theme.Palette.paperEdge).frame(width:1, height:44) }
 }
 
-#Preview {
-    StatsView()
-        .modelContainer(PreviewData.container)
-}
+#Preview { StatsView().modelContainer(PreviewData.container) }
