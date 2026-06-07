@@ -620,6 +620,18 @@ nav.top {
   position: relative;
   padding-top: 50px;
 }
+/* LPスクショ用：実際のアプリ画面（紙質感のkokutetsu-retro）を表示 */
+.mini-screen.shot {
+  padding-top: 0;
+  background: #0a1626;
+}
+.mini-screen.shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border-radius: 34px;
+}
 
 /* Feature 1: Vehicle Logger */
 .zukan-grid {
@@ -1927,6 +1939,7 @@ footer {
     <ul class="nav-links">
       <li><a href="#problem">問題</a></li>
       <li><a href="#features">機能</a></li>
+      <li><a href="#design">デザイン</a></li>
       <li><a href="#stats">統計</a></li>
       <li><a href="#privacy">プライバシー</a></li>
       <li><a href="#pricing">価格</a></li>
@@ -2178,31 +2191,8 @@ footer {
       </ul>
     </div>
     <div class="mini-phone">
-      <div class="mini-screen">
-        <div class="zukan-header">
-          <div class="zukan-h-title">E235系 図鑑</div>
-          <div class="zukan-h-count">38 / 50</div>
-        </div>
-        <div class="zukan-grid">
-          <div class="zukan-item collected"><div class="zukan-num">トウ01</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ02</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ03</div></div>
-          <div class="zukan-item"><div class="zukan-num">トウ04</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ05</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ06</div></div>
-          <div class="zukan-item"><div class="zukan-num">トウ07</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ08</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ09</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ10</div></div>
-          <div class="zukan-item"><div class="zukan-num">トウ11</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ12</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ13</div></div>
-          <div class="zukan-item locked"><div class="zukan-num">トウ14</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ15</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ16</div></div>
-          <div class="zukan-item locked"><div class="zukan-num">トウ17</div></div>
-          <div class="zukan-item collected"><div class="zukan-num">トウ18</div></div>
-        </div>
+      <div class="mini-screen shot">
+        <img src="lp-assets/lp-zukan.png" alt="図鑑画面" loading="lazy">
       </div>
     </div>
   </div>
@@ -2224,15 +2214,8 @@ footer {
       </ul>
     </div>
     <div class="mini-phone">
-      <div class="mini-screen">
-        <div class="ocr-canvas">
-          <div class="ocr-train-shape"></div>
-          <div class="ocr-bbox"></div>
-        </div>
-        <div class="ocr-result">
-          <div class="ocr-result-label">識別された編成番号</div>
-          <div class="ocr-result-value">E235-1247</div>
-        </div>
+      <div class="mini-screen shot">
+        <img src="lp-assets/lp-ocr.png" alt="OCR画面" loading="lazy">
       </div>
     </div>
   </div>
@@ -2254,21 +2237,8 @@ footer {
       </ul>
     </div>
     <div class="mini-phone">
-      <div class="mini-screen">
-        <div class="map-canvas">
-          <div class="map-line l1"></div>
-          <div class="map-line l2"></div>
-          <div class="map-line l3"></div>
-          <div class="map-pin p1"></div>
-          <div class="map-pin p2"></div>
-          <div class="map-pin p3"></div>
-          <div class="map-pin p4"></div>
-          <div class="map-pin p5"></div>
-          <div class="map-overlay">
-            <span class="map-overlay-label">乗車距離</span>
-            <span class="map-overlay-stat">14,283 km</span>
-          </div>
-        </div>
+      <div class="mini-screen shot">
+        <img src="lp-assets/lp-map.png" alt="地図画面" loading="lazy">
       </div>
     </div>
   </div>
@@ -2290,29 +2260,8 @@ footer {
       </ul>
     </div>
     <div class="mini-phone">
-      <div class="mini-screen">
-        <div class="sun-canvas">
-          <div class="sun-arc"></div>
-          <div class="sun-orb"></div>
-          <div class="sun-compass">
-            <div class="sun-stat">
-              <div class="sun-stat-label">方位</div>
-              <div class="sun-stat-val">SE 142°</div>
-            </div>
-            <div class="sun-stat">
-              <div class="sun-stat-label">高度</div>
-              <div class="sun-stat-val">48°</div>
-            </div>
-            <div class="sun-stat">
-              <div class="sun-stat-label">時刻</div>
-              <div class="sun-stat-val">10:24</div>
-            </div>
-          </div>
-        </div>
-        <div class="sun-verdict">
-          <span class="sun-verdict-text">完全順光 · 撮影適</span>
-          <span style="color: var(--rail-green); font-weight: 800;">✓</span>
-        </div>
+      <div class="mini-screen shot">
+        <img src="lp-assets/lp-sun.png" alt="順光計算画面" loading="lazy">
       </div>
     </div>
   </div>
@@ -2406,6 +2355,39 @@ footer {
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DESIGN PHILOSOPHY ===== -->
+<section class="section" id="design" style="border-top:1px solid var(--line);">
+  <div class="section-eyebrow" style="color: var(--rail-amber);">DESIGN · 国鉄レトロ・上質</div>
+  <h2 class="section-title">紙片の図鑑のように、<br>長く愛せる質感を。</h2>
+  <p class="section-sub">
+    紺地に浮かぶ紙のカード、朱の罫線、廃車進行中の編成は経年した黄ばみ紙へ。
+    日常的に触れるアプリだからこそ、SwiftUIの標準UIから一歩踏み込み、
+    国鉄特急ヘッドマークの世界観を全画面に行き渡らせました。
+  </p>
+  <div class="ios-grid" style="margin-top: 48px;">
+    <div class="ios-card">
+      <div class="ios-icon-wrap">📜</div>
+      <div class="ios-title">本物の紙質感</div>
+      <div class="ios-desc">繊維のテクスチャ・温かいセピア・4隅の反り影。フラットな塗りでは出ない質感。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">🟫</div>
+      <div class="ios-title">経年する紙</div>
+      <div class="ios-desc">廃車進行中・ラストラン記録は黄ばみ紙に変化。時の経過を視覚で。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">🖋</div>
+      <div class="ios-title">インク染み込み</div>
+      <div class="ios-desc">タップすると朱のインクがにじみつつ広がる。紙の柔らかさが指先に伝わる。</div>
+    </div>
+    <div class="ios-card">
+      <div class="ios-icon-wrap">🚆</div>
+      <div class="ios-title">国鉄ヘッドマーク調</div>
+      <div class="ios-desc">紺×クリーム×朱の三色。アイコンの動輪エンブレムと完全に統一された世界観。</div>
     </div>
   </div>
 </section>
@@ -2590,34 +2572,8 @@ footer {
       </ul>
     </div>
     <div class="mini-phone">
-      <div class="mini-screen">
-        <div style="padding: 16px;">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
-            <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--rail-amber);">328</div><div style="font-size:9px;color:var(--text-3);">遭遇</div></div>
-            <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--rail-amber);">142</div><div style="font-size:9px;color:var(--text-3);">編成</div></div>
-            <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--rail-amber);">3.4k</div><div style="font-size:9px;color:var(--text-3);">km</div></div>
-            <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--rail-amber);">87</div><div style="font-size:9px;color:var(--text-3);">時間</div></div>
-          </div>
-          <div style="background:rgba(28,33,43,.7);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;">
-            <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">よく出会う形式</div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>1 E235系</span><span style="color:var(--text-3);font-family:'JetBrains Mono';">68回</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>2 E233系</span><span style="color:var(--text-3);font-family:'JetBrains Mono';">51回</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span>3 N700S</span><span style="color:var(--text-3);font-family:'JetBrains Mono';">34回</span></div>
-          </div>
-          <div style="background:rgba(28,33,43,.7);border:1px solid var(--line);border-radius:12px;padding:12px;">
-            <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">直近12ヶ月</div>
-            <div style="display:flex;align-items:flex-end;gap:4px;height:60px;">
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:30%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:55%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:40%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:70%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:90%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:60%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:100%;border-radius:2px;"></div>
-              <div style="flex:1;background:linear-gradient(180deg,var(--rail-amber),var(--rail-red));height:45%;border-radius:2px;"></div>
-            </div>
-          </div>
-        </div>
+      <div class="mini-screen shot">
+        <img src="lp-assets/lp-stats.png" alt="統計画面" loading="lazy">
       </div>
     </div>
   </div>
