@@ -31,4 +31,5 @@ struct RootTabView: View {
     RootTabView()
         .modelContainer(PreviewData.container)
         .environment(RideManager())
+        .environment(PurchaseManager())
 }

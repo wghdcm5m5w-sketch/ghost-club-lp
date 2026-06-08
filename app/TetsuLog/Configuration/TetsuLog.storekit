@@ -1,0 +1,37 @@
+{
+  "identifier" : "TetsuLogStoreKitConfig",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "980",
+      "familyShareable" : true,
+      "internalID" : "tetsulog.pro.lifetime",
+      "localizations" : [
+        {
+          "description" : "OCR・順光計算・統計・ライブアクティビティ・撮影地・録音・CSV取り込みなど全機能を無制限に開放。一度の購入で永続的にお使いいただけます。",
+          "displayName" : "TetsuLog Pro（買い切り）",
+          "locale" : "ja_JP"
+        },
+        {
+          "description" : "Unlock OCR, sun calculator, statistics, Live Activity, shooting spots, audio recording, CSV import and all features. One-time purchase, yours forever.",
+          "displayName" : "TetsuLog Pro (One-time)",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.example.tetsulog.pro",
+      "referenceName" : "TetsuLog Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

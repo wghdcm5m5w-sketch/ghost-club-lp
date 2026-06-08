@@ -40,6 +40,7 @@ struct TetsuLogApp: App {
     }
 
     @State private var rideManager = RideManager()
+    @State private var purchaseManager = PurchaseManager()
     @AppStorage("tetsulog.onboardingDone") private var onboardingDone = false
 
     var body: some Scene {
@@ -48,12 +49,14 @@ struct TetsuLogApp: App {
                 if onboardingDone {
                     RootTabView()
                         .environment(rideManager)
+                        .environment(purchaseManager)
                 } else {
                     OnboardingView()
                 }
             }
             .task {
                 await SeedData.seedIfNeeded(container.mainContext)
+                await purchaseManager.loadProducts()
             }
         }
         .modelContainer(container)

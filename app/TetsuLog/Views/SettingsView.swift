@@ -3,6 +3,7 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var context
+    @Environment(PurchaseManager.self) private var store
     @Query private var watchItems: [WatchItem]
     @Query private var sightings: [Sighting]
     @Query private var rides: [RideSegment]
@@ -12,6 +13,7 @@ struct SettingsView: View {
     @State private var showingShare = false
     @State private var showingImporter = false
     @State private var showingCSVImport = false
+    @State private var showingPurchase = false
     @State private var importMessage: String?
 
     private var appVersion: String {
@@ -27,6 +29,9 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         MakuHeader(title: "設 定").padding(.top, 8)
+
+                        // Pro バナー（買い切り課金）
+                        proBanner
 
                         section("あなたの記録") {
                             row("遭遇記録", "\(sightings.count)件")
@@ -85,8 +90,68 @@ struct SettingsView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .sheet(isPresented: $showingShare) { if let exportURL { ShareSheet(items: [exportURL]) } }
             .sheet(isPresented: $showingCSVImport) { CSVImportSheet() }
+            .sheet(isPresented: $showingPurchase) { PurchaseView() }
             .fileImporter(isPresented: $showingImporter, allowedContentTypes: [.json]) { handleImport($0) }
         }
+    }
+
+    // MARK: Pro バナー
+    @ViewBuilder
+    private var proBanner: some View {
+        if store.isPro {
+            Button {
+                showingPurchase = true
+            } label: {
+                PaperCard(accent: false) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(Theme.Palette.gold)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("TetsuLog Pro 有効")
+                                .font(.system(size: 15, weight: .heavy, design: .serif))
+                                .foregroundStyle(Theme.Palette.ink)
+                            Text("ご購入ありがとうございます")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Theme.Palette.inkSub)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+        } else {
+            Button {
+                showingPurchase = true
+            } label: {
+                PaperCard(accent: true) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "bag.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(Theme.Palette.red)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("TetsuLog Pro")
+                                .font(.system(size: 15, weight: .heavy, design: .serif))
+                                .foregroundStyle(Theme.Palette.ink)
+                            Text("全機能を ¥\(displayPrice) 買い切りで")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Theme.Palette.inkSub)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var displayPrice: String {
+        store.product?.displayPrice
+            .replacingOccurrences(of: "¥", with: "")
+            .replacingOccurrences(of: ",", with: "")
+            ?? "980"
     }
 
     // MARK: コンポーネント
@@ -203,4 +268,8 @@ struct WatchListView: View {
     }
 }
 
-#Preview { SettingsView().modelContainer(PreviewData.container) }
+#Preview {
+    SettingsView()
+        .modelContainer(PreviewData.container)
+        .environment(PurchaseManager())
+}
