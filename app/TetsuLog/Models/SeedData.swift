@@ -37,6 +37,22 @@ enum SeedData {
         }
     }
 
+    // MARK: - 撮影地（お立ち台）のJSONデコード
+
+    private struct SpotsFile: Decodable {
+        let version: Int?
+        let spots: [SpotSpec]
+    }
+
+    private struct SpotSpec: Decodable {
+        let name: String
+        let lat: Double
+        let lon: Double
+        let bearing: Double
+        let bestHours: String
+        let note: String?
+    }
+
     // MARK: - 投入
 
     @MainActor
@@ -68,7 +84,25 @@ enum SeedData {
             context.insert(al)
         }
 
+        // 撮影地（お立ち台）のシード
+        for spec in loadSpots() {
+            let spot = ShootingSpot(name: spec.name, latitude: spec.lat, longitude: spec.lon)
+            spot.bearingToTrack = spec.bearing
+            spot.bestHours = spec.bestHours
+            spot.note = spec.note ?? ""
+            context.insert(spot)
+        }
+
         try? context.save()
+    }
+
+    private static func loadSpots() -> [SpotSpec] {
+        guard let url = Bundle.main.url(forResource: "seed_spots", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let file = try? JSONDecoder().decode(SpotsFile.self, from: data) else {
+            return []
+        }
+        return file.spots
     }
 
     private static func loadClasses() -> [ClassSpec] {
