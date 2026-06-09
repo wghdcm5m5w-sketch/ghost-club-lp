@@ -22,7 +22,7 @@ final class PurchaseManager {
     private(set) var lastError: String?
 
     private let cacheKey = "tetsulog.isPro"
-    private var updatesTask: Task<Void, Never>?
+    private nonisolated(unsafe) var updatesTask: Task<Void, Never>?
 
     init() {
         // 既存のキャッシュで初期描画を高速化（後で真実値で更新）
