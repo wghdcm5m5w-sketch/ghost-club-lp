@@ -347,6 +347,8 @@ let result = try await products.first?.purchase()
 
 - [ ] プライバシーポリシー / 利用規約 / 特商法表記（GitHub Pagesで配信、本リポジトリに用意済み）
 - [ ] App Privacy「データを収集しません」を正確に申告（実際に収集しない設計）
+- [ ] プライバシーマニフェスト `PrivacyInfo.xcprivacy` 同梱（トラッキングなし／収集なし／
+      Required Reason API: UserDefaults CA92.1・FileTimestamp C617.1）
 - [ ] 位置情報の用途文言（Info.plist `NSLocationWhenInUseUsageDescription`）を接近アラート用に明記
 - [ ] カメラ用途文言（OCR）
 - [ ] ライブアクティビティ・プッシュ未使用の確認
