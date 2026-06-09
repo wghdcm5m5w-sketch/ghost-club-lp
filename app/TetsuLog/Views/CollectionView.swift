@@ -44,6 +44,8 @@ struct CollectionView: View {
                                    trailing: "\(Int(totalRatio*100))%")
                             .padding(.top, 8)
 
+                        TodaySuggestionsStrip()
+
                         filterChips
 
                         if filtered.isEmpty {
