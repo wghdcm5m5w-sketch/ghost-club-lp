@@ -111,7 +111,7 @@ enum SeedData {
               let file = try? JSONDecoder().decode(SeedFile.self, from: data) else {
             // JSONが無い場合の最小フォールバック
             return [ClassSpec(name: "E235系", operator: "JR東日本", category: "通勤型",
-                              lines: ["山手線"], cars: 11, retiring: false,
+                              lines: ["山手線"], cars: 11, retiring: false, unitType: nil,
                               formationPrefix: "トウ", from: 1, to: 50, formationCodes: nil)]
         }
         return file.classes
