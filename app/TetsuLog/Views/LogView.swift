@@ -253,5 +253,7 @@ private struct RideCard: View {
 }
 
 #Preview {
-    LogView().modelContainer(PreviewData.container).environment(RideManager())
+    LogView().modelContainer(PreviewData.container)
+        .environment(RideManager())
+        .environment(PurchaseManager())
 }

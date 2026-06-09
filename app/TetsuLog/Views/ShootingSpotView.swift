@@ -118,8 +118,10 @@ struct SpotEditView: View {
 /// 撮影地詳細 + 順光/逆光計算（SunCalculatorを実際に使う画面）
 struct SpotDetailView: View {
     let spot: ShootingSpot
+    @Environment(PurchaseManager.self) private var store
     @State private var when = Date.now
     @State private var showingEdit = false
+    @State private var showingPurchase = false
 
     private var sun: SunPosition {
         SunCalculator.position(latitude: spot.latitude, longitude: spot.longitude, date: when)
@@ -134,27 +136,52 @@ struct SpotDetailView: View {
                 DatePicker("日時", selection: $when)
             }
 
-            Section("太陽の位置") {
-                LabeledContent("方位", value: "\(Int(sun.azimuth))° (\(compass(sun.azimuth)))")
-                LabeledContent("高度", value: "\(Int(sun.altitude))°")
-                LabeledContent("被写体方位", value: "\(Int(spot.bearingToTrack))°")
-            }
+            if store.isPro {
+                Section("太陽の位置") {
+                    LabeledContent("方位", value: "\(Int(sun.azimuth))° (\(compass(sun.azimuth)))")
+                    LabeledContent("高度", value: "\(Int(sun.altitude))°")
+                    LabeledContent("被写体方位", value: "\(Int(spot.bearingToTrack))°")
+                }
 
-            Section {
-                HStack {
-                    Image(systemName: lightIcon)
-                        .font(.title)
-                        .foregroundStyle(lightColor)
-                    VStack(alignment: .leading) {
-                        Text(verdict).font(.headline)
-                        Text(detail).font(.caption).foregroundStyle(.secondary)
+                Section {
+                    HStack {
+                        Image(systemName: lightIcon)
+                            .font(.title)
+                            .foregroundStyle(lightColor)
+                        VStack(alignment: .leading) {
+                            Text(verdict).font(.headline)
+                            Text(detail).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("光線判定")
+                } footer: {
+                    if sun.altitude < 0 {
+                        Text("この時刻、太陽は地平線の下です（夜間）。")
                     }
                 }
-            } header: {
-                Text("光線判定")
-            } footer: {
-                if sun.altitude < 0 {
-                    Text("この時刻、太陽は地平線の下です（夜間）。")
+            } else {
+                Section {
+                    Button { showingPurchase = true } label: {
+                        VStack(spacing: 10) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sun.max.fill").foregroundStyle(Theme.Palette.gold)
+                                Text("順光・逆光の計算").font(.headline)
+                                ProBadge()
+                            }
+                            Text("撮影地と日時から、太陽方位・順光逆光・撮影適否をその場で判定します。")
+                                .font(.caption).foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                            Text("Proで解放")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Theme.Palette.red)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+                } header: {
+                    Text("光線判定")
                 }
             }
 
@@ -171,6 +198,7 @@ struct SpotDetailView: View {
             }
         }
         .sheet(isPresented: $showingEdit) { SpotEditView(spot: spot) }
+        .sheet(isPresented: $showingPurchase) { PurchaseView() }
     }
 
     private var verdict: String {
@@ -214,4 +242,5 @@ struct SpotDetailView: View {
 #Preview {
     NavigationStack { ShootingSpotListView() }
         .modelContainer(PreviewData.container)
+        .environment(PurchaseManager())
 }

@@ -322,11 +322,17 @@ await monitor.add(
 
 ## 6. マネタイズ
 
-- **買い切り 980円**（StoreKit 2、Non-Consumable）。
-- 無料層：基本記録（図鑑/記録/地図）。
-- 有料解放：OCR・順光計算・廃線データ・ライブアクティビティ・接近アラート・無制限写真。
+- **買い切り 980円**（StoreKit 2、Non-Consumable、`PurchaseManager`で実装済み）。
+- **無料層**：基本記録（図鑑・遭遇/乗車記録・地図・統計・撮影地閲覧）と、
+  **データ持ち出し（JSON/CSVエクスポート・インポート）**。
+  → データ移行・乗り換えを妨げない＝信頼の核なのであえて無料。
+- **Pro解放（便利機能）**：OCR・順光計算・走行音の録音。
+  （ライブアクティビティ／接近アラートは将来的にPro対象化を検討）
+- ゲートは `Pro.Feature` と `ProBadge` / `PurchaseView` で実装。
+  真実値は `Transaction.currentEntitlements`。
 - サブスクなし・広告なし・追跡なしを訴求点として明記。
 - 家族共有（Family Sharing）対応。
+- リリース時に `com.example.tetsulog.pro` を実プロダクトIDへ置換。
 
 ```swift
 // StoreKit 2 概略

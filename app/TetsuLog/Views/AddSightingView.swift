@@ -6,6 +6,7 @@ import PhotosUI
 struct AddSightingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @Environment(PurchaseManager.self) private var store
 
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
     @Query private var allSightings: [Sighting]
@@ -45,6 +46,7 @@ struct AddSightingView: View {
 
     @State private var audioFilenames: [String] = []
     @State private var showingRecorder = false
+    @State private var showingPurchase = false
 
     @State private var loaded = false
     @State private var saveError: String?
@@ -73,9 +75,13 @@ struct AddSightingView: View {
 
                 Section {
                     Button {
-                        showingScanner = true
+                        if store.isPro { showingScanner = true } else { showingPurchase = true }
                     } label: {
-                        Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
+                        HStack {
+                            Label("カメラで編成番号をスキャン", systemImage: "text.viewfinder")
+                            Spacer()
+                            if !store.isPro { ProBadge() }
+                        }
                     }
                     PhotosPicker(selection: $pickerItem, matching: .images) {
                         Label(photoAttached ? "写真を変更" : "写真を添付（EXIFから自動入力）",
@@ -101,10 +107,14 @@ struct AddSightingView: View {
 
                 Section {
                     Button {
-                        showingRecorder = true
+                        if store.isPro { showingRecorder = true } else { showingPurchase = true }
                     } label: {
-                        Label(audioFilenames.isEmpty ? "走行音を録音" : "もう1本録音する",
-                              systemImage: "mic.circle")
+                        HStack {
+                            Label(audioFilenames.isEmpty ? "走行音を録音" : "もう1本録音する",
+                                  systemImage: "mic.circle")
+                            Spacer()
+                            if !store.isPro { ProBadge() }
+                        }
                     }
                     ForEach(audioFilenames, id: \.self) { file in
                         HStack {
@@ -185,6 +195,7 @@ struct AddSightingView: View {
                     audioFilenames.append(filename)
                 }
             }
+            .sheet(isPresented: $showingPurchase) { PurchaseView() }
             .onChange(of: pickerItem) { _, newItem in
                 guard let newItem else { return }
                 Task { await loadPhotoMetadata(newItem) }
@@ -332,4 +343,5 @@ struct AddSightingView: View {
 #Preview {
     AddSightingView()
         .modelContainer(PreviewData.container)
+        .environment(PurchaseManager())
 }
