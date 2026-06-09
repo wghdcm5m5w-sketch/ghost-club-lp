@@ -10,9 +10,23 @@
 		7A0000000000000000000010 /* TetsuLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TetsuLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7A0000000000000000000099 /* Exceptions for "TetsuLog" folder in "TetsuLog" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				PrivacyInfo.xcprivacy,
+			);
+			target = 7A0000000000000000000011 /* TetsuLog */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7A0000000000000000000001 /* TetsuLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7A0000000000000000000099 /* Exceptions for "TetsuLog" folder in "TetsuLog" target */,
+			);
 			path = TetsuLog;
 			sourceTree = "<group>";
 		};
