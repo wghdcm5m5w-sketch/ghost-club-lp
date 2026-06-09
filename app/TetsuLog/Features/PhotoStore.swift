@@ -10,7 +10,11 @@ enum PhotoStore {
         let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let photos = base.appendingPathComponent("photos", isDirectory: true)
         if !FileManager.default.fileExists(atPath: photos.path) {
-            try? FileManager.default.createDirectory(at: photos, withIntermediateDirectories: true)
+            // Data Protection: 初回ロック解除後のみ復号可（バックグラウンド処理とも両立）
+            try? FileManager.default.createDirectory(
+                at: photos, withIntermediateDirectories: true,
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+            )
         }
         return photos
     }
@@ -30,7 +34,7 @@ enum PhotoStore {
         let filename = "\(UUID().uuidString).jpg"
         let url = dir.appendingPathComponent(filename)
         do {
-            try jpeg.write(to: url, options: .atomic)
+            try jpeg.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
             return filename
         } catch {
             return nil

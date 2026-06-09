@@ -8,6 +8,9 @@ enum CSVImporter {
 
     // MARK: - パース
 
+    /// 取り込み行数の上限。異常な巨大ファイルでメモリを使い果たさないための保険。
+    private static let maxRows = 100_000
+
     /// クォート対応の最小限のCSVパーサ。改行・カンマを含むフィールドを正しく扱う。
     static func parse(_ text: String) -> [[String]] {
         var rows: [[String]] = []
@@ -38,6 +41,7 @@ enum CSVImporter {
                 case "\n":
                     row.append(field); field = ""
                     rows.append(row); row = []
+                    if rows.count >= maxRows { return rows }
                 default: field.append(c)
                 }
             }

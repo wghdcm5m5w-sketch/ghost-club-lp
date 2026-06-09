@@ -45,5 +45,9 @@
 	<string>記録に写真を添付するためにフォトライブラリへアクセスします。</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>記録の閲覧を Face ID で保護するために使用します。</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

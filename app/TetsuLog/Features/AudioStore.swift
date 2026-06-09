@@ -7,7 +7,12 @@ enum AudioStore {
         let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let audio = base.appendingPathComponent("audio", isDirectory: true)
         if !FileManager.default.fileExists(atPath: audio.path) {
-            try? FileManager.default.createDirectory(at: audio, withIntermediateDirectories: true)
+            // Data Protection: 初回ロック解除後のみ復号可。
+            // .complete だと画面ロック中の長時間録音が書き込めなくなるためこのクラスを選択。
+            try? FileManager.default.createDirectory(
+                at: audio, withIntermediateDirectories: true,
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+            )
         }
         return audio
     }

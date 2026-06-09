@@ -101,11 +101,72 @@ enum ExportService {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("TetsuLog-export-\(stamp).json")
         do {
-            try data.write(to: url, options: .atomic)
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
             return url
         } catch {
             return nil
         }
+    }
+
+    // MARK: - CSV書き出し（Excel・スプレッドシート用）
+
+    /// 遭遇記録をCSVで書き出す。BOM付きUTF-8（Excelで文字化けしない）・CRLF改行。
+    /// ガチ鉄の「自分の集計は自分のシートでやる」文化への直結口。
+    @MainActor
+    static func exportSightingsCSV(_ context: ModelContext) -> URL? {
+        let descriptor = FetchDescriptor<Sighting>(sortBy: [SortDescriptor(\.date)])
+        let sightings = (try? context.fetch(descriptor)) ?? []
+
+        let header = ["日付", "形式", "編成番号", "車番", "路線", "駅",
+                      "緯度", "経度", "ヘッドマーク", "塗装", "天気",
+                      "列車番号", "種別", "ラストラン", "メモ"]
+        let dateFormatter = ISO8601DateFormatter()
+
+        var lines: [String] = [header.map(csvEscape).joined(separator: ",")]
+        for s in sightings {
+            let fields = [
+                dateFormatter.string(from: s.date),
+                s.formation?.vehicleClass?.name ?? "",
+                s.formation?.code ?? "",
+                s.carNumber,
+                s.lineName,
+                s.stationName,
+                s.latitude == 0 ? "" : String(s.latitude),
+                s.longitude == 0 ? "" : String(s.longitude),
+                s.headmark,
+                s.livery,
+                s.weather,
+                s.trainNumber,
+                s.kind.rawValue,
+                s.isLastRun ? "1" : "0",
+                s.note
+            ]
+            lines.append(fields.map(csvEscape).joined(separator: ","))
+        }
+        let csv = lines.joined(separator: "\r\n")
+
+        // BOM付きUTF-8。これが無いとExcelがShift_JISと誤認して文字化けする。
+        var data = Data([0xEF, 0xBB, 0xBF])
+        data.append(Data(csv.utf8))
+
+        let stamp = ISO8601DateFormatter().string(from: .now)
+            .replacingOccurrences(of: ":", with: "-")
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("TetsuLog-sightings-\(stamp).csv")
+        do {
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
+            return url
+        } catch {
+            return nil
+        }
+    }
+
+    /// RFC 4180 準拠のフィールドエスケープ
+    private static func csvEscape(_ field: String) -> String {
+        if field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r") {
+            return "\"" + field.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+        }
+        return field
     }
 
     // MARK: - インポート（移行・復元）
@@ -124,7 +185,12 @@ enum ExportService {
         guard url.startAccessingSecurityScopedResource() else { return nil }
         defer { url.stopAccessingSecurityScopedResource() }
 
-        guard let data = try? Data(contentsOf: url) else { return nil }
+        // 異常に大きいファイルでメモリを使い果たさないための上限（64MB）
+        if let size = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize,
+           size > 64 * 1024 * 1024 {
+            return nil
+        }
+        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else { return nil }
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         guard let payload = try? decoder.decode(Export.self, from: data) else { return nil }

@@ -47,7 +47,10 @@ targets:
         NSCameraUsageDescription: "編成番号を読み取って記録するためにカメラを使用します。画像は端末内でのみ処理されます。"
         NSLocationWhenInUseUsageDescription: "撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。"
         NSPhotoLibraryUsageDescription: "記録に写真を添付するためにフォトライブラリへアクセスします。"
+        NSMicrophoneUsageDescription: "走行音や駅メロディなどを録音して記録するためにマイクを使用します。音声は端末内にのみ保存されます。"
+        NSFaceIDUsageDescription: "記録の閲覧を Face ID で保護するために使用します。"
         NSSupportsLiveActivities: true
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog

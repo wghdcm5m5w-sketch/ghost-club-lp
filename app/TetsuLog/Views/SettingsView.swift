@@ -9,6 +9,8 @@ struct SettingsView: View {
     @Query private var sightings: [Sighting]
     @Query private var rides: [RideSegment]
     @AppStorage("tetsulog.lastSyncAt") private var lastSyncAt: Double = 0
+    @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
+    private let lockAvailable = AppLockManager.isAvailable
 
     @State private var exportURL: URL?
     @State private var showingShare = false
@@ -55,12 +57,26 @@ struct SettingsView: View {
                                     .font(Theme.Font.body(15))
                                 Spacer()
                             }
+                            line
+                            HStack {
+                                Label("アプリロック", systemImage: "faceid")
+                                    .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+                                Spacer()
+                                Toggle("", isOn: $appLockEnabled).labelsHidden()
+                                    .tint(Theme.Palette.red)
+                                    .disabled(!lockAvailable)
+                            }
+                            caption(lockAvailable
+                                ? "起動時と復帰時に Face ID / パスコードを要求します。"
+                                : "この端末ではパスコード/生体認証が未設定のため利用できません。")
                             if lastSyncAt > 0 {
                                 line
                                 row("最終同期", Date(timeIntervalSince1970: lastSyncAt).formatted(date:.abbreviated, time:.shortened))
                             }
                             line
                             actionRow("データをJSONで書き出す", "square.and.arrow.up"){ export() }
+                            line
+                            actionRow("CSVで書き出す（Excel用・遭遇記録）", "doc.plaintext"){ exportCSV() }
                             line
                             actionRow("JSONから読み込む（移行・復元）", "square.and.arrow.down"){ showingImporter = true }
                             line
@@ -189,6 +205,9 @@ struct SettingsView: View {
 
     private func export() {
         if let url = ExportService.exportAll(context) { exportURL = url; showingShare = true; Haptics.success(); lastSyncAt = Date.now.timeIntervalSince1970 }
+    }
+    private func exportCSV() {
+        if let url = ExportService.exportSightingsCSV(context) { exportURL = url; showingShare = true; Haptics.success() }
     }
     private func handleImport(_ result: Result<URL, Error>) {
         guard case let .success(url) = result else { return }

@@ -41,22 +41,52 @@ struct TetsuLogApp: App {
 
     @State private var rideManager = RideManager()
     @State private var purchaseManager = PurchaseManager()
+    @State private var appLock = AppLockManager()
     @AppStorage("tetsulog.onboardingDone") private var onboardingDone = false
+    @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if onboardingDone {
-                    RootTabView()
-                        .environment(rideManager)
-                        .environment(purchaseManager)
-                } else {
-                    OnboardingView()
+            ZStack {
+                Group {
+                    if onboardingDone {
+                        RootTabView()
+                            .environment(rideManager)
+                            .environment(purchaseManager)
+                    } else {
+                        OnboardingView()
+                    }
+                }
+
+                // アプリロック有効時：未認証なら全面を改札でふさぐ
+                if appLockEnabled && !appLock.isUnlocked {
+                    LockScreenView(manager: appLock)
+                        .zIndex(1)
+                }
+
+                // アプリスイッチャーのスナップショットに記録を写さない目隠し
+                if appLockEnabled && appLock.isUnlocked && scenePhase != .active {
+                    PrivacyShieldView()
+                        .zIndex(2)
                 }
             }
             .task {
                 await SeedData.seedIfNeeded(container.mainContext)
                 await purchaseManager.loadProducts()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard appLockEnabled else { return }
+                switch newPhase {
+                case .background:
+                    appLock.lock()
+                case .active:
+                    if !appLock.isUnlocked {
+                        Task { await appLock.unlock() }
+                    }
+                default:
+                    break
+                }
             }
         }
         .modelContainer(container)
