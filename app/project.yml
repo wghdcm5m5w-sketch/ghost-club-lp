@@ -25,6 +25,9 @@ settings:
     DEVELOPMENT_TEAM: ""          # ←自分のTeam IDを入れるか、Xcodeで選択
     CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: NO
+    # App Intents の SSU 学習ステップ(AppIntentsSSUTraining)が
+    # 環境によって nonzero exit で失敗するため無効化。
+    ENABLE_APP_SHORTCUTS_FLEXIBLE_MATCHING: NO
 
 targets:
   TetsuLog:
