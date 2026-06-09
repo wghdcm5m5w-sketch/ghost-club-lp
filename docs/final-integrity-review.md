@@ -62,3 +62,23 @@
 コード本体は重複・未定義参照・型不一致なし。ドキュメントの機能数・タブ構成のドリフトを是正し、
 **LP / 法務 / 実装 / ドキュメントの表記が一致した状態**になった。
 残るプレースホルダは公開前に置換するもののみで、設計通り。
+
+---
+
+## 追補（2026-06-08 時点・第2次総点検）
+
+その後の実装追加（音鉄録音 / CSV移行 / Apple Watch / 撮影地シード / StoreKit課金 / Proゲート /
+国鉄レトロUI全面刷新 / 紙テクスチャ / OGP・favicon）を反映して再点検：
+
+- **コード規模**: 51 Swiftファイル / 約6,100行、型の重複定義なし
+- **環境注入**: `PurchaseManager` を使う4View全てのPreviewに `.environment(PurchaseManager())` 注入済み
+- **TetsuLogApp**: `rideManager` / `purchaseManager` の両方をenvironmentに注入
+- **プレースホルダ棚卸し**: `docs/release-checklist.md` のフェーズ1に全所在を表で集約
+  - `yourname`（CloudKit/AppGroup）, `com.example`（Bundle/Product）,
+    `example.github.io`（法務URL）, `support@example.com`（連絡先）
+- **同梱`.xcodeproj`は本体のみ**（最小構成）。Watch/Widget/Testsは
+  `project.yml`（xcodegen）またはチェックリストの手順で追加する設計
+- **マネタイズ整合**: spec・実装・LPで「買い切り980円／データ持ち出しは無料／
+  Proは OCR・順光・録音」に統一
+
+リリースまでの全工程は `docs/release-checklist.md` を単一の真実として参照する。

@@ -33,9 +33,13 @@ ghost-club-lp/
 ├── docs/
 │   ├── market-analysis.md         ← App Store鉄道アプリ市場分析（企画根拠）
 │   ├── tetsulog-spec.md           ← 技術設計書（実装の青写真）
-│   └── app-store-assets.md        ← ストア掲載素材（説明文・キーワード・申告）
+│   ├── app-store-assets.md        ← ストア掲載素材（説明文・キーワード・申告）
+│   ├── release-checklist.md       ← ★リリース全工程の決定版チェックリスト
+│   ├── build-troubleshooting.md   ← ビルド時の落とし穴と対処
+│   ├── critical-review*.md        ← 3次にわたる辛口レビューと是正記録
+│   └── final-integrity-review.md  ← 整合性総点検の記録
 │
-└── app/                           ← iOSアプリ実装骨格（Swift）
+└── app/                           ← iOSアプリ実装（Swift・51ファイル）
     ├── README.md                  ← Xcodeセットアップ手順
     ├── TetsuLog/                  本体ターゲット
     │   ├── Models/                SwiftData モデル・シード・共有ストア
