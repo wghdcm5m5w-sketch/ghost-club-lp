@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import UIKit
 
 /// 遭遇記録の入力シート。新規追加と既存編集の両対応。
 struct AddSightingView: View {
