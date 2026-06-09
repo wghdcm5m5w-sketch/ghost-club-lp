@@ -273,6 +273,7 @@ private struct FormationRow: View {
 /// 編成詳細: 遭遇履歴と写真・録音
 struct FormationDetailView: View {
     let formation: Formation
+    @State private var sharingSighting: Sighting?
     private var sightings: [Sighting] { (formation.sightings ?? []).sorted { $0.date > $1.date } }
 
     var body: some View {
@@ -319,6 +320,9 @@ struct FormationDetailView: View {
                                 ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
                             }
                         }
+                        .contextMenu {
+                            Button { sharingSighting = s } label: { Label("きっぷを共有", systemImage: "ticket") }
+                        }
                     }
                 }
                 .padding(Theme.screenPadding)
@@ -327,6 +331,7 @@ struct FormationDetailView: View {
         .navigationTitle(formation.code)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .sheet(item: $sharingSighting) { TicketShareSheet(sighting: $0) }
     }
 
     private func detailRow(_ k: String, _ v: String) -> some View {

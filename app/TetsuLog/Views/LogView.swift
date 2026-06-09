@@ -23,6 +23,7 @@ struct LogView: View {
     @State private var showingActiveRide = false
     @State private var editingSighting: Sighting?
     @State private var editingRide: RideSegment?
+    @State private var sharingSighting: Sighting?
     @State private var query = ""
 
     private var grouping: LogGrouping { LogGrouping(rawValue: groupingRaw) ?? .year }
@@ -98,6 +99,7 @@ struct LogView: View {
             .searchable(text: $query, prompt: "編成・駅・路線・車番・メモで検索")
             .sheet(isPresented: $showingAdd){ AddSightingView() }
             .sheet(item: $editingSighting){ AddSightingView(editing: $0) }
+            .sheet(item: $sharingSighting){ TicketShareSheet(sighting: $0) }
             .sheet(item: $editingRide){ RideEditView(ride: $0) }
             .sheet(isPresented: $showingStartRide){ StartRideView(manager: rideManager) }
             .sheet(isPresented: $showingActiveRide){ ActiveRideView(manager: rideManager) }
@@ -126,6 +128,7 @@ struct LogView: View {
                         Button { editingSighting = s } label: { SightingCard(sighting: s) }
                             .buttonStyle(.plain)
                             .contextMenu {
+                                Button { sharingSighting = s } label: { Label("きっぷを共有", systemImage: "ticket") }
                                 Button(role: .destructive){ delete(s) } label: { Label("削除", systemImage:"trash") }
                             }
                     }

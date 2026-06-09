@@ -69,7 +69,7 @@ ghost-club-lp/
 | 10 | 音鉄 | 走行音・駅メロ・車内放送を遭遇に添付（端末内） | `AudioRecorderView` / `AudioPlayerView` / `AudioStore` |
 
 加えて: 記録の編集・削除 / 検索 / 形式・編成のユーザー追加 / JSON書き出し・読み込み / **CSV取り込み（他サービスから移行）** /
-ウィジェット / Spotlight / Siri(App Intents) / **Apple Watchコンパニオン**（今週遭遇数・最後の遭遇・クイック記録） /
+ウィジェット / Spotlight / Siri(App Intents) / **Apple Watchコンパニオン**（今週遭遇数・最後の遭遇・クイック記録） / **硬券シェア**（遭遇記録を厚紙きっぷ風画像でSNS共有） /
 **全国20有名撮影地のプリセット**（東十条S字・函南鉄橋・下灘駅・姨捨スイッチバック等、座標＋順光方位入り） / 多言語(日英中韓)。
 
 ---
