@@ -79,6 +79,7 @@ TetsuLog/                          （本体ターゲット）
 
 TetsuLogWidgets/                   （Widget Extension ターゲット）
 ├── TetsuLogWidgetBundle.swift     エントリ
+├── WidgetTheme.swift              ウィジェット用カラー（国鉄レトロ）
 ├── CollectionWidget.swift         ホーム/ロック画面ウィジェット
 └── RideLiveActivity.swift         ライブアクティビティ/Dynamic Island
 ```

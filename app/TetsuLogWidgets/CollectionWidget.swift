@@ -10,10 +10,12 @@ struct CollectionWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CollectionProvider()) { entry in
             CollectionWidgetView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(for: .widget) {
+                    WidgetTheme.navyGradient
+                }
         }
         .configurationDisplayName("コレクション")
-        .description("今月の遭遇数と累計編成数を表示します。")
+        .description("今月の遭遇数と集めた編成数を表示します。")
         .supportedFamilies([.systemSmall, .accessoryRectangular, .accessoryInline])
     }
 }
@@ -69,19 +71,28 @@ struct CollectionWidgetView: View {
             Text("今月 \(entry.monthCount) 件")
         case .accessoryRectangular:
             VStack(alignment: .leading) {
-                Text("TetsuLog").font(.caption2).foregroundStyle(.secondary)
-                Text("今月 \(entry.monthCount) 件").font(.headline)
+                Text("TETSULOG")
+                    .font(.system(size: 10, weight: .heavy, design: .serif)).tracking(2)
+                Text("今月 \(entry.monthCount) 件")
+                    .font(.system(size: 16, weight: .heavy, design: .serif))
                 Text("集めた編成 \(entry.uniqueFormations)").font(.caption)
             }
         default:
-            VStack(alignment: .leading, spacing: 6) {
-                Image(systemName: "tram.fill").foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 4) {
+                    Image(systemName: "tram.fill").foregroundStyle(WidgetTheme.red)
+                    Text("TETSULOG")
+                        .font(.system(size: 9, weight: .heavy, design: .serif)).tracking(2)
+                        .foregroundStyle(WidgetTheme.creamSub)
+                }
                 Spacer()
                 Text("\(entry.monthCount)")
-                    .font(.system(size: 38, weight: .bold, design: .rounded))
-                Text("今月の遭遇").font(.caption).foregroundStyle(.secondary)
+                    .font(.system(size: 44, weight: .heavy, design: .serif).monospacedDigit())
+                    .foregroundStyle(WidgetTheme.red)
+                Text("今月の遭遇")
+                    .font(.system(size: 12, weight: .bold)).foregroundStyle(WidgetTheme.cream)
                 Text("集めた編成 \(entry.uniqueFormations)")
-                    .font(.caption2.monospaced()).foregroundStyle(.secondary)
+                    .font(.system(size: 11, design: .monospaced)).foregroundStyle(WidgetTheme.creamSub)
             }
         }
     }
