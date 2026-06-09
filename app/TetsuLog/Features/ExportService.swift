@@ -161,6 +161,47 @@ enum ExportService {
         }
     }
 
+    /// 乗車記録をCSVで書き出す（遭遇記録と同じ書式ルール）。
+    @MainActor
+    static func exportRidesCSV(_ context: ModelContext) -> URL? {
+        let descriptor = FetchDescriptor<RideSegment>(sortBy: [SortDescriptor(\.date)])
+        let rides = (try? context.fetch(descriptor)) ?? []
+        guard !rides.isEmpty else { return nil }
+
+        let header = ["日付", "出発駅", "到着駅", "路線", "編成番号", "距離km", "所要秒", "メモ"]
+        let dateFormatter = ISO8601DateFormatter()
+
+        var lines: [String] = [header.map(csvEscape).joined(separator: ",")]
+        for r in rides {
+            let fields = [
+                dateFormatter.string(from: r.date),
+                r.fromStation,
+                r.toStation,
+                r.lineName,
+                r.formationCode,
+                String(format: "%.2f", r.distanceKm),
+                String(r.durationSec),
+                r.note
+            ]
+            lines.append(fields.map(csvEscape).joined(separator: ","))
+        }
+        let csv = lines.joined(separator: "\r\n")
+
+        var data = Data([0xEF, 0xBB, 0xBF])
+        data.append(Data(csv.utf8))
+
+        let stamp = ISO8601DateFormatter().string(from: .now)
+            .replacingOccurrences(of: ":", with: "-")
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("TetsuLog-rides-\(stamp).csv")
+        do {
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
+            return url
+        } catch {
+            return nil
+        }
+    }
+
     /// RFC 4180 準拠のフィールドエスケープ
     private static func csvEscape(_ field: String) -> String {
         if field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r") {
@@ -175,6 +216,19 @@ enum ExportService {
         var sightings: Int
         var rides: Int
         var spots: Int
+        var duplicates: Int
+    }
+
+    // MARK: 重複判定キー（同じファイルの二重取り込みを防ぐ）
+
+    private static func sightingKey(date: Date, station: String, formationCode: String, trainNumber: String) -> String {
+        "\(Int(date.timeIntervalSince1970))|\(station)|\(formationCode)|\(trainNumber)"
+    }
+    private static func rideKey(date: Date, from: String, to: String, line: String) -> String {
+        "\(Int(date.timeIntervalSince1970))|\(from)|\(to)|\(line)"
+    }
+    private static func spotKey(name: String, lat: Double, lon: Double) -> String {
+        "\(name)|\(String(format: "%.5f", lat))|\(String(format: "%.5f", lon))"
     }
 
     /// JSONを読み込み、記録を追加する。形式・編成は名称で既存に照合し、
@@ -218,7 +272,30 @@ enum ExportService {
             return f
         }
 
+        // 既存記録の重複キーを構築（同じファイルを2回読み込んでも二重化しない）
+        let existingSightings = (try? context.fetch(FetchDescriptor<Sighting>())) ?? []
+        let existingRides = (try? context.fetch(FetchDescriptor<RideSegment>())) ?? []
+        let existingSpots = (try? context.fetch(FetchDescriptor<ShootingSpot>())) ?? []
+        var seenSightings = Set(existingSightings.map {
+            sightingKey(date: $0.date, station: $0.stationName,
+                        formationCode: $0.formation?.code ?? "", trainNumber: $0.trainNumber)
+        })
+        var seenRides = Set(existingRides.map {
+            rideKey(date: $0.date, from: $0.fromStation, to: $0.toStation, line: $0.lineName)
+        })
+        var seenSpots = Set(existingSpots.map {
+            spotKey(name: $0.name, lat: $0.latitude, lon: $0.longitude)
+        })
+
+        var imported = (sightings: 0, rides: 0, spots: 0)
+        var duplicates = 0
+
         for s in payload.sightings {
+            let key = sightingKey(date: s.date, station: s.stationName,
+                                  formationCode: s.formationCode, trainNumber: s.trainNumber)
+            if seenSightings.contains(key) { duplicates += 1; continue }
+            seenSightings.insert(key)
+
             let sighting = Sighting(date: s.date, stationName: s.stationName, lineName: s.lineName)
             sighting.formation = formation(for: s.className, code: s.formationCode)
             sighting.carNumber = s.carNumber
@@ -232,9 +309,14 @@ enum ExportService {
             sighting.longitude = s.longitude
             sighting.note = s.note
             context.insert(sighting)
+            imported.sightings += 1
         }
 
         for r in payload.rides {
+            let key = rideKey(date: r.date, from: r.fromStation, to: r.toStation, line: r.lineName)
+            if seenRides.contains(key) { duplicates += 1; continue }
+            seenRides.insert(key)
+
             let ride = RideSegment(fromStation: r.fromStation, toStation: r.toStation, lineName: r.lineName)
             ride.date = r.date
             ride.formationCode = r.formationCode
@@ -242,19 +324,26 @@ enum ExportService {
             ride.durationSec = r.durationSec
             ride.note = r.note
             context.insert(ride)
+            imported.rides += 1
         }
 
         for sp in payload.spots {
+            let key = spotKey(name: sp.name, lat: sp.latitude, lon: sp.longitude)
+            if seenSpots.contains(key) { duplicates += 1; continue }
+            seenSpots.insert(key)
+
             let spot = ShootingSpot(name: sp.name, latitude: sp.latitude, longitude: sp.longitude)
             spot.bearingToTrack = sp.bearingToTrack
             spot.bestHours = sp.bestHours
             spot.note = sp.note
             context.insert(spot)
+            imported.spots += 1
         }
 
         try? context.save()
-        return ImportResult(sightings: payload.sightings.count,
-                            rides: payload.rides.count,
-                            spots: payload.spots.count)
+        return ImportResult(sightings: imported.sightings,
+                            rides: imported.rides,
+                            spots: imported.spots,
+                            duplicates: duplicates)
     }
 }

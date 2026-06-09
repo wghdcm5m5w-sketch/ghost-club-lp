@@ -44,6 +44,7 @@ struct TetsuLogApp: App {
     @State private var appLock = AppLockManager()
     @AppStorage("tetsulog.onboardingDone") private var onboardingDone = false
     @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
+    @AppStorage(AppLockManager.graceKey) private var appLockGraceSec = 0
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -79,8 +80,11 @@ struct TetsuLogApp: App {
                 guard appLockEnabled else { return }
                 switch newPhase {
                 case .background:
-                    appLock.lock()
+                    // 即時施錠ではなく移行時刻を記録（猶予はユーザー設定）。
+                    // 背面中の見た目は PrivacyShieldView が覆う。
+                    appLock.noteBackgrounded()
                 case .active:
+                    appLock.relockIfNeeded(grace: TimeInterval(appLockGraceSec))
                     if !appLock.isUnlocked {
                         Task { await appLock.unlock() }
                     }

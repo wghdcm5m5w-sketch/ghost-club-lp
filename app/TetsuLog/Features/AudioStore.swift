@@ -39,4 +39,35 @@ enum AudioStore {
         // 軽量にメタから推定するため AVURLAsset などを使う側で扱う
         return nil
     }
+
+    /// ディレクトリ内の全ファイル名
+    static func allFilenames() -> [String] {
+        (try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []
+    }
+
+    /// 使用バイト数
+    static func diskUsage() -> Int {
+        let fm = FileManager.default
+        return allFilenames().reduce(0) { sum, name in
+            let path = dir.appendingPathComponent(name).path
+            let size = (try? fm.attributesOfItem(atPath: path))?[.size] as? Int ?? 0
+            return sum + size
+        }
+    }
+
+    /// どの記録からも参照されていないファイルを削除し、(件数, 解放バイト数) を返す。
+    static func removeOrphans(referenced: Set<String>) -> (count: Int, bytes: Int) {
+        let fm = FileManager.default
+        var count = 0
+        var bytes = 0
+        for name in allFilenames() where !referenced.contains(name) {
+            let path = dir.appendingPathComponent(name).path
+            let size = (try? fm.attributesOfItem(atPath: path))?[.size] as? Int ?? 0
+            if (try? fm.removeItem(atPath: path)) != nil {
+                count += 1
+                bytes += size
+            }
+        }
+        return (count, bytes)
+    }
 }

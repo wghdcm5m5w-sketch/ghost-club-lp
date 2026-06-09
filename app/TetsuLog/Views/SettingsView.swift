@@ -10,14 +10,19 @@ struct SettingsView: View {
     @Query private var rides: [RideSegment]
     @AppStorage("tetsulog.lastSyncAt") private var lastSyncAt: Double = 0
     @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
+    @AppStorage(AppLockManager.graceKey) private var appLockGraceSec = 0
     private let lockAvailable = AppLockManager.isAvailable
 
     @State private var exportURL: URL?
     @State private var showingShare = false
+    @State private var csvURLs: [URL] = []
+    @State private var showingCSVShare = false
     @State private var showingImporter = false
     @State private var showingCSVImport = false
     @State private var showingPurchase = false
     @State private var importMessage: String?
+    @State private var cleanupMessage: String?
+    @State private var storageBytes: Int?
 
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -69,6 +74,20 @@ struct SettingsView: View {
                             caption(lockAvailable
                                 ? "起動時と復帰時に Face ID / パスコードを要求します。"
                                 : "この端末ではパスコード/生体認証が未設定のため利用できません。")
+                            if appLockEnabled {
+                                HStack {
+                                    Text("再ロックまでの猶予")
+                                        .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
+                                    Spacer()
+                                    Picker("", selection: $appLockGraceSec) {
+                                        Text("すぐに").tag(0)
+                                        Text("1分").tag(60)
+                                        Text("5分").tag(300)
+                                    }
+                                    .pickerStyle(.menu)
+                                    .tint(Theme.Palette.navy)
+                                }
+                            }
                             if lastSyncAt > 0 {
                                 line
                                 row("最終同期", Date(timeIntervalSince1970: lastSyncAt).formatted(date:.abbreviated, time:.shortened))
@@ -76,13 +95,24 @@ struct SettingsView: View {
                             line
                             actionRow("データをJSONで書き出す", "square.and.arrow.up"){ export() }
                             line
-                            actionRow("CSVで書き出す（Excel用・遭遇記録）", "doc.plaintext"){ exportCSV() }
+                            actionRow("CSVで書き出す（Excel用・遭遇/乗車）", "doc.plaintext"){ exportCSV() }
                             line
                             actionRow("JSONから読み込む（移行・復元）", "square.and.arrow.down"){ showingImporter = true }
                             line
                             actionRow("CSVから取り込む（他サービス）", "tablecells"){ showingCSVImport = true }
                             if let importMessage {
                                 caption(importMessage, color: Theme.Palette.navy)
+                            }
+                            line
+                            row("端末内の写真・録音", storageBytes.map(formatBytes) ?? "計測中…")
+                            line
+                            actionRow("参照切れファイルを掃除", "trash"){ cleanupOrphans() }
+                            if let cleanupMessage {
+                                caption(cleanupMessage, color: Theme.Palette.navy)
+                            }
+                            if lastSyncAt > 0,
+                               Date.now.timeIntervalSince1970 - lastSyncAt > 30 * 24 * 3600 {
+                                caption("最後の書き出しから30日以上経っています。バックアップをおすすめします。", color: Theme.Palette.red)
                             }
                             caption("運営者のサーバーには送信されません。※写真・録音は端末内保存のためJSONには含まれません。")
                         }
@@ -106,9 +136,11 @@ struct SettingsView: View {
             .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .sheet(isPresented: $showingShare) { if let exportURL { ShareSheet(items: [exportURL]) } }
+            .sheet(isPresented: $showingCSVShare) { ShareSheet(items: csvURLs) }
             .sheet(isPresented: $showingCSVImport) { CSVImportSheet() }
             .sheet(isPresented: $showingPurchase) { PurchaseView() }
             .fileImporter(isPresented: $showingImporter, allowedContentTypes: [.json]) { handleImport($0) }
+            .onAppear { refreshStorage() }
         }
     }
 
@@ -207,13 +239,43 @@ struct SettingsView: View {
         if let url = ExportService.exportAll(context) { exportURL = url; showingShare = true; Haptics.success(); lastSyncAt = Date.now.timeIntervalSince1970 }
     }
     private func exportCSV() {
-        if let url = ExportService.exportSightingsCSV(context) { exportURL = url; showingShare = true; Haptics.success() }
+        var urls: [URL] = []
+        if let s = ExportService.exportSightingsCSV(context) { urls.append(s) }
+        if let r = ExportService.exportRidesCSV(context) { urls.append(r) }
+        guard !urls.isEmpty else { return }
+        csvURLs = urls; showingCSVShare = true; Haptics.success()
     }
     private func handleImport(_ result: Result<URL, Error>) {
         guard case let .success(url) = result else { return }
         if let r = ExportService.importAll(from: url, into: context) {
-            importMessage = "読み込み完了: 遭遇\(r.sightings)件・乗車\(r.rides)件・撮影地\(r.spots)件"; Haptics.success()
+            var message = "読み込み完了: 遭遇\(r.sightings)件・乗車\(r.rides)件・撮影地\(r.spots)件"
+            if r.duplicates > 0 { message += "（重複\(r.duplicates)件をスキップ）" }
+            importMessage = message; Haptics.success()
         } else { importMessage = "読み込みに失敗しました。ファイル形式をご確認ください。" }
+    }
+    private func refreshStorage() {
+        Task { @MainActor in
+            storageBytes = PhotoStore.diskUsage() + AudioStore.diskUsage()
+        }
+    }
+    private func cleanupOrphans() {
+        var photoRefs = Set<String>()
+        var audioRefs = Set<String>()
+        for s in sightings {
+            photoRefs.formUnion(s.photoFilenames)
+            audioRefs.formUnion(s.audioFilenames)
+        }
+        let p = PhotoStore.removeOrphans(referenced: photoRefs)
+        let a = AudioStore.removeOrphans(referenced: audioRefs)
+        let total = p.count + a.count
+        cleanupMessage = total == 0
+            ? "参照切れファイルはありませんでした。"
+            : "\(total)件を削除し、\(formatBytes(p.bytes + a.bytes))を解放しました。"
+        Haptics.success()
+        refreshStorage()
+    }
+    private func formatBytes(_ bytes: Int) -> String {
+        ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
     }
 }
 

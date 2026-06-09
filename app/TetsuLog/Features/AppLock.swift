@@ -10,10 +10,16 @@ import LocalAuthentication
 final class AppLockManager {
     /// 設定トグルと TetsuLogApp が共有する UserDefaults キー
     static let enabledKey = "tetsulog.appLockEnabled"
+    /// 再ロックまでの猶予秒数（0=すぐに / 60 / 300）
+    static let graceKey = "tetsulog.appLockGraceSec"
 
     private(set) var isUnlocked = false
     private(set) var isAuthenticating = false
     private(set) var lastError: String?
+
+    /// バックグラウンド移行時刻（猶予判定用・メモリ内のみ。
+    /// プロセスが死ねば次回起動は必ずロックから始まる）
+    private var backgroundedAt: Date?
 
     /// この端末で認証手段（生体 or パスコード）が使えるか
     nonisolated static var isAvailable: Bool {
@@ -24,6 +30,21 @@ final class AppLockManager {
     /// バックグラウンド移行時に呼ぶ。次回前面化で再認証を要求する。
     func lock() {
         isUnlocked = false
+    }
+
+    /// バックグラウンド移行を記録する（猶予判定の起点）。
+    func noteBackgrounded() {
+        backgroundedAt = .now
+    }
+
+    /// 前面復帰時に呼ぶ。猶予時間を超えていれば施錠する。
+    /// 短いアプリ切替のたびに Face ID を要求しないための仕組み。
+    func relockIfNeeded(grace: TimeInterval) {
+        guard isUnlocked, let at = backgroundedAt else { return }
+        backgroundedAt = nil
+        if Date.now.timeIntervalSince(at) >= grace {
+            isUnlocked = false
+        }
     }
 
     func unlock() async {
