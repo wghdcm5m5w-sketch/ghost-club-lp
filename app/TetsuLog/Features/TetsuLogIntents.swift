@@ -68,7 +68,14 @@ struct StartRideIntent: AppIntent {
 }
 
 // MARK: - ショートカット登録
-
+//
+// ⚠️ 一時無効化: Xcode の AppIntentsSSUTraining ビルドステップが
+// AppShortcutsProvider のフレーズ処理で失敗する事象を回避するため、
+// 初回リリースでは Siri/ショートカット連携を無効化している。
+// App Intents（LogSightingIntent / StartRideIntent）自体は有効なので、
+// ショートカットAppから手動でレシピに追加することは可能。
+// 環境が安定したら以下のコメントを外して有効化する。
+/*
 struct TetsuLogShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -91,3 +98,4 @@ struct TetsuLogShortcuts: AppShortcutsProvider {
         )
     }
 }
+*/
