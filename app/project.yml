@@ -12,7 +12,7 @@
 
 name: TetsuLog
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.ryofujimatsu
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -47,7 +47,7 @@ targets:
         NSSupportsLiveActivities: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -60,7 +60,7 @@ targets:
       - path: TetsuLogTests
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.tests
         BUNDLE_LOADER: "$(TEST_HOST)"
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TetsuLog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TetsuLog"
         SWIFT_VERSION: "5.0"
@@ -78,6 +78,6 @@ targets:
       - path: TetsuLog/Models/SharedStore.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.tetsulog.watchapp
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"   # Apple Watch

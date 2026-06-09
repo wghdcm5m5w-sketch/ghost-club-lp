@@ -6,7 +6,7 @@ import SwiftData
 /// 両ターゲットの Membership にこのファイルと Models.swift を追加すること。
 enum SharedStore {
     /// App Group ID（Capabilities で両ターゲットに設定）
-    static let appGroupID = "group.com.yourname.tetsulog"
+    static let appGroupID = "group.com.ryofujimatsu.tetsulog"
 
     static let container: ModelContainer? = {
         guard let groupURL = FileManager.default
@@ -16,7 +16,7 @@ enum SharedStore {
         let storeURL = groupURL.appendingPathComponent("TetsuLog.store")
         let config = ModelConfiguration(
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.com.yourname.tetsulog")
+            cloudKitDatabase: .private("iCloud.com.ryofujimatsu.tetsulog")
         )
         return try? ModelContainer(
             for: VehicleClass.self, Formation.self, Sighting.self,

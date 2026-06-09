@@ -3,7 +3,7 @@ import StoreKit
 
 /// StoreKit 2 を使った買い切り課金のマネージャ。
 /// シンプルな非消費型（NonConsumable）1製品のみを扱う：
-/// - `com.example.tetsulog.pro`（実機/App Store公開時は実プロダクトIDに置換）
+/// - `com.ryofujimatsu.tetsulog.pro`（実機/App Store公開時は実プロダクトIDに置換）
 ///
 /// 設計思想:
 /// - サーバー不要・サブスクなし・買い切り一度きり（LPの約束）
@@ -13,7 +13,7 @@ import StoreKit
 @Observable
 final class PurchaseManager {
     /// プロダクトID。本番リリース前に必ず自分のIDへ書き換え。
-    static let proProductID = "com.example.tetsulog.pro"
+    static let proProductID = "com.ryofujimatsu.tetsulog.pro"
 
     /// 状態
     private(set) var product: Product?

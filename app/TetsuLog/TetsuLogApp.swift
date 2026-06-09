@@ -21,7 +21,7 @@ struct TetsuLogApp: App {
         do {
             let config = ModelConfiguration(
                 "TetsuLog",
-                cloudKitDatabase: .private("iCloud.com.yourname.tetsulog")
+                cloudKitDatabase: .private("iCloud.com.ryofujimatsu.tetsulog")
             )
             container = try ModelContainer(for: Schema(types), configurations: config)
             return

@@ -74,11 +74,11 @@ struct SettingsView: View {
                         section("アプリ") {
                             row("バージョン", appVersion)
                             line
-                            linkRow("プライバシーポリシー", "https://example.github.io/ghost-club-lp/tetsulog-privacy.html")
+                            linkRow("プライバシーポリシー", "https://wghdcm5m5w-sketch.github.io/ghost-club-lp/tetsulog-privacy.html")
                             line
-                            linkRow("利用規約", "https://example.github.io/ghost-club-lp/tetsulog-terms.html")
+                            linkRow("利用規約", "https://wghdcm5m5w-sketch.github.io/ghost-club-lp/tetsulog-terms.html")
                             line
-                            linkRow("特定商取引法に基づく表記", "https://example.github.io/ghost-club-lp/tetsulog-tokushoho.html")
+                            linkRow("特定商取引法に基づく表記", "https://wghdcm5m5w-sketch.github.io/ghost-club-lp/tetsulog-tokushoho.html")
                         }
                     }
                     .padding(Theme.screenPadding)
