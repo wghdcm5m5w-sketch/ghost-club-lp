@@ -87,7 +87,7 @@ struct PurchaseView: View {
                         if let err = store.lastError {
                             Text(err)
                                 .font(.system(size: 12))
-                                .foregroundStyle(Theme.Palette.red)
+                                .foregroundStyle(Theme.Palette.redLight)
                                 .padding(.horizontal, 8)
                                 .multilineTextAlignment(.center)
                         }

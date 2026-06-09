@@ -11,11 +11,13 @@ enum Theme {
         static let paperAged  = Color(hex: 0xDDC592)   // 経年した黄ばみ紙（廃車カード用）
         static let paperEdge  = Color(hex: 0xE2D6BC)   // 紙の境界
         static let red       = Color(hex: 0xC0392B)   // 朱（アクセント・廃車・ゲージ）
+        static let redLight  = Color(hex: 0xE85A48)   // 明朱：紺地上のテキスト用（AA大satisfied）
         static let ink       = Color(hex: 0x10243F)   // 紙の上の文字（紺）
         static let inkSub    = Color(hex: 0x6B5A3C)   // 紙の上の副文字（セピア）
         static let cream     = Color(hex: 0xF0E6CF)   // 暗背景上の明文字
         static let creamSub  = Color(hex: 0xB7A98A)   // 暗背景上の副文字
         static let gold      = Color(hex: 0xC9A24B)   // 金（達成・特別）
+        static let goldDeep  = Color(hex: 0x8A6F1F)   // 深い金：紙の上で AA本文を満たす
         static let rail      = Color(hex: 0x9AA0AC)   // レール鋼色
     }
 
@@ -261,7 +263,7 @@ struct RailGauge: View {
                     .fill(Theme.Palette.paperEdge)
                     .frame(height: 4)
                 Rectangle()
-                    .fill(complete ? Theme.Palette.gold : Theme.Palette.red)
+                    .fill(complete ? Theme.Palette.goldDeep : Theme.Palette.red)
                     .frame(width: geo.size.width * ratio, height: 8)
             }
         }

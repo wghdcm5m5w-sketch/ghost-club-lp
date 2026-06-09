@@ -152,7 +152,7 @@ private struct ClassCard: View {
                     Spacer()
                     if vehicleClass.isComplete {
                         Image(systemName: "checkmark.seal.fill")
-                            .foregroundStyle(Theme.Palette.gold)
+                            .foregroundStyle(Theme.Palette.goldDeep)
                     } else if vehicleClass.isRetiring {
                         InkBadge(text: "廃車", filled: false)
                     }
@@ -171,7 +171,7 @@ private struct ClassCard: View {
                     Spacer()
                     Text("\(Int(vehicleClass.collectionRatio * 100))%")
                         .font(Theme.Font.mono(14))
-                        .foregroundStyle(vehicleClass.isComplete ? Theme.Palette.gold : Theme.Palette.red)
+                        .foregroundStyle(vehicleClass.isComplete ? Theme.Palette.goldDeep : Theme.Palette.red)
                 }
             }
         }
@@ -203,7 +203,7 @@ struct ClassDetailView: View {
                                 if vehicleClass.isComplete {
                                     Label("コンプリート", systemImage: "checkmark.seal.fill")
                                         .font(.system(size: 13, weight: .bold))
-                                        .foregroundStyle(Theme.Palette.gold)
+                                        .foregroundStyle(Theme.Palette.goldDeep)
                                 }
                             }
                             if !vehicleClass.lineNames.isEmpty {

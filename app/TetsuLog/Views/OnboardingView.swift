@@ -24,7 +24,7 @@ struct OnboardingView: View {
             VStack(spacing: 0) {
                 // 上部のロゴライン
                 HStack(spacing: 10) {
-                    Image(systemName: "tram.fill").foregroundStyle(Theme.Palette.red)
+                    Image(systemName: "tram.fill").foregroundStyle(Theme.Palette.redLight)
                     Text("TETSULOG")
                         .font(.system(size: 13, weight: .heavy, design: .serif))
                         .tracking(6)

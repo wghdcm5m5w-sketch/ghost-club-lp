@@ -53,7 +53,7 @@ struct StatsView: View {
         return PaperCard {
             VStack(spacing: 12) {
                 HStack {
-                    Label("コンプリート", systemImage: "checkmark.seal.fill").foregroundStyle(Theme.Palette.gold)
+                    Label("コンプリート", systemImage: "checkmark.seal.fill").foregroundStyle(Theme.Palette.goldDeep)
                         .font(Theme.Font.body(15))
                     Spacer()
                     Text("\(complete) 形式").font(Theme.Font.mono(18)).foregroundStyle(Theme.Palette.ink)

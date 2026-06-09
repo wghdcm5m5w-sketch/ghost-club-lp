@@ -64,7 +64,7 @@ private struct LockScreenRideView: View {
             HStack {
                 Label("乗車中", systemImage: "tram.fill")
                     .font(.caption.bold())
-                    .foregroundStyle(WidgetTheme.red)
+                    .foregroundStyle(WidgetTheme.redLight)
                 Spacer()
                 Text(formatElapsed(context.state.elapsedSec))
                     .font(.caption.monospaced())

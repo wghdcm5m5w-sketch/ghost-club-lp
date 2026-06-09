@@ -106,7 +106,7 @@ struct SettingsView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 24))
-                            .foregroundStyle(Theme.Palette.gold)
+                            .foregroundStyle(Theme.Palette.goldDeep)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("TetsuLog Pro 有効")
                                 .font(.system(size: 15, weight: .heavy, design: .serif))

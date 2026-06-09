@@ -165,7 +165,7 @@ struct SpotDetailView: View {
                     Button { showingPurchase = true } label: {
                         VStack(spacing: 10) {
                             HStack(spacing: 8) {
-                                Image(systemName: "sun.max.fill").foregroundStyle(Theme.Palette.gold)
+                                Image(systemName: "sun.max.fill").foregroundStyle(Theme.Palette.goldDeep)
                                 Text("順光・逆光の計算").font(.headline)
                                 ProBadge()
                             }
