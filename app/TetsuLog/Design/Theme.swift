@@ -111,8 +111,9 @@ struct BlueprintGrid: View {
 // MARK: - 硬券の紙テクスチャ（TicketCard / ShareCard 用に温存）
 
 /// 紙の質感（クリーム＋地紋）。硬券・シェアカードの下地。
-/// 地紋は Canvas で 1 回描き、`drawingGroup()` でビットマップ化してキャッシュ。
-/// スクロール中に毎フレーム再描画されないようにする。
+/// パフォーマンス方針: drawingGroup() は使わない（1枚ずつ GPU テクスチャを確保
+/// するため、LazyVGrid/ScrollView 内で大量のカードに付けるとメモリ上限を超える）。
+/// 地紋の Canvas は SwiftUI のレンダラに任せる。
 struct PaperSurface: View {
     var aged: Bool = false
     var body: some View {
@@ -134,7 +135,6 @@ struct PaperSurface: View {
             }
             LinearGradient(colors: [Color.white.opacity(0.12), .clear], startPoint: .top, endPoint: .bottom)
         }
-        .drawingGroup() // ★ ビットマップ化してスクロール時の再描画コストを下げる
     }
 }
 
@@ -197,7 +197,6 @@ struct PaperCard<Content: View>: View {
         .clipShape(shape)
         .overlay(shape.stroke(Theme.Palette.surfaceEdge, lineWidth: 1))
         .shadow(color: .black.opacity(0.30), radius: 8, x: 0, y: 5)
-        .compositingGroup()
     }
 }
 
@@ -220,7 +219,6 @@ struct KikenCard<Content: View>: View {
             .overlay(shape.inset(by: 5).stroke(Color(hex: 0x46341A, alpha: 0.45), lineWidth: 1))
             .clipShape(shape)
             .shadow(color: .black.opacity(0.42), radius: 8, x: 0, y: 5)
-            .compositingGroup()
     }
 }
 
@@ -267,7 +265,6 @@ struct CarDiagram: View {
             }
         }
         .frame(height: height)
-        .drawingGroup() // ★ ビットマップ化（スクロール時の再描画を回避）
     }
 
     private func drawCar(_ ctx: GraphicsContext, kind: Kind, rect: CGRect, facingRight: Bool) {

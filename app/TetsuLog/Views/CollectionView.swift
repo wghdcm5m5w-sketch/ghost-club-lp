@@ -306,26 +306,26 @@ struct FormationDetailView: View {
                         }
                     }
 
-                    ForEach(sightings) { s in
-                        VStack(spacing: 10) {
-                            // ① 硬券（クリーム券）
-                            SightingTicketDetail(sighting: s)
-                            // ② 添付（写真・録音）はダークガラスで“別物”として下に
-                            if !s.photoFilenames.isEmpty || !s.audioFilenames.isEmpty {
-                                PaperCard(accent: false) {
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        if let file = s.photoFilenames.first, let img = PhotoStore.load(file) {
-                                            Image(uiImage: img).resizable().scaledToFill()
-                                                .frame(height: 160).frame(maxWidth: .infinity)
-                                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                    LazyVStack(spacing: 14) {
+                        ForEach(sightings) { s in
+                            VStack(spacing: 10) {
+                                // ① 硬券（クリーム券）
+                                SightingTicketDetail(sighting: s)
+                                // ② 添付（写真・録音）はダークガラスで“別物”として下に
+                                if !s.photoFilenames.isEmpty || !s.audioFilenames.isEmpty {
+                                    PaperCard(accent: false) {
+                                        VStack(alignment: .leading, spacing: 10) {
+                                            if let file = s.photoFilenames.first {
+                                                LazyPhoto(filename: file, height: 160)
+                                            }
+                                            ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
                                         }
-                                        ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
                                     }
                                 }
                             }
-                        }
-                        .contextMenu {
-                            Button { sharingSighting = s } label: { Label("きっぷを共有", systemImage: "ticket") }
+                            .contextMenu {
+                                Button { sharingSighting = s } label: { Label("きっぷを共有", systemImage: "ticket") }
+                            }
                         }
                     }
                 }
@@ -457,6 +457,32 @@ private struct SightingTicketDetail: View {
 
     private var formCode: String {
         String(format: "%04d", abs(sighting.id.uuidString.hashValue) % 10000)
+    }
+}
+
+/// 画面に出てから写真を読み、消えたら解放する。
+/// LazyVStack のセル登場/退場と onAppear/onDisappear が連動するため、
+/// 全遭遇ぶんの UIImage を同時にメモリ上に持たないで済む。
+private struct LazyPhoto: View {
+    let filename: String
+    var height: CGFloat = 160
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Rectangle().fill(Theme.Palette.surface2)
+            }
+        }
+        .frame(height: height)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .onAppear  { if image == nil { image = PhotoStore.load(filename) } }
+        .onDisappear { image = nil }
     }
 }
 
