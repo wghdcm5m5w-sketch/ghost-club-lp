@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TetsuLog — ハイブリッド（④骨格＋①詳細＋⑤余白）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+:root{
+  --bg:#080a0e; --bg2:#0f1218; --line:rgba(150,200,240,.08);
+  --cyan:#5fd0ff; --cyan2:#8fbfe5; --cyandim:#6f93ad;
+  --cream:#ece0c2; --red:#b3372a; --gold:#d9b75e;
+  --tx:#e8edf4; --txd:#8a93a4;
+}
+body{background:radial-gradient(1100px 640px at 16% -10%,#15202e 0%,transparent 56%),var(--bg);
+  color:var(--tx);font-family:'Noto Sans JP',-apple-system,sans-serif;padding:48px 28px 110px;min-height:100vh;}
+.intro{max-width:1100px;margin:0 auto 42px;}
+.intro .kicker{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.3em;color:var(--cyandim);text-transform:uppercase;margin-bottom:14px;}
+.intro h1{font-size:clamp(25px,3.8vw,38px);font-weight:900;letter-spacing:-.01em;line-height:1.25;margin-bottom:14px;}
+.intro p{color:#9aa6b6;font-size:15px;line-height:1.95;max-width:800px;}
+.intro .notes{margin-top:18px;display:flex;flex-wrap:wrap;gap:9px;}
+.intro .notes span{font-size:12px;color:#cfe0f0;background:#11151c;border:1px solid #1e2733;padding:7px 13px;border-radius:7px;font-family:'JetBrains Mono';}
+.intro .notes b{color:var(--gold);}
+
+.rail{display:flex;gap:38px;overflow-x:auto;padding:8px 4px 44px;scroll-snap-type:x proximity;}
+.col{flex:0 0 auto;width:316px;scroll-snap-align:center;}
+.col.wide{width:316px;}
+.col .tag{display:flex;align-items:center;gap:9px;margin-bottom:5px;}
+.col .num{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:12px;color:#06121e;background:linear-gradient(180deg,#7fd6ff,#2f9fd6);}
+.col h2{font-size:16px;font-weight:900;letter-spacing:.01em;}
+.col .sub{font-size:11px;color:var(--cyandim);font-family:'JetBrains Mono';margin-bottom:13px;letter-spacing:.05em;}
+.col .why{margin-top:15px;font-size:12px;color:#93a0b0;line-height:1.85;}
+.col .why b{color:var(--tx);font-weight:700;}
+.col .why em{color:var(--gold);font-style:normal;}
+
+/* 端末 */
+.phone{width:316px;height:670px;border-radius:46px;padding:11px;background:linear-gradient(145deg,#2c333d,#0f1319);
+  box-shadow:0 30px 64px rgba(0,0,0,.62), inset 0 0 0 2px rgba(255,255,255,.04);}
+.screen{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--bg);}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:25px;background:#000;border-radius:0 0 15px 15px;z-index:60;}
+.sbar{position:relative;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:13px 24px 0;font-size:12.5px;font-weight:700;color:#cdd6e2;}
+.pg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% -8%,#141b26 0%,#080a0e 62%);}
+.fgrid{position:absolute;inset:0;background:
+  linear-gradient(0deg,var(--line) 1px,transparent 1px),
+  linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:19px 19px;opacity:.7;}
+
+/* 見出し（⑤プレミアム） */
+.ph{position:relative;z-index:10;padding:16px 22px 8px;}
+.ph .ov{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.32em;color:var(--cyandim);}
+.ph .ttl{font-size:26px;font-weight:900;letter-spacing:-.01em;margin-top:5px;}
+.ph .ttl small{font-family:'JetBrains Mono';font-size:12px;font-weight:500;color:var(--cyandim);margin-left:8px;letter-spacing:.04em;}
+
+/* タブ */
+.tab{position:absolute;bottom:0;left:0;right:0;height:76px;display:flex;justify-content:space-around;align-items:flex-start;padding-top:10px;z-index:45;
+  background:rgba(8,10,14,.72);border-top:1px solid rgba(150,200,240,.12);backdrop-filter:blur(14px);color:#7e8a99;}
+.ti{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:600;opacity:.55;}
+.ti.on{opacity:1;color:var(--cyan);}
+.ti svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;}
+
+/* 車両側面図 */
+svg.car{display:block;width:100%;height:auto;}
+.cs{stroke:#9fcdf2;stroke-width:1.4;fill:none;}
+.cw{fill:#5fd0ff;opacity:.4;}
+
+/* 硬券パーツ */
+.tkt{position:relative;background:linear-gradient(178deg,#ece0c2,#e1d2ac);color:#251b10;border-radius:5px;overflow:hidden;
+  box-shadow:0 10px 26px rgba(0,0,0,.5);}
+.jimon{position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:repeating-linear-gradient(28deg,rgba(60,45,20,.05) 0 1px,transparent 1px 7px),repeating-linear-gradient(-28deg,rgba(60,45,20,.05) 0 1px,transparent 1px 7px);}
+.jimon.red{background-image:repeating-linear-gradient(28deg,rgba(150,40,30,.07) 0 1px,transparent 1px 7px),repeating-linear-gradient(-28deg,rgba(150,40,30,.07) 0 1px,transparent 1px 7px);}
+.dbl{position:absolute;inset:5px;border:1px solid rgba(70,52,26,.45);border-radius:3px;pointer-events:none;}
+.edge{position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--red);}
+.edge.blue{background:#1d4e86;}
+.stamp{font-family:'JetBrains Mono';font-weight:700;color:#3a2f4e;transform:rotate(-1.4deg);letter-spacing:.04em;}
+.formno{font-family:'JetBrains Mono';font-size:8px;color:#8a7a55;letter-spacing:.04em;}
+.micro{font-size:7px;color:#9a875f;}
+
+/* ---------------- 1. 図鑑 ---------------- */
+.s1 .filter{position:relative;z-index:10;display:flex;gap:6px;padding:0 20px 10px;}
+.s1 .filter span{font-size:10px;font-family:'JetBrains Mono';color:var(--cyan2);border:1px solid #233140;padding:5px 11px;border-radius:999px;}
+.s1 .filter span.on{background:var(--cyan);color:#06121e;border-color:var(--cyan);}
+.s1 .list{position:relative;z-index:10;padding:0 16px;display:flex;flex-direction:column;gap:13px;}
+.fc{position:relative;border:1px solid rgba(150,200,240,.16);border-radius:16px;padding:16px 17px;
+  background:linear-gradient(170deg,rgba(95,160,230,.06),rgba(95,160,230,.015));}
+.fc .top{display:flex;justify-content:space-between;align-items:baseline;}
+.fc .cls{font-size:20px;font-weight:900;letter-spacing:.01em;}
+.fc .acc{width:8px;height:8px;border-radius:50%;}
+.fc .ln{font-family:'JetBrains Mono';font-size:10px;color:var(--cyandim);margin-top:2px;letter-spacing:.05em;}
+.fc .car{margin:12px 0 9px;}
+.fc .bottom{display:flex;justify-content:space-between;align-items:center;}
+.fc .set{font-family:'JetBrains Mono';font-size:10px;color:var(--cyan2);}
+.fc .rt{display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono';font-size:10px;color:var(--cyandim);}
+.fc .rt .bar{width:48px;height:5px;border:1px solid rgba(150,200,240,.35);border-radius:3px;overflow:hidden;}
+.fc .rt .bar i{display:block;height:100%;background:var(--cyan);}
+
+/* ---------------- 2. 遭遇詳細（硬券） ---------------- */
+.s2 .back{position:relative;z-index:10;display:flex;align-items:center;gap:7px;color:var(--cyan2);font-size:13px;padding:6px 18px 4px;}
+.s2 .back svg{width:16px;height:16px;stroke:var(--cyan2);fill:none;stroke-width:2;}
+.s2 .ovh{position:relative;z-index:10;padding:6px 22px 12px;}
+.s2 .ovh .ov{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.28em;color:var(--cyandim);}
+.s2 .ovh .t{font-size:21px;font-weight:900;margin-top:4px;}
+.bigtkt{position:relative;z-index:10;margin:0 18px;padding:18px 18px 14px 24px;}
+.bigtkt .ln{font-family:'Noto Serif JP';font-size:24px;font-weight:900;line-height:1;}
+.bigtkt .op{font-size:10px;color:#7a6a48;font-weight:700;margin-top:3px;letter-spacing:.06em;}
+.bigtkt .mdl{font-family:'JetBrains Mono';font-size:16px;font-weight:800;margin:12px 0 0;color:#2a2014;}
+.bigtkt .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;margin-top:13px;border-top:1px dashed rgba(80,60,30,.4);padding-top:12px;}
+.bigtkt .k{font-size:8.5px;color:#8a7654;letter-spacing:.1em;font-family:'JetBrains Mono';}
+.bigtkt .v{font-size:13px;font-weight:700;margin-top:1px;color:#2a2014;}
+.bigtkt .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;border-top:1px solid rgba(80,60,30,.35);padding-top:9px;}
+.bigtkt .punch{position:absolute;top:14px;right:14px;}
+.s2 .att{position:relative;z-index:10;margin:13px 18px 0;display:flex;gap:11px;}
+.s2 .photo{flex:1;height:80px;border-radius:12px;background:linear-gradient(135deg,#33485c,#1c2733);position:relative;overflow:hidden;border:1px solid rgba(150,200,240,.14);}
+.s2 .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 42%,rgba(255,255,255,.1) 50%,transparent 58%);}
+.s2 .photo .cn{position:absolute;font-family:'JetBrains Mono';font-size:8px;color:#bcd;left:8px;bottom:7px;opacity:.8;}
+.s2 .audio{flex:1;height:80px;border-radius:12px;border:1px solid rgba(150,200,240,.14);background:rgba(95,160,230,.05);padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:7px;}
+.s2 .audio .l{font-family:'JetBrains Mono';font-size:8.5px;color:var(--cyandim);letter-spacing:.06em;}
+.s2 .wave{display:flex;align-items:center;gap:2px;height:22px;}
+.s2 .wave i{flex:1;background:var(--cyan);border-radius:1px;opacity:.75;}
+
+/* ---------------- 3. 形式図 ---------------- */
+.s3 .crop{position:absolute;width:13px;height:13px;border:1px solid rgba(150,200,240,.3);z-index:6;}
+.s3 .crop.tl{top:34px;left:12px;border-right:none;border-bottom:none;}
+.s3 .crop.tr{top:34px;right:12px;border-left:none;border-bottom:none;}
+.s3 .cls{position:relative;z-index:10;margin:6px 18px 0;font-size:24px;font-weight:900;}
+.s3 .setline{position:relative;z-index:10;margin:2px 18px 14px;font-family:'JetBrains Mono';font-size:10px;color:var(--cyan2);letter-spacing:.06em;}
+.drawbox{position:relative;z-index:10;margin:0 18px 14px;border:1px solid rgba(150,200,240,.28);border-radius:12px;padding:13px 13px 9px;background:rgba(95,160,230,.03);}
+.drawbox .l{font-family:'JetBrains Mono';font-size:8px;color:var(--cyandim);letter-spacing:.1em;margin-bottom:8px;}
+.frow{display:flex;gap:3px;align-items:flex-end;}
+.frow .c{flex:1;text-align:center;}
+.frow .c .n{font-family:'JetBrains Mono';font-size:7px;color:var(--cyandim);margin-bottom:2px;}
+.dim{display:flex;justify-content:center;font-family:'JetBrains Mono';font-size:8px;color:var(--cyandim);margin-top:6px;}
+.spectab{position:relative;z-index:10;margin:0 18px;font-family:'JetBrains Mono';}
+.spectab .r{display:flex;justify-content:space-between;font-size:11px;padding:8px 0;border-bottom:1px dotted rgba(150,200,240,.22);}
+.spectab .r .k{color:var(--cyandim);}
+.spectab .r b{color:#fff;font-weight:700;}
+
+/* ---------------- 4. 測量図（主役） ---------------- */
+.s4 .map{position:absolute;inset:0;}
+.s4 .mapbg{position:absolute;inset:0;background:radial-gradient(130% 80% at 60% 30%,#0e1722 0%,#070a0f 70%);}
+.s4 .coordgrid{position:absolute;inset:0;background:
+  linear-gradient(0deg,rgba(150,200,240,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(150,200,240,.05) 1px,transparent 1px);background-size:42px 42px;}
+.s4 svg.geo{position:absolute;inset:0;width:100%;height:100%;}
+.s4 .frame{position:absolute;inset:30px 12px 84px;border:1px solid rgba(150,200,240,.22);z-index:8;pointer-events:none;border-radius:2px;}
+.s4 .frame::before{content:"A      B      C      D";position:absolute;top:-15px;left:0;right:0;display:flex;justify-content:space-around;
+  font-family:'JetBrains Mono';font-size:8px;color:var(--cyandim);letter-spacing:.2em;}
+.s4 .topbar{position:absolute;top:46px;left:22px;right:22px;z-index:20;display:flex;justify-content:space-between;align-items:center;}
+.s4 .topbar .t{font-size:19px;font-weight:900;}
+.s4 .topbar .t small{font-family:'JetBrains Mono';font-size:10px;color:var(--cyandim);font-weight:500;margin-left:7px;}
+.s4 .compass{width:34px;height:34px;}
+.s4 .scalebar{position:absolute;left:24px;bottom:96px;z-index:20;font-family:'JetBrains Mono';font-size:8px;color:var(--cyan2);}
+.s4 .scalebar .l{display:flex;height:5px;width:64px;margin-bottom:3px;border:1px solid var(--cyan2);}
+.s4 .scalebar .l i{flex:1;}.s4 .scalebar .l i:nth-child(odd){background:var(--cyan2);}
+.s4 .callout{position:absolute;z-index:25;}
+.s4 .ctkt{position:relative;width:172px;padding:9px 12px 9px 16px;}
+.s4 .ctkt .ln{font-family:'Noto Serif JP';font-weight:900;font-size:13px;color:#251b10;}
+.s4 .ctkt .mt{font-family:'JetBrains Mono';font-size:8.5px;color:#7a6a48;margin-top:3px;letter-spacing:.03em;}
+.s4 .ctkt .lead{position:absolute;width:9px;height:9px;border-radius:50%;background:#ffcf4a;border:2px solid #251b10;left:-4px;bottom:-4px;}
+/* ボトムシート */
+.s4 .sheet{position:absolute;left:0;right:0;bottom:0;height:84px;z-index:30;
+  background:linear-gradient(180deg,rgba(12,16,22,.4),rgba(8,10,14,.96));backdrop-filter:blur(12px);
+  border-top:1px solid rgba(150,200,240,.14);padding:9px 14px 0;}
+.s4 .sheet .handle{width:34px;height:4px;border-radius:2px;background:rgba(150,200,240,.4);margin:0 auto 9px;}
+.s4 .sheet .stats{display:flex;justify-content:space-around;}
+.s4 .sheet .st{text-align:center;}
+.s4 .sheet .st .v{font-family:'JetBrains Mono';font-weight:800;font-size:16px;color:var(--cyan);}
+.s4 .sheet .st .k{font-family:'JetBrains Mono';font-size:7.5px;color:var(--cyandim);letter-spacing:.08em;margin-top:2px;}
+
+/* ---------------- 5. 統計 ---------------- */
+.s5 .gauge{position:relative;z-index:10;margin:4px auto 8px;width:180px;text-align:center;}
+.s5 .gauge .v{position:absolute;top:60px;left:0;right:0;font-family:'JetBrains Mono';font-weight:800;font-size:34px;color:var(--cyan);}
+.s5 .gauge .k{position:absolute;top:100px;left:0;right:0;font-family:'JetBrains Mono';font-size:9px;color:var(--cyandim);letter-spacing:.12em;}
+.s5 .read{position:relative;z-index:10;margin:0 18px 14px;display:flex;gap:10px;}
+.s5 .rd{flex:1;border:1px solid rgba(150,200,240,.16);border-radius:13px;padding:12px 8px;text-align:center;background:rgba(95,160,230,.04);}
+.s5 .rd .v{font-family:'JetBrains Mono';font-weight:800;font-size:18px;}
+.s5 .rd .k{font-family:'JetBrains Mono';font-size:8px;color:var(--cyandim);margin-top:4px;letter-spacing:.06em;}
+.s5 .panel{position:relative;z-index:10;margin:0 18px;border:1px solid rgba(150,200,240,.16);border-radius:14px;padding:14px 16px;background:rgba(95,160,230,.03);}
+.s5 .pt{font-family:'JetBrains Mono';font-size:9.5px;color:var(--cyandim);letter-spacing:.1em;margin-bottom:10px;}
+.s5 .plot{display:flex;align-items:flex-end;gap:5px;height:62px;}
+.s5 .plot .b{flex:1;background:linear-gradient(180deg,#5fd0ff,#2f7fb0);border-radius:3px 3px 0 0;}
+.s5 .px{display:flex;gap:5px;margin-top:5px;}
+.s5 .px span{flex:1;text-align:center;font-family:'JetBrains Mono';font-size:7px;color:var(--cyandim);}
+
+/* ---------------- 6. 設定 ---------------- */
+.s6 .pro{position:relative;z-index:10;margin:2px 18px 14px;padding:15px 17px 14px 22px;}
+.s6 .pro .bd{font-family:'JetBrains Mono';font-size:8px;color:var(--red);letter-spacing:.12em;}
+.s6 .pro .t{font-family:'Noto Serif JP';font-weight:900;font-size:17px;margin-top:3px;color:#251b10;}
+.s6 .pro .d{font-size:10px;color:#5a4a30;margin-top:4px;}
+.s6 .pro .pr{position:absolute;right:15px;bottom:13px;font-family:'Noto Serif JP';font-weight:900;font-size:20px;color:var(--red);}
+.s6 .grp{position:relative;z-index:10;margin:0 18px 13px;}
+.s6 .gt{font-family:'JetBrains Mono';font-size:8.5px;color:var(--cyandim);letter-spacing:.12em;margin:0 0 7px 4px;}
+.s6 .card{border:1px solid rgba(150,200,240,.16);border-radius:13px;padding:2px 15px;background:rgba(95,160,230,.03);}
+.s6 .r{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(150,200,240,.1);font-size:13px;}
+.s6 .r:last-child{border-bottom:none;}
+.s6 .r .rt{display:flex;align-items:center;gap:10px;}
+.s6 .r svg{width:17px;height:17px;stroke:var(--cyan);fill:none;stroke-width:1.6;}
+.s6 .r .val{font-family:'JetBrains Mono';font-size:10px;color:var(--cyandim);}
+.s6 .tg{width:36px;height:20px;border-radius:999px;background:var(--cyan);position:relative;}
+.s6 .tg::after{content:"";position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:#06121e;}
+
+@media(max-width:720px){body{padding:32px 16px 64px;}.rail{gap:26px;}}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="kicker">TETSULOG · HYBRID DIRECTION (C)</div>
+  <h1>ハイブリッド ― 技術の骨格に、紙の温度</h1>
+  <p>近黒＋余白（⑤）の地に、形式図・側面図の製図美（④）で信頼を担保し、<b>遭遇の詳細だけを硬券（①）の温かい紙</b>で“蒐集する一枚”として際立たせる三層構成。冷たい技術と温かい紙のコントラストそのものが世界観です。測量図はこのセットの主役として作り込みました。</p>
+  <div class="notes">
+    <span>地＝近黒＋余白</span><span>骨格＝<b>形式図/側面図</b></span><span>詳細＝<b>硬券</b></span><span>主役＝測量図（方位記号・図郭・等高線・河川）</span>
+  </div>
+</div>
+
+<div class="rail">
+
+  <!-- 1. 図鑑 -->
+  <div class="col s1">
+    <div class="tag"><div class="num">1</div><h2>図鑑</h2></div>
+    <div class="sub">COLLECTION — ④骨格 × ⑤余白</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="pg"></div><div class="fgrid"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="ph"><div class="ov">TETSULOG</div><div class="ttl">図鑑<small>042 / 312</small></div></div>
+      <div class="filter"><span class="on">全</span><span>通勤</span><span>特急</span><span>機関車</span><span>廃車</span></div>
+      <div class="list">
+        <div class="fc">
+          <div class="top"><div class="cls">E235系</div><span class="acc" style="background:#9ACD32"></span></div>
+          <div class="ln">JR EAST ▸ 山手線</div>
+          <div class="car"><svg class="car" viewBox="0 0 44 15"><path d="M38 3 L42 5.5 L42 12 L2 12 L2 5 Q2 3 4 3 Z" class="cs"/><rect x="6" y="5" width="4" height="3" class="cw"/><rect x="13" y="5" width="4" height="3" class="cw"/><rect x="20" y="5" width="4" height="3" class="cw"/><rect x="27" y="5" width="4" height="3" class="cw"/><rect x="34" y="5" width="3" height="3" class="cw"/><circle cx="9" cy="13" r="1.5" class="cs"/><circle cx="35" cy="13" r="1.5" class="cs"/></svg></div>
+          <div class="bottom"><div class="set">トウ04 · 11CARS</div><div class="rt"><span class="bar"><i style="width:8%"></i></span>04/50</div></div>
+        </div>
+        <div class="fc">
+          <div class="top"><div class="cls">E353系</div><span class="acc" style="background:#E60012"></span></div>
+          <div class="ln">JR EAST ▸ 中央本線「あずさ」</div>
+          <div class="car"><svg class="car" viewBox="0 0 44 15"><path d="M38 3 L42 5.5 L42 12 L2 12 L2 5 Q2 3 4 3 Z" class="cs"/><rect x="7" y="5" width="5" height="3" class="cw"/><rect x="15" y="5" width="5" height="3" class="cw"/><rect x="23" y="5" width="5" height="3" class="cw"/><rect x="31" y="5" width="5" height="3" class="cw"/><circle cx="10" cy="13" r="1.5" class="cs"/><circle cx="34" cy="13" r="1.5" class="cs"/></svg></div>
+          <div class="bottom"><div class="set">S204 · 9CARS</div><div class="rt"><span class="bar"><i style="width:8%"></i></span>02/26</div></div>
+        </div>
+        <div class="fc">
+          <div class="top"><div class="cls">EF65形</div><span class="acc" style="background:#9aa0aa"></span></div>
+          <div class="ln">JR FREIGHT ▸ 電気機関車 PF</div>
+          <div class="car"><svg class="car" viewBox="0 0 44 15"><rect x="7" y="3" width="30" height="9" rx="1.5" class="cs"/><path d="M7 5 L2 5 L2 11 L7 11" class="cs"/><path d="M37 5 L42 5 L42 11 L37 11" class="cs"/><rect x="12" y="5" width="4" height="3" class="cw"/><rect x="28" y="5" width="4" height="3" class="cw"/><circle cx="13" cy="13" r="1.5" class="cs"/><circle cx="22" cy="13" r="1.5" class="cs"/><circle cx="31" cy="13" r="1.5" class="cs"/></svg></div>
+          <div class="bottom"><div class="set">2065 · 単機</div><div class="rt"><span class="bar"><i style="width:42%"></i></span>遭遇11</div></div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>近黒の地に、線画の形式カード。</b>路線色は小さなドットだけで効かせ、余白を広く。<em>④の側面図＋⑤の抜け感</em>。</div>
+  </div>
+
+  <!-- 2. 遭遇詳細（硬券） -->
+  <div class="col s2">
+    <div class="tag"><div class="num">2</div><h2>遭遇の詳細</h2></div>
+    <div class="sub">SIGHTING — ①硬券が“物”として浮く</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="pg"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>図鑑へ戻る</div>
+      <div class="ovh"><div class="ov">SIGHTING · No.0042</div><div class="t">この一枚</div></div>
+      <div class="tkt bigtkt"><div class="jimon"></div><div class="dbl"></div><div class="edge"></div>
+        <svg class="punch" viewBox="0 0 22 22" width="26" height="26"><path d="M22 3a7 7 0 0 0 0 16V3z" fill="#0e1117"/><circle cx="11" cy="11" r="3" fill="none" stroke="#b3372a" stroke-width="1.5"/></svg>
+        <div class="ln">山手線</div><div class="op">JR東日本 · 通勤型 E系</div>
+        <div class="mdl">E235系 トウ04編成</div>
+        <div class="grid2">
+          <div><div class="k">遭遇駅</div><div class="v">東京駅 (JY01)</div></div>
+          <div><div class="k">日付</div><div class="v stamp" style="font-size:14px">2026.-6.13</div></div>
+          <div><div class="k">列車番号</div><div class="v">0512G 内回り</div></div>
+          <div><div class="k">天気 / 種別</div><div class="v">快晴 · 定期</div></div>
+        </div>
+        <div class="foot"><span class="formno">様式 (2) 図 - 0042</span><span class="micro">下車前途無効</span><span class="formno">04 / 50編成</span></div>
+      </div>
+      <div class="att">
+        <div class="photo"><span class="cn">DSC_4821.JPG · クハE235-4</span></div>
+        <div class="audio"><div class="l">走行音 · VVVF 0'48"</div>
+          <div class="wave"><i style="height:30%"></i><i style="height:70%"></i><i style="height:45%"></i><i style="height:92%"></i><i style="height:58%"></i><i style="height:100%"></i><i style="height:48%"></i><i style="height:74%"></i><i style="height:36%"></i><i style="height:64%"></i><i style="height:26%"></i></div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>ここだけ温度が上がる。</b>近黒の地に<em>クリーム色の硬券が物理的に浮く</em>。冷たい一覧から開いた瞬間の落差が“蒐集の悦び”。写真・走行音はダーク側に馴染ませて衝突回避。</div>
+  </div>
+
+  <!-- 3. 形式図 -->
+  <div class="col s3">
+    <div class="tag"><div class="num">3</div><h2>形式図</h2></div>
+    <div class="sub">SPEC — ④側面図の見せ場</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="pg"></div><div class="fgrid"></div>
+      <div class="crop tl"></div><div class="crop tr"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="ph" style="padding-bottom:0"><div class="ov">SPEC SHEET</div></div>
+      <div class="cls">E235系</div>
+      <div class="setline">SET トウ04 · 11CARS · 山手線 · 2026.06.13</div>
+      <div class="drawbox">
+        <div class="l">FORMATION ─ ◂大崎方　神田方▸</div>
+        <div class="frow">
+          <div class="c"><div class="n">クハ</div><svg class="car" viewBox="0 0 26 18"><path d="M22 5 L24 7 L24 14 L2 14 L2 7 Q2 5 4 5 Z" class="cs"/><rect x="5" y="7" width="3" height="3" class="cw"/><rect x="10" y="7" width="3" height="3" class="cw"/><rect x="15" y="7" width="3" height="3" class="cw"/><circle cx="7" cy="15.5" r="1.4" class="cs"/><circle cx="18" cy="15.5" r="1.4" class="cs"/></svg></div>
+          <div class="c"><div class="n">モハ</div><svg class="car" viewBox="0 0 26 18"><path d="M9 5 L11 1 L17 1 L19 5" class="cs"/><rect x="2" y="5" width="22" height="9" rx="1.5" class="cs"/><rect x="5" y="7" width="3" height="3" class="cw"/><rect x="11" y="7" width="3" height="3" class="cw"/><rect x="17" y="7" width="3" height="3" class="cw"/><circle cx="7" cy="15.5" r="1.4" class="cs"/><circle cx="19" cy="15.5" r="1.4" class="cs"/></svg></div>
+          <div class="c"><div class="n">サハ</div><svg class="car" viewBox="0 0 26 18"><rect x="2" y="5" width="22" height="9" rx="1.5" class="cs"/><rect x="5" y="7" width="3" height="3" class="cw"/><rect x="11" y="7" width="3" height="3" class="cw"/><rect x="17" y="7" width="3" height="3" class="cw"/><circle cx="7" cy="15.5" r="1.4" class="cs"/><circle cx="19" cy="15.5" r="1.4" class="cs"/></svg></div>
+          <div class="c"><div class="n">モハ</div><svg class="car" viewBox="0 0 26 18"><path d="M9 5 L11 1 L17 1 L19 5" class="cs"/><rect x="2" y="5" width="22" height="9" rx="1.5" class="cs"/><rect x="5" y="7" width="3" height="3" class="cw"/><rect x="11" y="7" width="3" height="3" class="cw"/><rect x="17" y="7" width="3" height="3" class="cw"/><circle cx="7" cy="15.5" r="1.4" class="cs"/><circle cx="19" cy="15.5" r="1.4" class="cs"/></svg></div>
+          <div class="c"><div class="n">クハ</div><svg class="car" viewBox="0 0 26 18"><path d="M4 5 L2 7 L2 14 L24 14 L24 7 Q24 5 22 5 Z" class="cs"/><rect x="8" y="7" width="3" height="3" class="cw"/><rect x="13" y="7" width="3" height="3" class="cw"/><rect x="18" y="7" width="3" height="3" class="cw"/><circle cx="7" cy="15.5" r="1.4" class="cs"/><circle cx="18" cy="15.5" r="1.4" class="cs"/></svg></div>
+        </div>
+        <div class="dim">|◂──── 220,000 mm (11両) ────▸|</div>
+      </div>
+      <div class="spectab">
+        <div class="r"><span class="k">遭遇駅</span><b>東京 (JY01)</b></div>
+        <div class="r"><span class="k">全長 / 編成</span><b>20,000mm × 11</b></div>
+        <div class="r"><span class="k">主電動機</span><b>MT79 · 140kW</b></div>
+        <div class="r"><span class="k">収集</span><b>04 / 50編成</b></div>
+      </div>
+      <div class="tab">
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>技術の信頼を担保する画面。</b>側面図・寸法線・諸元を近黒の地に薄グリッドで。<em>④をそのまま、⑤のトーンに乗せる</em>。</div>
+  </div>
+
+  <!-- 4. 測量図（主役・高品質化） -->
+  <div class="col s4 wide">
+    <div class="tag"><div class="num">4</div><h2>測量図 ★主役</h2></div>
+    <div class="sub">MAP — 路線網・等高線・河川・方位</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="map">
+        <div class="mapbg"></div>
+        <div class="coordgrid"></div>
+        <svg class="geo" viewBox="0 0 294 600" preserveAspectRatio="xMidYMid slice">
+          <!-- 等高線（左上の山岳・姨捨方面） -->
+          <g fill="none" stroke="#3a5a4a" stroke-width="1" opacity=".55">
+            <path d="M-10 90 Q40 70 70 110 Q95 145 60 175 Q20 195 -10 170"/>
+            <path d="M-10 110 Q35 95 58 125 Q78 152 50 172 Q22 186 -10 165"/>
+            <path d="M-10 130 Q30 120 46 140 Q60 158 40 168"/>
+          </g>
+          <!-- 河川 -->
+          <path d="M-10 470 Q70 440 130 480 Q190 520 300 500" fill="none" stroke="#1f5f7a" stroke-width="9" opacity=".55" stroke-linecap="round"/>
+          <path d="M-10 470 Q70 440 130 480 Q190 520 300 500" fill="none" stroke="#39a0c4" stroke-width="3" opacity=".5" stroke-linecap="round"/>
+
+          <!-- 廃線（破線＋トンネル） -->
+          <path d="M150 300 Q120 360 96 410 L110 470" fill="none" stroke="#6e7d8c" stroke-width="2.4" stroke-dasharray="6 5"/>
+          <rect x="92" y="404" width="10" height="6" fill="none" stroke="#6e7d8c" stroke-width="1" transform="rotate(58 97 407)"/>
+
+          <!-- 山手ループ（黄緑）glow+本線 -->
+          <ellipse cx="150" cy="250" rx="62" ry="74" fill="none" stroke="#9ACD32" stroke-width="8" opacity=".16"/>
+          <ellipse cx="150" cy="250" rx="62" ry="74" fill="none" stroke="#9ACD32" stroke-width="2.8"/>
+          <!-- 中央（オレンジ・西へ） -->
+          <path d="M150 176 Q90 150 18 120" fill="none" stroke="#F39800" stroke-width="8" opacity=".15"/>
+          <path d="M150 176 Q90 150 18 120" fill="none" stroke="#F39800" stroke-width="2.8"/>
+          <!-- 東海道（水色・南へ、河川越え） -->
+          <path d="M150 324 Q160 430 150 560" fill="none" stroke="#36b0e0" stroke-width="8" opacity=".15"/>
+          <path d="M150 324 Q160 430 150 560" fill="none" stroke="#36b0e0" stroke-width="2.8"/>
+          <!-- 総武（黄・東へ） -->
+          <path d="M212 250 Q260 235 300 250" fill="none" stroke="#e3c000" stroke-width="8" opacity=".15"/>
+          <path d="M212 250 Q260 235 300 250" fill="none" stroke="#e3c000" stroke-width="2.6"/>
+          <!-- 山岳支線（スイッチバック・姨捨へ） -->
+          <path d="M88 250 L40 210 L70 196 L34 168" fill="none" stroke="#59c36a" stroke-width="2.4"/>
+
+          <!-- 駅マーカー -->
+          <!-- 通常駅（白丸） -->
+          <g stroke="#cfe0f0" stroke-width="1.4" fill="#0b0f15">
+            <circle cx="150" cy="176" r="3.4"/><circle cx="212" cy="250" r="3.4"/>
+            <circle cx="150" cy="324" r="3.4"/><circle cx="88" cy="250" r="3.4"/>
+            <circle cx="150" cy="430" r="3"/><circle cx="150" cy="540" r="3"/>
+          </g>
+          <!-- 遭遇済み駅（グロー＋リング＋数バッジ） -->
+          <g>
+            <circle cx="150" cy="176" r="9" fill="#5fd0ff" opacity=".18"/>
+            <circle cx="150" cy="176" r="4.6" fill="#5fd0ff" stroke="#eaf6ff" stroke-width="1.4"/>
+            <circle cx="34" cy="168" r="9" fill="#5fd0ff" opacity=".18"/>
+            <circle cx="34" cy="168" r="4.6" fill="#5fd0ff" stroke="#eaf6ff" stroke-width="1.4"/>
+          </g>
+          <!-- 撮影地（ダイヤ＋順光方位ウェッジ） -->
+          <g>
+            <path d="M256 320 L262 326 L256 332 L250 326 Z" fill="#ffcf4a" stroke="#0b0f15" stroke-width="1"/>
+            <path d="M256 326 L246 316 A14 14 0 0 1 266 316 Z" fill="#ffcf4a" opacity=".22"/>
+          </g>
+          <!-- 駅名ラベル -->
+          <g font-family="'JetBrains Mono'" font-size="9" fill="#aebfd0">
+            <text x="158" y="172">東京 JY01</text>
+            <text x="218" y="246">秋葉原</text>
+            <text x="96" y="246">新宿</text>
+            <text x="158" y="338">品川</text>
+            <text x="6" y="160" fill="#7fc99a">姨捨▲</text>
+          </g>
+          <!-- 距離標（キロポスト風の小目盛） -->
+          <g stroke="#36b0e0" stroke-width="1" opacity=".7">
+            <path d="M146 380 h8"/><path d="M147 470 h6"/>
+          </g>
+        </svg>
+        <div class="frame"></div>
+      </div>
+
+      <div class="sbar" style="position:relative;z-index:30"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="topbar">
+        <div class="t">足跡<small>FOOTPRINTS</small></div>
+        <svg class="compass" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="rgba(8,12,18,.7)" stroke="rgba(150,200,240,.4)" stroke-width="1"/><path d="M17 5 L21 18 L17 15 L13 18 Z" fill="#5fd0ff"/><path d="M17 29 L13 18 L17 21 L21 18 Z" fill="#6f93ad"/><text x="14.5" y="12" font-family="JetBrains Mono" font-size="6" fill="#cfe0f0">N</text></svg>
+      </div>
+
+      <!-- 選択ポップ：硬券チップ -->
+      <div class="callout" style="left:60px;top:300px">
+        <div class="tkt ctkt"><div class="jimon"></div><div class="dbl"></div><div class="edge blue"></div>
+          <div class="lead"></div>
+          <div class="ln">姨捨駅</div>
+          <div class="mt">篠ノ井線 · SWITCHBACK · 遭遇 06</div>
+        </div>
+      </div>
+
+      <div class="scalebar"><div class="l"><i></i><i></i><i></i><i></i></div>0 ─ 5km　1:150,000</div>
+
+      <div class="sheet">
+        <div class="handle"></div>
+        <div class="stats">
+          <div class="st"><div class="v">38</div><div class="k">踏破 LINES</div></div>
+          <div class="st"><div class="v">212</div><div class="k">遭遇駅 STN</div></div>
+          <div class="st"><div class="v">23</div><div class="k">撮影地 SPOT</div></div>
+          <div class="st"><div class="v">4,820</div><div class="k">乗車 KM</div></div>
+        </div>
+      </div>
+
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>主役を本気で。</b>路線は実色＋グロー、駅は白丸／遭遇済みは発光リング、撮影地は<em>順光方位ウェッジ付きダイヤ</em>。等高線・河川・トンネル記号、方位記号、図郭(A–D枠)、縮尺バー。選択は硬券チップでポップ、下に踏破サマリー。</div>
+  </div>
+
+  <!-- 5. 統計 -->
+  <div class="col s5">
+    <div class="tag"><div class="num">5</div><h2>統計</h2></div>
+    <div class="sub">DASHBOARD — ④計器 × ⑤余白</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="pg"></div><div class="fgrid"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="ph"><div class="ov">DASHBOARD</div><div class="ttl">成績</div></div>
+      <div class="gauge">
+        <svg viewBox="0 0 180 116" width="180" height="116">
+          <path d="M16 100 A74 74 0 0 1 164 100" fill="none" stroke="rgba(150,200,240,.18)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M16 100 A74 74 0 0 1 140 40" fill="none" stroke="#5fd0ff" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+        <div class="v">312</div><div class="k">TOTAL 総遭遇</div>
+      </div>
+      <div class="read">
+        <div class="rd"><div class="v">87</div><div class="k">形式</div></div>
+        <div class="rd"><div class="v">4,820</div><div class="k">乗車KM</div></div>
+        <div class="rd"><div class="v">23</div><div class="k">撮影地</div></div>
+      </div>
+      <div class="panel">
+        <div class="pt">MONTHLY ─ 月別遭遇</div>
+        <div class="plot"><div class="b" style="height:40%"></div><div class="b" style="height:62%"></div><div class="b" style="height:55%"></div><div class="b" style="height:82%"></div><div class="b" style="height:48%"></div><div class="b" style="height:100%"></div></div>
+        <div class="px"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+      </div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>計器ゲージは活かしつつ、余白を増やして上品に。</b>数字が主役、線は控えめ。</div>
+  </div>
+
+  <!-- 6. 設定 -->
+  <div class="col s6">
+    <div class="tag"><div class="num">6</div><h2>設定</h2></div>
+    <div class="sub">SETTINGS — Pro＝特別補充券（①）</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="pg"></div><div class="fgrid"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="ph"><div class="ov">CONFIG</div><div class="ttl">設定</div></div>
+      <div class="tkt pro"><div class="jimon red"></div><div class="dbl"></div><div class="edge"></div>
+        <div class="bd">特別補充券 · TETSULOG PRO</div>
+        <div class="t">全機能を、買い切りで</div>
+        <div class="d">OCR測定 / 順光逆光演算 / 走行音録音</div>
+        <div class="pr">¥980</div>
+      </div>
+      <div class="grp"><div class="gt">SECURITY / プライバシー</div>
+        <div class="card">
+          <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>アプリロック (Face ID)</span><div class="tg"></div></div>
+          <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>再ロックの猶予</span><span class="val">1分</span></div>
+          <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>JSON / CSV 書き出し</span><span class="val">›</span></div>
+        </div>
+      </div>
+      <div class="grp"><div class="gt">APP / アプリ</div>
+        <div class="card">
+          <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>バージョン</span><span class="val">1.0 (1)</span></div>
+          <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>プライバシーポリシー</span><span class="val">↗</span></div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>Proだけ硬券で“特別感”。</b>技術トーンの設定画面に、課金バナーだけ温かい紙を差し込み、自然に視線を集める。</div>
+  </div>
+
+</div>
+
+</body>
+</html>
