@@ -90,6 +90,7 @@ struct NavyBackground: View {
 }
 
 /// 製図グリッド（19pt方眼）。技術トーンの薄い下地。
+/// drawingGroup() でビットマップ化し、画面の上をスクロールしても再描画しない。
 struct BlueprintGrid: View {
     var spacing: CGFloat = 19
     var color: Color = Color(hex: 0x96C8F0, alpha: 0.05)
@@ -103,27 +104,28 @@ struct BlueprintGrid: View {
             ctx.stroke(path, with: .color(color), lineWidth: 1)
         }
         .allowsHitTesting(false)
+        .drawingGroup()
     }
 }
 
 // MARK: - 硬券の紙テクスチャ（TicketCard / ShareCard 用に温存）
 
 /// 紙の質感（クリーム＋地紋）。硬券・シェアカードの下地。
+/// 地紋は Canvas で 1 回描き、`drawingGroup()` でビットマップ化してキャッシュ。
+/// スクロール中に毎フレーム再描画されないようにする。
 struct PaperSurface: View {
     var aged: Bool = false
     var body: some View {
         ZStack {
             (aged ? Theme.Palette.paperAged : Theme.Palette.paper)
             // 地紋（偽造防止模様）：細い斜線のクロスハッチ
-            GeometryReader { geo in
-                Canvas { ctx, size in
-                    let c = Color(hex: 0x3C2D14, alpha: aged ? 0.07 : 0.05)
-                    for d in stride(from: -size.height, through: size.width, by: 7) {
-                        var p = Path(); p.move(to: .init(x: d, y: 0)); p.addLine(to: .init(x: d + size.height, y: size.height))
-                        ctx.stroke(p, with: .color(c), lineWidth: 1)
-                        var q = Path(); q.move(to: .init(x: d, y: size.height)); q.addLine(to: .init(x: d + size.height, y: 0))
-                        ctx.stroke(q, with: .color(c), lineWidth: 1)
-                    }
+            Canvas { ctx, size in
+                let c = Color(hex: 0x3C2D14, alpha: aged ? 0.07 : 0.05)
+                for d in stride(from: -size.height, through: size.width, by: 7) {
+                    var p = Path(); p.move(to: .init(x: d, y: 0)); p.addLine(to: .init(x: d + size.height, y: size.height))
+                    ctx.stroke(p, with: .color(c), lineWidth: 1)
+                    var q = Path(); q.move(to: .init(x: d, y: size.height)); q.addLine(to: .init(x: d + size.height, y: 0))
+                    ctx.stroke(q, with: .color(c), lineWidth: 1)
                 }
             }
             if aged {
@@ -132,6 +134,7 @@ struct PaperSurface: View {
             }
             LinearGradient(colors: [Color.white.opacity(0.12), .clear], startPoint: .top, endPoint: .bottom)
         }
+        .drawingGroup() // ★ ビットマップ化してスクロール時の再描画コストを下げる
     }
 }
 
@@ -140,30 +143,16 @@ struct PaperCornerCurl: View {
     var body: some View { Color.clear.allowsHitTesting(false) }
 }
 
-/// タップ時のインク染み込み（押下ハイライト）。ダーク面ではシアンの淡い拡散。
+/// タップ時のインク染み込み（押下ハイライト）。
+/// パフォーマンス重視で簡素化：押下中だけシアンの半透明オーバーレイを薄く出す。
+/// 旧版は GeometryReader + Canvas + onChange で常時描画していたためスクロールを重くしていた。
 struct InkBleedOverlay: View {
     var pressed: Bool
-    @State private var scale: CGFloat = 0
-    @State private var opacity: Double = 0
-    @State private var origin: UnitPoint = .center
     var body: some View {
-        GeometryReader { geo in
-            Circle()
-                .fill(RadialGradient(colors: [Theme.Palette.cyan.opacity(0.30), Theme.Palette.cyan.opacity(0.0)],
-                                     center: .center, startRadius: 0, endRadius: 80))
-                .frame(width: max(geo.size.width, geo.size.height) * 1.6, height: max(geo.size.width, geo.size.height) * 1.6)
-                .position(x: geo.size.width * origin.x, y: geo.size.height * origin.y)
-                .scaleEffect(scale).opacity(opacity).allowsHitTesting(false)
-                .onChange(of: pressed) { _, isDown in
-                    if isDown {
-                        origin = UnitPoint(x: .random(in: 0.3...0.7), y: .random(in: 0.3...0.7))
-                        scale = 0.05; opacity = 0
-                        withAnimation(.easeOut(duration: 0.35)) { scale = 1.0; opacity = 0.8 }
-                    } else {
-                        withAnimation(.easeOut(duration: 0.55)) { opacity = 0; scale = 1.15 }
-                    }
-                }
-        }
+        Theme.Palette.cyan
+            .opacity(pressed ? 0.10 : 0)
+            .allowsHitTesting(false)
+            .animation(.easeOut(duration: 0.18), value: pressed)
     }
 }
 
@@ -171,12 +160,17 @@ struct InkBleedOverlay: View {
 
 /// ダークガラスのカード。`accent`=true で左にシアンの帯。
 /// `aged`=true で廃車差分（レール鋼色の帯＋やや沈んだ面）。
+///
+/// パフォーマンス方針：
+/// - DragGesture によるバネ駆動アニメーションは外した。
+///   親が Button/NavigationLink ならシステムの押下フィードバックで充分で、
+///   かつスクロール中に指が触れて誤発火する“揺れ”の原因になっていた。
+/// - 影は近距離 1 枚に絞り、ぼかし半径も控えめに（合成コストを半減）。
 struct PaperCard<Content: View>: View {
     var accent: Bool = true
     var aged: Bool = false
-    var interactive: Bool = false
+    var interactive: Bool = false   // 互換のため残す。動作は無効化。
     @ViewBuilder var content: Content
-    @State private var isPressed = false
 
     private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous) }
 
@@ -200,19 +194,10 @@ struct PaperCard<Content: View>: View {
                 startPoint: .topLeading, endPoint: .bottomTrailing
             )
         )
-        .overlay(InkBleedOverlay(pressed: isPressed))
         .clipShape(shape)
         .overlay(shape.stroke(Theme.Palette.surfaceEdge, lineWidth: 1))
-        .shadow(color: .black.opacity(0.34), radius: 14, x: 0, y: 10)
-        .scaleEffect(isPressed ? 0.985 : 1)
-        .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
-        .gesture(
-            interactive
-            ? DragGesture(minimumDistance: 0)
-                .onChanged { _ in if !isPressed { isPressed = true } }
-                .onEnded { _ in isPressed = false }
-            : nil
-        )
+        .shadow(color: .black.opacity(0.30), radius: 8, x: 0, y: 5)
+        .compositingGroup()
     }
 }
 
@@ -234,7 +219,8 @@ struct KikenCard<Content: View>: View {
             .overlay(alignment: .leading) { Rectangle().fill(edge).frame(width: 7) }
             .overlay(shape.inset(by: 5).stroke(Color(hex: 0x46341A, alpha: 0.45), lineWidth: 1))
             .clipShape(shape)
-            .shadow(color: .black.opacity(0.5), radius: 16, x: 0, y: 10)
+            .shadow(color: .black.opacity(0.42), radius: 8, x: 0, y: 5)
+            .compositingGroup()
     }
 }
 
@@ -281,6 +267,7 @@ struct CarDiagram: View {
             }
         }
         .frame(height: height)
+        .drawingGroup() // ★ ビットマップ化（スクロール時の再描画を回避）
     }
 
     private func drawCar(_ ctx: GraphicsContext, kind: Kind, rect: CGRect, facingRight: Bool) {
