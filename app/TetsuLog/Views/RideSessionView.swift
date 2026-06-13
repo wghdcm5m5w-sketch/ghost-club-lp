@@ -205,7 +205,7 @@ struct ActiveRideView: View {
                                 }
                                 HStack(spacing: 6) {
                                     Image(systemName: "tram.fill")
-                                        .foregroundStyle(Theme.Palette.navy)
+                                        .foregroundStyle(Theme.Palette.cyan)
                                     Text("\(manager.fromStation) を出発")
                                         .font(.system(size: 14))
                                         .foregroundStyle(Theme.Palette.inkSub)

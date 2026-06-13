@@ -64,7 +64,7 @@ struct TicketCard: View {
                         Text("TETSULOG 鉄道遭遇券")
                             .font(.system(size: 16, weight: .bold, design: .serif))
                             .tracking(2)
-                            .foregroundStyle(Theme.Palette.inkSub)
+                            .foregroundStyle(Theme.Palette.paperInkSub)
                         Spacer()
                         if isLastRun {
                             Text("LAST RUN")
@@ -81,7 +81,7 @@ struct TicketCard: View {
                     // 形式・編成（主役）
                     Text(className)
                         .font(.system(size: 48, weight: .heavy, design: .serif))
-                        .foregroundStyle(Theme.Palette.ink)
+                        .foregroundStyle(Theme.Palette.paperInk)
                         .lineLimit(1).minimumScaleFactor(0.6)
                     Text(formationCode.isEmpty ? " " : formationCode)
                         .font(.system(size: 30, weight: .bold, design: .monospaced))
@@ -90,7 +90,7 @@ struct TicketCard: View {
                     if !headmark.isEmpty {
                         Text("〔\(headmark)〕")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Theme.Palette.inkSub)
+                            .foregroundStyle(Theme.Palette.paperInkSub)
                     }
 
                     Spacer(minLength: 0)
@@ -100,15 +100,15 @@ struct TicketCard: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(lineName.isEmpty ? "—" : lineName)
                                 .font(.system(size: 20, weight: .bold, design: .serif))
-                                .foregroundStyle(Theme.Palette.ink)
+                                .foregroundStyle(Theme.Palette.paperInk)
                             Text(stationName.isEmpty ? "" : "\(stationName) にて")
                                 .font(.system(size: 16))
-                                .foregroundStyle(Theme.Palette.inkSub)
+                                .foregroundStyle(Theme.Palette.paperInkSub)
                         }
                         Spacer()
                         Text(date, format: .dateTime.year().month().day())
                             .font(.system(size: 20, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(Theme.Palette.ink)
+                            .foregroundStyle(Theme.Palette.paperInk)
                     }
                     .padding(.bottom, 36)
                 }
@@ -118,7 +118,7 @@ struct TicketCard: View {
                 VStack {
                     Text(serial)
                         .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(Theme.Palette.inkSub)
+                        .foregroundStyle(Theme.Palette.paperInkSub)
                         .rotationEffect(.degrees(90))
                         .fixedSize()
                         .frame(width: 28)
@@ -130,7 +130,7 @@ struct TicketCard: View {
                     // ミシン目（縦の点線）
                     VStack(spacing: 6) {
                         ForEach(0..<22, id: \.self) { _ in
-                            Circle().fill(Theme.Palette.inkSub.opacity(0.4)).frame(width: 3, height: 3)
+                            Circle().fill(Theme.Palette.paperInkSub.opacity(0.4)).frame(width: 3, height: 3)
                         }
                     }
                 }

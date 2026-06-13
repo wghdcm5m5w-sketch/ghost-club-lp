@@ -211,7 +211,7 @@ private struct SightingCard: View {
                         .font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
                     if sighting.isLastRun { InkBadge(text: "ラストラン") }
                     else if sighting.kind != .scheduled {
-                        Text(sighting.kind.rawValue).font(.system(size:11,weight:.bold)).foregroundStyle(Theme.Palette.navy)
+                        Text(sighting.kind.rawValue).font(.system(size:11,weight:.bold)).foregroundStyle(Theme.Palette.cyan)
                     }
                 }
             }
@@ -219,7 +219,7 @@ private struct SightingCard: View {
     }
     private func dot(_ t:String)->some View {
         Text(t).font(.system(size:11)).padding(.horizontal,5).padding(.vertical,1)
-            .background(Capsule().fill(Theme.Palette.navy.opacity(0.1))).foregroundStyle(Theme.Palette.navy)
+            .background(Capsule().fill(Theme.Palette.cyan.opacity(0.12))).foregroundStyle(Theme.Palette.cyan)
     }
     private var label:String { guard let f=sighting.formation else {return "（編成未設定）"}; return "\(f.vehicleClass?.name ?? "") \(f.code)" }
     private var iconName:String {
@@ -228,7 +228,7 @@ private struct SightingCard: View {
         case .delivery:return "shippingbox"; case .charter:return "person.3.fill"; case .lastRun:return "star.fill" }
     }
     private var iconColor:Color {
-        switch sighting.kind { case .scheduled:return Theme.Palette.navy; case .lastRun:return Theme.Palette.red
+        switch sighting.kind { case .scheduled:return Theme.Palette.cyan; case .lastRun:return Theme.Palette.red
         case .extra:return Theme.Palette.gold; default:return Theme.Palette.rail }
     }
 }
@@ -238,7 +238,7 @@ private struct RideCard: View {
     var body: some View {
         PaperCard(accent: true, interactive: true) {
             HStack(spacing: 12) {
-                Image(systemName: "figure.seated.side").foregroundStyle(Theme.Palette.navy).frame(width: 28)
+                Image(systemName: "figure.seated.side").foregroundStyle(Theme.Palette.cyan).frame(width: 28)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("\(ride.fromStation) → \(ride.toStation)").font(Theme.Font.headline(17)).foregroundStyle(Theme.Palette.ink)
                     Text(ride.lineName.isEmpty ? "—" : ride.lineName).font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)

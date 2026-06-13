@@ -143,6 +143,15 @@ struct CollectionView: View {
 private struct ClassCard: View {
     let vehicleClass: VehicleClass
 
+    /// 形式の管理単位から代表的な編成シルエットを描く
+    private var diagramKinds: [CarDiagram.Kind] {
+        switch vehicleClass.unitType {
+        case .locomotive: return [.loco]
+        case .railcar:    return [.cab, .plain, .cab]
+        case .formation:  return [.cab, .motor, .plain, .motor, .cab]
+        }
+    }
+
     var body: some View {
         PaperCard(accent: true, aged: vehicleClass.isRetiring, interactive: true) {
             VStack(alignment: .leading, spacing: 8) {
@@ -162,6 +171,9 @@ private struct ClassCard: View {
                 Text(vehicleClass.operatorName)
                     .font(Theme.Font.body(13))
                     .foregroundStyle(Theme.Palette.inkSub)
+
+                CarDiagram(diagramKinds, stroke: vehicleClass.isRetiring ? Theme.Palette.rail : Theme.Palette.cyan, height: 22)
+                    .padding(.vertical, 4)
 
                 RailGauge(ratio: vehicleClass.collectionRatio, complete: vehicleClass.isComplete)
                     .padding(.top, 2)
@@ -346,8 +358,8 @@ struct FormationDetailView: View {
     private func tag(_ t: String) -> some View {
         Text(t).font(.system(size: 12, weight: .bold))
             .padding(.horizontal, 8).padding(.vertical, 3)
-            .background(Capsule().fill(Theme.Palette.navy.opacity(0.1)))
-            .foregroundStyle(Theme.Palette.navy)
+            .background(Capsule().fill(Theme.Palette.cyan.opacity(0.12)))
+            .foregroundStyle(Theme.Palette.cyan)
     }
 }
 

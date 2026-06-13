@@ -9,13 +9,20 @@ struct StatsView: View {
 
     private var overview: Statistics.Overview { Statistics.overview(sightings: sightings, rides: rides) }
 
+    private var collectionRatio: Double {
+        let withForms = classes.filter { $0.totalCount > 0 }
+        guard !withForms.isEmpty else { return 0 }
+        return withForms.map(\.collectionRatio).reduce(0, +) / Double(withForms.count)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 NavyBackground()
                 ScrollView {
                     VStack(spacing: 16) {
-                        MakuHeader(title: "記 録 統 計").padding(.top, 8)
+                        MakuHeader(title: "成 績", kicker: "DASHBOARD").padding(.top, 8)
+                        gaugeCard
                         overviewCard
                         completionCard
                         rankCard("よく出会う形式", Statistics.topClasses(sightings: sightings))
@@ -32,6 +39,32 @@ struct StatsView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(Theme.Palette.navy, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+        }
+    }
+
+    private var gaugeCard: some View {
+        PaperCard(accent: false) {
+            VStack(spacing: 6) {
+                ZStack(alignment: .bottom) {
+                    GaugeArc(ratio: collectionRatio)
+                        .frame(width: 188, height: 100)
+                    HStack(alignment: .firstTextBaseline, spacing: 1) {
+                        Text("\(Int(collectionRatio * 100))")
+                            .font(.system(size: 40, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(Theme.Palette.cyan)
+                        Text("%")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(Theme.Palette.cyanDim)
+                    }
+                    .padding(.bottom, 6)
+                }
+                Text("TOTAL 収集率")
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                    .tracking(2)
+                    .foregroundStyle(Theme.Palette.inkSub)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
         }
     }
 

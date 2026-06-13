@@ -58,14 +58,14 @@ struct SettingsView: View {
 
                         section("プライバシー・データ") {
                             HStack {
-                                Label("iCloudにのみ保存", systemImage: "lock.icloud").foregroundStyle(Theme.Palette.navy)
+                                Label("iCloudにのみ保存", systemImage: "lock.icloud").foregroundStyle(Theme.Palette.cyan)
                                     .font(Theme.Font.body(15))
                                 Spacer()
                             }
                             line
                             HStack {
                                 Label("アプリロック", systemImage: "faceid")
-                                    .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+                                    .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.cyan)
                                 Spacer()
                                 Toggle("", isOn: $appLockEnabled).labelsHidden()
                                     .tint(Theme.Palette.red)
@@ -85,7 +85,7 @@ struct SettingsView: View {
                                         Text("5分").tag(300)
                                     }
                                     .pickerStyle(.menu)
-                                    .tint(Theme.Palette.navy)
+                                    .tint(Theme.Palette.cyan)
                                 }
                             }
                             if lastSyncAt > 0 {
@@ -101,14 +101,14 @@ struct SettingsView: View {
                             line
                             actionRow("CSVから取り込む（他サービス）", "tablecells"){ showingCSVImport = true }
                             if let importMessage {
-                                caption(importMessage, color: Theme.Palette.navy)
+                                caption(importMessage, color: Theme.Palette.cyan)
                             }
                             line
                             row("端末内の写真・録音", storageBytes.map(formatBytes) ?? "計測中…")
                             line
                             actionRow("参照切れファイルを掃除", "trash"){ cleanupOrphans() }
                             if let cleanupMessage {
-                                caption(cleanupMessage, color: Theme.Palette.navy)
+                                caption(cleanupMessage, color: Theme.Palette.cyan)
                             }
                             if lastSyncAt > 0,
                                Date.now.timeIntervalSince1970 - lastSyncAt > 30 * 24 * 3600 {
@@ -215,18 +215,18 @@ struct SettingsView: View {
             Spacer(); Text(v).font(Theme.Font.mono(14)).foregroundStyle(Theme.Palette.inkSub) }
     }
     private func navRow(_ k: String, _ icon: String) -> some View {
-        HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+        HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.cyan)
             Spacer(); Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub).font(.system(size:13)) }
     }
     private func actionRow(_ k: String, _ icon: String, _ act: @escaping ()->Void) -> some View {
         Button(action: act) {
-            HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+            HStack { Label(k, systemImage: icon).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.cyan)
                 Spacer() }
         }.buttonStyle(.plain)
     }
     private func linkRow(_ k: String, _ url: String) -> some View {
         Link(destination: URL(string: url)!) {
-            HStack { Text(k).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.navy)
+            HStack { Text(k).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.cyan)
                 Spacer(); Image(systemName: "arrow.up.right").foregroundStyle(Theme.Palette.inkSub).font(.system(size:12)) }
         }
     }
@@ -304,7 +304,7 @@ struct WatchListView: View {
                             Picker("形式", selection: $newClassName) {
                                 Text("選択").tag("")
                                 ForEach(classes){ Text($0.name).tag($0.name) }
-                            }.tint(Theme.Palette.navy)
+                            }.tint(Theme.Palette.cyan)
                             TextField("編成番号（任意・例: ナノN102）", text: $newFormationCode)
                                 .font(Theme.Font.mono(15)).foregroundStyle(Theme.Palette.ink)
                             Button { add() } label: {

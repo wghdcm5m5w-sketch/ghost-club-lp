@@ -97,7 +97,7 @@ struct OnboardingView: View {
                     Circle().stroke(Theme.Palette.red.opacity(0.4), lineWidth: 1).frame(width: 96, height: 96)
                     Image(systemName: slide.icon)
                         .font(.system(size: 44, weight: .regular))
-                        .foregroundStyle(Theme.Palette.navy)
+                        .foregroundStyle(Theme.Palette.cyan)
                 }
                 .padding(.top, 18)
 
