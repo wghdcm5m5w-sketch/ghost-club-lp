@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TetsuLog — 編成表 / 形式図エディション（全画面）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+body{
+  background:radial-gradient(1200px 700px at 18% -12%, #123a5e 0%, transparent 58%), #07111c;
+  color:#dceaf7; font-family:'Noto Sans JP',-apple-system,sans-serif;
+  padding:48px 28px 110px; min-height:100vh;
+}
+.intro{max-width:1100px;margin:0 auto 42px;}
+.intro .kicker{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.28em;color:#6fa6cf;text-transform:uppercase;margin-bottom:14px;}
+.intro h1{font-family:'JetBrains Mono';font-size:clamp(24px,3.6vw,36px);font-weight:800;letter-spacing:.02em;line-height:1.3;margin-bottom:14px;color:#eaf4ff;}
+.intro p{color:#9fb6cb;font-size:15px;line-height:1.95;max-width:780px;}
+.intro .notes{margin-top:18px;display:flex;flex-wrap:wrap;gap:9px;}
+.intro .notes span{font-size:12px;color:#cfe4f6;background:#0e2236;border:1px solid #1f3d59;padding:7px 13px;border-radius:6px;font-family:'JetBrains Mono';letter-spacing:.03em;}
+
+.rail{display:flex;gap:38px;overflow-x:auto;padding:8px 4px 44px;scroll-snap-type:x proximity;}
+.col{flex:0 0 auto;width:316px;scroll-snap-align:center;}
+.col .tag{display:flex;align-items:center;gap:9px;margin-bottom:5px;}
+.col .num{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;
+  font-family:'JetBrains Mono';font-weight:800;font-size:12px;color:#06121e;background:linear-gradient(180deg,#7fd6ff,#2f9fd6);}
+.col h2{font-family:'JetBrains Mono';font-size:16px;font-weight:800;letter-spacing:.02em;}
+.col .sub{font-size:11px;color:#6e8aa3;font-family:'JetBrains Mono';margin-bottom:13px;letter-spacing:.05em;}
+.col .why{margin-top:15px;font-size:12px;color:#93a8bd;line-height:1.85;}
+.col .why b{color:#dceaf7;font-weight:700;}
+
+/* 端末フレーム */
+.phone{width:316px;height:670px;border-radius:46px;padding:11px;
+  background:linear-gradient(145deg,#33414f,#121922);
+  box-shadow:0 30px 64px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.04);}
+.screen{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#0e2a46;}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:25px;background:#000;border-radius:0 0 15px 15px;z-index:60;}
+.sbar{position:relative;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:13px 24px 0;font-size:12.5px;font-weight:700;color:#bfe0ff;}
+
+/* ブループリント地 */
+.grid{position:absolute;inset:0;background:
+  linear-gradient(0deg,rgba(120,180,230,.07) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(120,180,230,.07) 1px,transparent 1px),
+  linear-gradient(180deg,#0f2c49,#0a2138);
+  background-size:18px 18px,18px 18px,100% 100%;}
+.crop{position:absolute;width:13px;height:13px;border:1px solid rgba(150,200,240,.35);z-index:5;}
+.crop.tl{top:34px;left:10px;border-right:none;border-bottom:none;}
+.crop.tr{top:34px;right:10px;border-left:none;border-bottom:none;}
+
+/* 共通テキスト */
+.mono{font-family:'JetBrains Mono';}
+.cap{font-family:'JetBrains Mono';font-size:10px;color:#7fb0d8;letter-spacing:.14em;}
+
+/* ヘッダー（図面タイトル） */
+.bh{position:relative;z-index:10;margin:14px 16px 12px;padding-bottom:9px;border-bottom:1px dashed rgba(150,200,240,.45);
+  display:flex;justify-content:space-between;align-items:flex-end;}
+.bh .t{font-family:'JetBrains Mono';font-weight:800;font-size:15px;color:#eaf4ff;letter-spacing:.05em;}
+.bh .s{font-family:'JetBrains Mono';font-size:9px;color:#7fb0d8;margin-top:3px;letter-spacing:.14em;}
+.bh .rev{font-family:'JetBrains Mono';font-size:9px;color:#6e8aa3;text-align:right;}
+
+/* タブ */
+.tab{position:absolute;bottom:0;left:0;right:0;height:76px;display:flex;justify-content:space-around;align-items:flex-start;padding-top:10px;z-index:40;
+  background:rgba(8,26,44,.72);border-top:1px solid rgba(150,200,240,.28);backdrop-filter:blur(9px);color:#8fbfe5;}
+.ti{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:600;opacity:.5;}
+.ti.on{opacity:1;color:#5fd0ff;}
+.ti svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;}
+
+/* 車両側面図（共通スタイル） */
+svg.car{display:block;width:100%;height:auto;}
+.carstroke{stroke:#9fcdf2;stroke-width:1.4;fill:none;}
+.carwin{fill:#5fd0ff;opacity:.45;}
+.cardoor{fill:#2f9fd6;opacity:.3;stroke:#9fcdf2;stroke-width:.8;}
+
+/* 図鑑 */
+.f-zukan .list{position:relative;z-index:10;padding:2px 16px;display:flex;flex-direction:column;gap:12px;}
+.fcard{position:relative;border:1px solid rgba(150,200,240,.3);border-radius:8px;padding:12px 14px;
+  background:linear-gradient(165deg,rgba(95,160,230,.07),rgba(95,160,230,.02));}
+.fcard .top{display:flex;justify-content:space-between;align-items:baseline;}
+.fcard .cls{font-size:18px;font-weight:900;color:#fff;letter-spacing:.01em;}
+.fcard .set{font-family:'JetBrains Mono';font-size:10px;color:#86c4f0;letter-spacing:.06em;}
+.fcard .ln{font-family:'JetBrains Mono';font-size:10px;color:#7fb0d8;margin-top:1px;letter-spacing:.05em;}
+.fcard .cars{display:flex;gap:2px;margin:10px 0 8px;align-items:flex-end;}
+.fcard .bottom{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono';font-size:9.5px;color:#7fb0d8;}
+.ratio{display:flex;align-items:center;gap:6px;}
+.ratio .bar{width:54px;height:5px;border:1px solid rgba(150,200,240,.4);border-radius:3px;overflow:hidden;}
+.ratio .bar i{display:block;height:100%;background:#5fd0ff;}
+.f-zukan .filter{position:relative;z-index:10;display:flex;gap:6px;justify-content:center;margin:0 0 9px;}
+.f-zukan .filter span{font-size:9.5px;font-family:'JetBrains Mono';color:#8fbfe5;border:1px solid #244a68;padding:4px 10px;border-radius:5px;}
+.f-zukan .filter span.on{background:#2f9fd6;color:#06121e;border-color:#2f9fd6;}
+
+/* 形式詳細（showpiece） */
+.f-detail .back{position:relative;z-index:10;display:flex;align-items:center;gap:7px;color:#bfe0ff;font-size:13px;padding:4px 16px 6px;}
+.f-detail .back svg{width:16px;height:16px;stroke:#bfe0ff;fill:none;stroke-width:2;}
+.f-detail .cls{position:relative;z-index:10;margin:0 16px;font-size:23px;font-weight:900;color:#fff;}
+.f-detail .setline{position:relative;z-index:10;margin:1px 16px 12px;font-family:'JetBrains Mono';font-size:10px;color:#86c4f0;letter-spacing:.07em;}
+.drawbox{position:relative;z-index:10;margin:0 16px 12px;border:1px solid rgba(150,200,240,.35);border-radius:6px;padding:12px 12px 8px;}
+.drawbox .lbl{font-family:'JetBrains Mono';font-size:8px;color:#7fb0d8;letter-spacing:.1em;margin-bottom:7px;}
+.formrow{display:flex;gap:2px;align-items:flex-end;margin-bottom:4px;}
+.formrow .c{flex:1;text-align:center;}
+.formrow .c .n{font-family:'JetBrains Mono';font-size:7px;color:#7fb0d8;margin-bottom:2px;}
+.dim{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:8px;color:#6fa6cf;letter-spacing:.04em;margin-top:4px;}
+.spectab{position:relative;z-index:10;margin:0 16px;font-family:'JetBrains Mono';}
+.spectab .r{display:flex;justify-content:space-between;font-size:11px;padding:7px 0;border-bottom:1px dotted rgba(150,200,240,.28);color:#bcdcf5;}
+.spectab .r .k{color:#7fb0d8;}
+.spectab .r b{color:#fff;font-weight:700;}
+
+/* 記録（測定入力） */
+.f-issue .scan{position:relative;z-index:10;margin:0 16px 12px;display:flex;align-items:center;gap:9px;
+  border:1px dashed #2f9fd6;border-radius:8px;padding:11px 13px;color:#bfe0ff;font-size:12px;}
+.f-issue .scan svg{width:19px;height:19px;stroke:#5fd0ff;fill:none;stroke-width:1.5;}
+.f-issue .scan .pro{margin-left:auto;font-size:8px;background:#2f9fd6;color:#06121e;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono';}
+.f-issue .fld{position:relative;z-index:10;margin:0 16px 9px;}
+.f-issue .fld .l{font-family:'JetBrains Mono';font-size:8.5px;color:#7fb0d8;letter-spacing:.1em;margin-bottom:4px;}
+.f-issue .box{border:1px solid rgba(150,200,240,.35);border-radius:5px;padding:10px 12px;background:rgba(95,160,230,.05);
+  font-weight:700;font-size:14px;color:#eaf4ff;position:relative;font-family:'JetBrains Mono';}
+.f-issue .box.ph{color:#6e8aa3;font-weight:500;}
+.f-issue .box .car{position:absolute;right:11px;top:10px;color:#7fb0d8;}
+.f-issue .seg{display:flex;flex-wrap:wrap;gap:5px;}
+.f-issue .seg span{font-size:10px;font-family:'JetBrains Mono';color:#8fbfe5;border:1px solid #244a68;border-radius:5px;padding:6px 9px;}
+.f-issue .seg span.on{background:#2f9fd6;color:#06121e;border-color:#2f9fd6;}
+.f-issue .reg{position:relative;z-index:10;margin:6px 16px 0;}
+.f-issue .reg .b{text-align:center;padding:14px;border-radius:7px;font-family:'JetBrains Mono';font-weight:800;font-size:15px;letter-spacing:.18em;
+  background:linear-gradient(180deg,#2f9fd6,#1e7bb0);color:#eaf6ff;box-shadow:0 6px 16px rgba(47,159,214,.35);}
+
+/* 地図（測量図） */
+.f-map .wrap{position:absolute;inset:0;}
+.f-map .bg{position:absolute;inset:0;background:
+  linear-gradient(0deg,rgba(120,180,230,.08) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(120,180,230,.08) 1px,transparent 1px),#0c2742;background-size:22px 22px,22px 22px;}
+.f-map svg.m{position:absolute;inset:0;width:100%;height:100%;}
+.f-map .scalebar{position:absolute;left:16px;bottom:92px;z-index:20;font-family:'JetBrains Mono';font-size:8px;color:#9fcdf2;}
+.f-map .scalebar .l{width:60px;height:5px;border:1px solid #9fcdf2;border-top:none;margin-bottom:3px;}
+.f-map .legend{position:absolute;left:14px;top:62px;z-index:20;border:1px solid rgba(150,200,240,.35);border-radius:6px;
+  background:rgba(8,26,44,.78);padding:9px 11px;}
+.f-map .legend .t{font-family:'JetBrains Mono';font-size:9px;color:#7fb0d8;letter-spacing:.1em;margin-bottom:6px;}
+.f-map .legend .li{display:flex;align-items:center;gap:7px;font-size:10px;color:#cfe4f6;margin:4px 0;}
+.f-map .popup{position:absolute;left:50%;bottom:98px;transform:translateX(-50%);z-index:20;width:206px;
+  border:1px solid rgba(150,200,240,.4);border-radius:6px;background:rgba(8,26,44,.85);padding:10px 12px;}
+.f-map .popup .n{font-size:13px;font-weight:900;color:#fff;}
+.f-map .popup .d{font-family:'JetBrains Mono';font-size:9px;color:#86c4f0;margin-top:3px;letter-spacing:.04em;}
+
+/* 統計（計器盤） */
+.f-stats .scroll{position:absolute;inset:0;overflow:hidden;}
+.f-stats .gauge{position:relative;z-index:10;margin:4px auto 10px;width:170px;text-align:center;}
+.f-stats .gauge .val{position:absolute;top:62px;left:0;right:0;font-family:'JetBrains Mono';font-weight:800;font-size:30px;color:#5fd0ff;}
+.f-stats .gauge .k{position:absolute;top:98px;left:0;right:0;font-family:'JetBrains Mono';font-size:9px;color:#7fb0d8;letter-spacing:.12em;}
+.f-stats .read{position:relative;z-index:10;margin:0 16px 12px;display:flex;gap:9px;}
+.f-stats .rd{flex:1;border:1px solid rgba(150,200,240,.3);border-radius:6px;padding:10px 8px;text-align:center;background:rgba(95,160,230,.05);}
+.f-stats .rd .v{font-family:'JetBrains Mono';font-weight:800;font-size:18px;color:#eaf4ff;}
+.f-stats .rd .k{font-family:'JetBrains Mono';font-size:8px;color:#7fb0d8;letter-spacing:.08em;margin-top:4px;}
+.f-stats .panel{position:relative;z-index:10;margin:0 16px 12px;border:1px solid rgba(150,200,240,.3);border-radius:7px;padding:12px 14px;background:rgba(95,160,230,.04);}
+.f-stats .pt{font-family:'JetBrains Mono';font-size:10px;color:#7fb0d8;letter-spacing:.1em;border-bottom:1px solid rgba(95,208,255,.4);padding-bottom:5px;margin-bottom:8px;}
+.f-stats .plot{display:flex;align-items:flex-end;gap:5px;height:60px;}
+.f-stats .plot .b{flex:1;background:linear-gradient(180deg,#5fd0ff,#2f7fb0);border-radius:2px 2px 0 0;}
+.f-stats .px{display:flex;gap:5px;margin-top:4px;}
+.f-stats .px span{flex:1;text-align:center;font-family:'JetBrains Mono';font-size:7px;color:#6fa6cf;}
+
+/* 設定 */
+.f-set .scroll{position:absolute;inset:0;overflow:hidden;}
+.f-set .opt{position:relative;z-index:10;margin:2px 16px 14px;border:1px solid #2f9fd6;border-radius:8px;padding:13px 14px;
+  background:linear-gradient(165deg,rgba(95,160,230,.14),rgba(95,160,230,.03));}
+.f-set .opt .bd{font-family:'JetBrains Mono';font-size:8px;color:#5fd0ff;letter-spacing:.12em;}
+.f-set .opt .t{font-size:16px;font-weight:900;color:#fff;margin-top:3px;}
+.f-set .opt .d{font-family:'JetBrains Mono';font-size:9.5px;color:#9fb6cb;margin-top:4px;line-height:1.6;}
+.f-set .opt .pr{position:absolute;right:14px;bottom:12px;font-family:'JetBrains Mono';font-weight:800;font-size:18px;color:#5fd0ff;}
+.f-set .grp{position:relative;z-index:10;margin:0 16px 12px;}
+.f-set .gt{font-family:'JetBrains Mono';font-size:8.5px;color:#7fb0d8;letter-spacing:.12em;margin:0 0 6px 2px;}
+.f-set .card{border:1px solid rgba(150,200,240,.28);border-radius:7px;padding:2px 13px;background:rgba(95,160,230,.04);}
+.f-set .r{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(150,200,240,.16);font-size:12.5px;color:#dceaf7;}
+.f-set .r:last-child{border-bottom:none;}
+.f-set .r .rt{display:flex;align-items:center;gap:9px;}
+.f-set .r svg{width:17px;height:17px;stroke:#5fd0ff;fill:none;stroke-width:1.6;}
+.f-set .r .val{font-family:'JetBrains Mono';font-size:10px;color:#7fb0d8;}
+.f-set .tg{width:36px;height:20px;border-radius:999px;background:#2f9fd6;position:relative;}
+.f-set .tg::after{content:"";position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:#eaf6ff;}
+
+/* 乗車中（運行モニタ） */
+.f-live .screen{background:linear-gradient(165deg,#0c2742,#06101b);}
+.f-live .di{position:absolute;top:9px;left:50%;transform:translateX(-50%);z-index:55;width:176px;height:34px;background:#000;border-radius:20px;display:flex;align-items:center;padding:0 12px;gap:8px;}
+.f-live .di .ic{width:16px;height:16px;border-radius:4px;background:#5fd0ff;}
+.f-live .di .tx{color:#9fcdf2;font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.03em;}
+.f-live .di .tm{margin-left:auto;color:#7fd6a0;font-family:'JetBrains Mono';font-size:11px;}
+.f-live .clock{position:relative;z-index:10;text-align:center;color:#eaf4ff;margin-top:30px;}
+.f-live .clock .d{font-size:13px;opacity:.7;}
+.f-live .clock .t{font-size:60px;font-weight:300;line-height:1;margin-top:2px;}
+.f-live .mon{position:absolute;left:16px;right:16px;bottom:118px;z-index:10;border:1px solid rgba(150,200,240,.4);border-radius:10px;
+  background:rgba(8,26,44,.8);padding:14px 16px;}
+.f-live .mon .lb{font-family:'JetBrains Mono';font-size:8px;color:#5fd0ff;letter-spacing:.14em;}
+.f-live .mon .ln{font-size:17px;font-weight:900;color:#fff;margin-top:3px;}
+.f-live .track{display:flex;align-items:center;margin:12px 0 4px;}
+.f-live .track .stn{width:8px;height:8px;border-radius:50%;border:1.5px solid #9fcdf2;}
+.f-live .track .stn.done{background:#5fd0ff;border-color:#5fd0ff;}
+.f-live .track .seg{flex:1;height:2px;background:rgba(150,200,240,.35);position:relative;}
+.f-live .track .seg.fill{background:#5fd0ff;}
+.f-live .track .train{position:absolute;right:0;top:50%;transform:translate(50%,-50%);font-size:11px;}
+.f-live .mon .lbls{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:9px;color:#7fb0d8;margin-top:5px;}
+.f-live .mon .read{display:flex;justify-content:space-between;align-items:flex-end;margin-top:11px;}
+.f-live .mon .read .k{font-family:'JetBrains Mono';font-size:8px;color:#7fb0d8;letter-spacing:.08em;}
+.f-live .mon .read .v{font-family:'JetBrains Mono';font-size:15px;font-weight:800;color:#eaf4ff;margin-top:1px;}
+.f-live .hint{position:absolute;bottom:34px;left:0;right:0;text-align:center;color:rgba(200,228,246,.45);font-size:11px;z-index:10;}
+
+@media(max-width:720px){body{padding:32px 16px 64px;}.rail{gap:26px;}}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="kicker">TETSULOG · FORMATION DIAGRAM EDITION</div>
+  <h1>編成表 / 形式図 ― 全画面</h1>
+  <p>④案を全画面に展開。クハ・モハ・サハの形式記号、号車、向き、パンタ位置、台車、寸法線、図面枠（タイトルブロック）、引出線つき注記——鉄道ピクトリアル/編成表の製図美で統一。「わかってる」を画面そのもので証明する、ガチ鉄が最も信頼する技術系の方向です。</p>
+  <div class="notes">
+    <span>側面図 SIDE ELEVATION</span><span>寸法線 20,000mm</span><span>図番 / 縮尺 1:150</span><span>形式記号 クハ/モハ/サハ</span><span>収集率ゲージ</span><span>計器盤UI</span>
+  </div>
+</div>
+
+<div class="rail">
+
+  <!-- ===================== 1. 図鑑 ===================== -->
+  <div class="col f-zukan">
+    <div class="tag"><div class="num">1</div><h2>図鑑</h2></div>
+    <div class="sub">DATABASE — 形式一覧</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="grid"></div><div class="crop tl"></div><div class="crop tr"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="bh"><div><div class="t">ROLLING STOCK</div><div class="s">COLLECTION 042 / 312</div></div><div class="rev">REV.1.0</div></div>
+      <div class="filter"><span class="on">全</span><span>通勤</span><span>特急</span><span>機関車</span><span>廃車</span></div>
+      <div class="list">
+        <div class="fcard">
+          <div class="top"><div class="cls">E235系</div><div class="set">トウ04 · 11CARS</div></div>
+          <div class="ln">JR EAST ▸ 山手線</div>
+          <div class="cars">
+            <svg class="car" viewBox="0 0 40 16"><rect x="1" y="4" width="38" height="9" rx="3" class="carstroke"/><rect x="5" y="6" width="4" height="3" class="carwin"/><rect x="12" y="6" width="4" height="3" class="carwin"/><rect x="19" y="6" width="4" height="3" class="carwin"/><rect x="26" y="6" width="4" height="3" class="carwin"/><rect x="33" y="6" width="3" height="3" class="carwin"/><circle cx="9" cy="14" r="1.6" class="carstroke"/><circle cx="31" cy="14" r="1.6" class="carstroke"/></svg>
+          </div>
+          <div class="bottom"><span>収集 04 / 50編成</span>
+            <span class="ratio"><span class="bar"><i style="width:8%"></i></span> 8%</span></div>
+        </div>
+        <div class="fcard">
+          <div class="top"><div class="cls">E353系</div><div class="set">S204 · 9CARS</div></div>
+          <div class="ln">JR EAST ▸ 中央本線 あずさ</div>
+          <div class="cars">
+            <svg class="car" viewBox="0 0 40 16"><path d="M34 4 L38 6.5 L38 13 L2 13 L2 6 Q2 4 4 4 Z" class="carstroke"/><rect x="6" y="6" width="5" height="3" class="carwin"/><rect x="14" y="6" width="5" height="3" class="carwin"/><rect x="22" y="6" width="5" height="3" class="carwin"/><rect x="30" y="6" width="4" height="3" class="carwin"/><circle cx="9" cy="14" r="1.6" class="carstroke"/><circle cx="31" cy="14" r="1.6" class="carstroke"/></svg>
+          </div>
+          <div class="bottom"><span>収集 02 / 26編成</span>
+            <span class="ratio"><span class="bar"><i style="width:8%"></i></span> 8%</span></div>
+        </div>
+        <div class="fcard">
+          <div class="top"><div class="cls">EF65形</div><div class="set">2065 · PF · 単機</div></div>
+          <div class="ln">JR FREIGHT ▸ 電気機関車</div>
+          <div class="cars">
+            <svg class="car" viewBox="0 0 40 16"><rect x="6" y="4" width="28" height="9" rx="1.5" class="carstroke"/><path d="M6 6 L2 6 L2 12 L6 12" class="carstroke"/><path d="M34 6 L38 6 L38 12 L34 12" class="carstroke"/><rect x="11" y="6" width="4" height="3" class="carwin"/><rect x="25" y="6" width="4" height="3" class="carwin"/><circle cx="12" cy="14" r="1.6" class="carstroke"/><circle cx="20" cy="14" r="1.6" class="carstroke"/><circle cx="28" cy="14" r="1.6" class="carstroke"/></svg>
+          </div>
+          <div class="bottom"><span>遭遇 11回 · 配給</span>
+            <span class="ratio"><span class="bar"><i style="width:42%"></i></span> 個体</span></div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>形式データベース。</b>各形式に縮小側面図＋編成番号＋収集率ゲージ。クハの傾斜前面、機関車の運転台位置まで描き分け。通勤/特急/機関車/廃車で分類。</div>
+  </div>
+
+  <!-- ===================== 2. 形式詳細（showpiece） ===================== -->
+  <div class="col f-detail">
+    <div class="tag"><div class="num">2</div><h2>形式図</h2></div>
+    <div class="sub">SPEC SHEET — 側面図と諸元</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="grid"></div><div class="crop tl"></div><div class="crop tr"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>一覧へ戻る</div>
+      <div class="cls">E235系</div>
+      <div class="setline">SET トウ04 · 11CARS · 山手線 · 2026.06.13</div>
+
+      <div class="drawbox">
+        <div class="lbl">FORMATION ─ ◂大崎方 1-11号車 神田方▸</div>
+        <div class="formrow">
+          <div class="c"><div class="n">クハ</div>
+            <svg class="car" viewBox="0 0 26 18"><path d="M22 5 L24 7 L24 14 L2 14 L2 7 Q2 5 4 5 Z" class="carstroke"/><rect x="5" y="7" width="3" height="3" class="carwin"/><rect x="10" y="7" width="3" height="3" class="carwin"/><rect x="15" y="7" width="3" height="3" class="carwin"/><circle cx="7" cy="15.5" r="1.4" class="carstroke"/><circle cx="18" cy="15.5" r="1.4" class="carstroke"/></svg></div>
+          <div class="c"><div class="n">モハ</div>
+            <svg class="car" viewBox="0 0 26 18"><path d="M9 5 L11 1 L17 1 L19 5" class="carstroke"/><rect x="2" y="5" width="22" height="9" rx="1.5" class="carstroke"/><rect x="5" y="7" width="3" height="3" class="carwin"/><rect x="11" y="7" width="3" height="3" class="carwin"/><rect x="17" y="7" width="3" height="3" class="carwin"/><circle cx="7" cy="15.5" r="1.4" class="carstroke"/><circle cx="19" cy="15.5" r="1.4" class="carstroke"/></svg></div>
+          <div class="c"><div class="n">サハ</div>
+            <svg class="car" viewBox="0 0 26 18"><rect x="2" y="5" width="22" height="9" rx="1.5" class="carstroke"/><rect x="5" y="7" width="3" height="3" class="carwin"/><rect x="11" y="7" width="3" height="3" class="carwin"/><rect x="17" y="7" width="3" height="3" class="carwin"/><circle cx="7" cy="15.5" r="1.4" class="carstroke"/><circle cx="19" cy="15.5" r="1.4" class="carstroke"/></svg></div>
+          <div class="c"><div class="n">モハ</div>
+            <svg class="car" viewBox="0 0 26 18"><path d="M9 5 L11 1 L17 1 L19 5" class="carstroke"/><rect x="2" y="5" width="22" height="9" rx="1.5" class="carstroke"/><rect x="5" y="7" width="3" height="3" class="carwin"/><rect x="11" y="7" width="3" height="3" class="carwin"/><rect x="17" y="7" width="3" height="3" class="carwin"/><circle cx="7" cy="15.5" r="1.4" class="carstroke"/><circle cx="19" cy="15.5" r="1.4" class="carstroke"/></svg></div>
+          <div class="c"><div class="n">クハ</div>
+            <svg class="car" viewBox="0 0 26 18"><path d="M4 5 L2 7 L2 14 L24 14 L24 7 Q24 5 22 5 Z" class="carstroke"/><rect x="8" y="7" width="3" height="3" class="carwin"/><rect x="13" y="7" width="3" height="3" class="carwin"/><rect x="18" y="7" width="3" height="3" class="carwin"/><circle cx="7" cy="15.5" r="1.4" class="carstroke"/><circle cx="18" cy="15.5" r="1.4" class="carstroke"/></svg></div>
+        </div>
+        <div class="dim"><span>|◂─────── 220,000 mm (11両) ───────▸|</span></div>
+      </div>
+
+      <div class="spectab">
+        <div class="r"><span class="k">遭遇駅</span><b>東京 (JY01)</b></div>
+        <div class="r"><span class="k">全長 / 編成</span><b>20,000mm × 11</b></div>
+        <div class="r"><span class="k">主電動機</span><b>MT79 · 140kW</b></div>
+        <div class="r"><span class="k">製造</span><b>2018 J-TREC</b></div>
+        <div class="r"><span class="k">収集</span><b>04 / 50編成</b></div>
+      </div>
+      <div class="tab">
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>本命の見せ場。</b>11両の側面図を号車・向き・パンタ位置つきで描き、寸法線で全長を表記。下に諸元表（主電動機・製造・全長）。図面そのもの。</div>
+  </div>
+
+  <!-- ===================== 3. 記録（測定入力） ===================== -->
+  <div class="col f-issue">
+    <div class="tag"><div class="num">3</div><h2>記録</h2></div>
+    <div class="sub">INPUT — 測定 / 記録登録</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="grid"></div><div class="crop tl"></div><div class="crop tr"></div>
+      <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="bh"><div><div class="t">NEW RECORD</div><div class="s">新しい遭遇を登録</div></div></div>
+      <div class="scan"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6l1.5-2h5L16 6"/></svg>カメラで編成番号を測定<span class="pro">PRO</span></div>
+      <div class="fld"><div class="l">CLASS / 形式</div><div class="box">E235系 <span class="car">▾</span></div></div>
+      <div class="fld"><div class="l">SET / 編成番号</div><div class="box">トウ04</div></div>
+      <div class="fld"><div class="l">STATION / 遭遇駅 ・ 路線</div><div class="box">東京 / 山手線</div></div>
+      <div class="fld"><div class="l">TYPE / 種別</div>
+        <div class="seg"><span class="on">定期</span><span>臨時</span><span>回送</span><span>試運転</span><span>団体</span><span>ラストラン</span></div>
+      </div>
+      <div class="fld"><div class="l">DATE / 日時</div><div class="box">2026-06-13 07:42</div></div>
+      <div class="reg"><div class="b">登 録 / REGISTER</div></div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>“測定→登録”の所作。</b>ラベルは英＋和の二段で計器票のように。OCRは「測定」（Pro）、種別はラストランまで。登録ボタンは計器パネル調。</div>
+  </div>
+
+  <!-- ===================== 4. 地図（測量図） ===================== -->
+  <div class="col f-map">
+    <div class="tag"><div class="num">4</div><h2>足跡（測量図）</h2></div>
+    <div class="sub">MAP — 路線網と廃線</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="wrap">
+        <div class="bg"></div>
+        <svg class="m" viewBox="0 0 290 640" preserveAspectRatio="xMidYMid slice">
+          <path d="M40 120 L120 220 L150 360 L210 470 L250 560" fill="none" stroke="#5fd0ff" stroke-width="2.6"/>
+          <path d="M20 300 L150 360 L270 320" fill="none" stroke="#7fd6a0" stroke-width="2.6"/>
+          <path d="M120 220 L240 180" fill="none" stroke="#ffb43a" stroke-width="2.6"/>
+          <path d="M150 360 L90 480 L110 590" fill="none" stroke="#6e8aa3" stroke-width="2" stroke-dasharray="5 5"/>
+          <!-- 測量マーカー（十字） -->
+          <g stroke="#bfe0ff" stroke-width="1.3">
+            <path d="M114 220h12M120 214v12"/><circle cx="120" cy="220" r="4" fill="none"/>
+            <path d="M144 360h12M150 354v12"/><circle cx="150" cy="360" r="5" fill="none"/>
+            <path d="M204 470h12M210 464v12"/><circle cx="210" cy="470" r="4" fill="none"/>
+          </g>
+          <rect x="236" y="176" width="9" height="9" fill="none" stroke="#ffb43a" stroke-width="1.4" transform="rotate(45 240 180)"/>
+          <text x="128" y="216" fill="#9fcdf2" font-size="9" font-family="JetBrains Mono">JY01</text>
+          <text x="158" y="356" fill="#9fcdf2" font-size="9" font-family="JetBrains Mono">姨捨</text>
+        </svg>
+      </div>
+      <div class="sbar" style="position:relative;z-index:30"><span>9:41</span><span>● ● ● 🔋</span></div>
+      <div class="legend">
+        <div class="t">凡例 LEGEND</div>
+        <div class="li"><svg width="14" height="10"><path d="M0 5h14" stroke="#5fd0ff" stroke-width="2.6"/></svg>現役路線</div>
+        <div class="li"><svg width="14" height="10"><path d="M0 5h14" stroke="#6e8aa3" stroke-width="2" stroke-dasharray="4 3"/></svg>廃線</div>
+        <div class="li"><svg width="12" height="12"><rect x="2" y="2" width="7" height="7" fill="none" stroke="#ffb43a" stroke-width="1.4" transform="rotate(45 5.5 5.5)"/></svg>撮影地</div>
+      </div>
+      <div class="scalebar"><div class="l"></div>0 ──── 5km　1:150,000</div>
+      <div class="popup">
+        <div class="n">姨捨駅</div>
+        <div class="d">篠ノ井線 · SWITCHBACK · 遭遇 06回</div>
+      </div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>測量図のように。</b>路線は色分け線、駅は十字の測量マーカー＋駅コード、撮影地は記号。縮尺バー・凡例つきで地図そのものを“図面”に。</div>
+  </div>
+
+  <!-- ===================== 5. 統計（計器盤） ===================== -->
+  <div class="col f-stats">
+    <div class="tag"><div class="num">5</div><h2>計器盤（統計）</h2></div>
+    <div class="sub">DASHBOARD — 運転台メーター</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="grid"></div><div class="crop tl"></div><div class="crop tr"></div>
+      <div class="scroll">
+        <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+        <div class="bh"><div><div class="t">DASHBOARD</div><div class="s">あなたの記録メーター</div></div></div>
+        <div class="gauge">
+          <svg viewBox="0 0 170 110" width="170" height="110">
+            <path d="M15 95 A70 70 0 0 1 155 95" fill="none" stroke="rgba(150,200,240,.25)" stroke-width="9" stroke-linecap="round"/>
+            <path d="M15 95 A70 70 0 0 1 132 38" fill="none" stroke="#5fd0ff" stroke-width="9" stroke-linecap="round"/>
+            <g stroke="#7fb0d8" stroke-width="1.4">
+              <path d="M15 95 l8 -3"/><path d="M85 25 v8"/><path d="M155 95 l-8 -3"/>
+            </g>
+          </svg>
+          <div class="val">312</div><div class="k">TOTAL 総遭遇</div>
+        </div>
+        <div class="read">
+          <div class="rd"><div class="v">87</div><div class="k">形式 CLASS</div></div>
+          <div class="rd"><div class="v">4,820</div><div class="k">乗車 KM</div></div>
+          <div class="rd"><div class="v">23</div><div class="k">撮影地 SPOT</div></div>
+        </div>
+        <div class="panel">
+          <div class="pt">MONTHLY ─ 月別遭遇</div>
+          <div class="plot">
+            <div class="b" style="height:40%"></div><div class="b" style="height:62%"></div><div class="b" style="height:55%"></div><div class="b" style="height:82%"></div><div class="b" style="height:48%"></div><div class="b" style="height:100%"></div>
+          </div>
+          <div class="px"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>運転台の計器のように。</b>総遭遇を円弧ゲージで、形式/距離/撮影地をデジタル読み取り表示、月別はプロット。データが“計器”になる。</div>
+  </div>
+
+  <!-- ===================== 6. 設定 ===================== -->
+  <div class="col f-set">
+    <div class="tag"><div class="num">6</div><h2>設定</h2></div>
+    <div class="sub">CONFIG — 拡張ユニット & Pro</div>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div><div class="grid"></div><div class="crop tl"></div><div class="crop tr"></div>
+      <div class="scroll">
+        <div class="sbar"><span>9:41</span><span>● ● ● 🔋</span></div>
+        <div class="bh"><div><div class="t">CONFIG</div><div class="s">設定</div></div></div>
+        <div class="opt">
+          <div class="bd">OPTION UNIT · TETSULOG PRO</div>
+          <div class="t">拡張ユニットを装着</div>
+          <div class="d">OCR測定 / 順光逆光演算 / 走行音録音<br>買い切り・サブスクなし</div>
+          <div class="pr">¥980</div>
+        </div>
+        <div class="grp"><div class="gt">SECURITY / プライバシー</div>
+          <div class="card">
+            <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>アプリロック (Face ID)</span><div class="tg"></div></div>
+            <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>再ロックの猶予</span><span class="val">1分</span></div>
+            <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg>JSON / CSV 書き出し</span><span class="val">›</span></div>
+          </div>
+        </div>
+        <div class="grp"><div class="gt">APP / アプリ</div>
+          <div class="card">
+            <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>バージョン</span><span class="val">1.0 (1)</span></div>
+            <div class="r"><span class="rt"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>プライバシーポリシー</span><span class="val">↗</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tab">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>図鑑</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M12 9v6M9 12h6"/></svg>記録</div>
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>地図</div>
+        <div class="ti on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>設定</div>
+      </div>
+    </div></div>
+    <div class="why"><b>Pro＝拡張ユニット。</b>課金を“機能ユニットの増設”として技術的に表現。設定はSECURITY/APPの英和ラベルで計器票調に整然と。</div>
+  </div>
+
+  <!-- ===================== 7. 乗車中（運行モニタ） ===================== -->
+  <div class="col f-live">
+    <div class="tag"><div class="num">7</div><h2>乗車中</h2></div>
+    <div class="sub">LIVE — 運行モニタ</div>
+    <div class="phone"><div class="screen">
+      <div class="di"><div class="ic"></div><div class="tx">山手線 内回り</div><div class="tm">12:34</div></div>
+      <div class="clock"><div class="d">6月13日 土曜日</div><div class="t">9:41</div></div>
+      <div class="mon">
+        <div class="lb">OPERATION MONITOR · 乗車中</div>
+        <div class="ln">山手線 内回り</div>
+        <div class="track">
+          <div class="stn done"></div><div class="seg fill"></div>
+          <div class="stn done"></div><div class="seg fill" style="position:relative"><span class="train">▸</span></div>
+          <div class="stn"></div><div class="seg"></div><div class="stn"></div>
+        </div>
+        <div class="lbls"><span>東京</span><span>神田</span><span>秋葉原</span></div>
+        <div class="read">
+          <div><div class="k">NEXT 次は</div><div class="v">神田</div></div>
+          <div style="text-align:right"><div class="k">ELAPSED 経過</div><div class="v">12:34</div></div>
+        </div>
+      </div>
+      <div class="hint">▲ ロック画面 / Dynamic Island に運行モニタ表示</div>
+    </div></div>
+    <div class="why"><b>乗車中はロック画面が運行モニタに。</b>駅間の現在位置を線図で示し、次駅・経過時間を計器表示。Dynamic Island連動。降車まで“運行図表”が動く。</div>
+  </div>
+
+</div>
+
+</body>
+</html>
