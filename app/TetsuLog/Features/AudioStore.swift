@@ -32,14 +32,6 @@ enum AudioStore {
         try? FileManager.default.removeItem(at: url(for: filename))
     }
 
-    /// ファイルの再生時間を取得（秒）
-    static func duration(_ filename: String) -> TimeInterval? {
-        let url = url(for: filename)
-        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-        // 軽量にメタから推定するため AVURLAsset などを使う側で扱う
-        return nil
-    }
-
     /// ディレクトリ内の全ファイル名
     static func allFilenames() -> [String] {
         (try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []

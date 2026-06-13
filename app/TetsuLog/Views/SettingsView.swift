@@ -114,7 +114,7 @@ struct SettingsView: View {
                                Date.now.timeIntervalSince1970 - lastSyncAt > 30 * 24 * 3600 {
                                 caption("最後の書き出しから30日以上経っています。バックアップをおすすめします。", color: Theme.Palette.red)
                             }
-                            caption("運営者のサーバーには送信されません。※写真・録音は端末内保存のためJSONには含まれません。")
+                            caption("運営者のサーバーには送信されません。\n※写真・録音は端末内保存のためJSONには含まれません（iCloudバックアップで端末間移行可能）。")
                         }
 
                         section("アプリ") {
