@@ -185,51 +185,127 @@ struct LogView: View {
     private func delete(_ r: RideSegment){ context.delete(r); try? context.save(); Haptics.tick() }
 }
 
+/// 遭遇1件を「硬券」に。種別で券種色（赤＝特急/臨時、青＝定期、緑＝回送/試運転等）。
 private struct SightingCard: View {
     let sighting: Sighting
+
     var body: some View {
-        PaperCard(accent: true,
-                  aged: sighting.isLastRun || sighting.formation?.vehicleClass?.isRetiring == true,
-                  interactive: true) {
-            HStack(spacing: 12) {
-                Image(systemName: iconName).foregroundStyle(iconColor).frame(width: 28)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(label).font(Theme.Font.headline(17)).foregroundStyle(Theme.Palette.ink)
-                    HStack(spacing: 6) {
-                        Text("\(sighting.lineName) · \(sighting.stationName)")
-                            .font(Theme.Font.body(13)).foregroundStyle(Theme.Palette.inkSub)
-                        if !sighting.headmark.isEmpty { dot(sighting.headmark) }
-                        if !sighting.livery.isEmpty { dot(sighting.livery) }
-                        if !sighting.audioFilenames.isEmpty {
-                            Image(systemName: "waveform").font(.system(size:12)).foregroundStyle(Theme.Palette.red)
-                        }
+        KikenCard(edge: edgeColor, aged: aged) {
+            VStack(alignment: .leading, spacing: 5) {
+                // 上段：路線（明朝大）＋ 事業者・形式の小書き／右上に日付印
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(sighting.lineName.isEmpty ? "（路線未設定）" : sighting.lineName)
+                            .font(.system(size: 19, weight: .heavy, design: .serif))
+                            .foregroundStyle(Theme.Palette.paperInk)
+                            .lineLimit(1)
+                        Text(operatorLabel)
+                            .font(.system(size: 9.5, weight: .bold))
+                            .tracking(0.8)
+                            .foregroundStyle(Theme.Palette.paperInkSub)
+                            .lineLimit(1)
+                    }
+                    Spacer(minLength: 8)
+                    DatingStamp(text: stampText)
+                }
+
+                // 形式・編成番号（モノスペース＝券面の打刻風）
+                Text(label)
+                    .font(.system(size: 14, weight: .heavy, design: .monospaced))
+                    .foregroundStyle(Theme.Palette.paperInk)
+                    .lineLimit(1)
+
+                // 下段：駅名＋アクセサリ
+                HStack(spacing: 6) {
+                    Text(sighting.stationName.isEmpty ? "—" : sighting.stationName)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Theme.Palette.paperInk)
+                    if !sighting.headmark.isEmpty { microTag(sighting.headmark) }
+                    if !sighting.livery.isEmpty { microTag(sighting.livery) }
+                    Spacer()
+                    if !sighting.audioFilenames.isEmpty {
+                        Image(systemName: "waveform")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Theme.Palette.red)
+                    }
+                    if sighting.isLastRun {
+                        Text("ラストラン")
+                            .font(.system(size: 9, weight: .heavy))
+                            .tracking(1)
+                            .foregroundStyle(Color.white)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Capsule().fill(Theme.Palette.red))
+                    } else if sighting.kind != .scheduled {
+                        Text(sighting.kind.rawValue)
+                            .font(.system(size: 9.5, weight: .heavy))
+                            .foregroundStyle(Theme.Palette.red)
+                            .padding(.horizontal, 5).padding(.vertical, 1.5)
+                            .overlay(RoundedRectangle(cornerRadius: 2).stroke(Theme.Palette.red, lineWidth: 1))
                     }
                 }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 3) {
-                    Text(sighting.date, format: .dateTime.month().day())
-                        .font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
-                    if sighting.isLastRun { InkBadge(text: "ラストラン") }
-                    else if sighting.kind != .scheduled {
-                        Text(sighting.kind.rawValue).font(.system(size:11,weight:.bold)).foregroundStyle(Theme.Palette.cyan)
-                    }
+
+                // 小書き＋通し番号
+                HStack {
+                    TicketMicroprint()
+                    Spacer()
+                    Text("No. \(serial)")
+                        .font(.system(size: 7.5, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(Theme.Palette.paperInkSub)
                 }
+                .padding(.top, 1)
             }
         }
     }
-    private func dot(_ t:String)->some View {
-        Text(t).font(.system(size:11)).padding(.horizontal,5).padding(.vertical,1)
-            .background(Capsule().fill(Theme.Palette.cyan.opacity(0.12))).foregroundStyle(Theme.Palette.cyan)
+
+    private func microTag(_ t: String) -> some View {
+        Text(t)
+            .font(.system(size: 9.5, weight: .bold))
+            .foregroundStyle(Color(hex: 0x1D4E86))
+            .padding(.horizontal, 5).padding(.vertical, 1)
+            .overlay(RoundedRectangle(cornerRadius: 2).stroke(Color(hex: 0x1D4E86).opacity(0.5), lineWidth: 0.8))
     }
-    private var label:String { guard let f=sighting.formation else {return "（編成未設定）"}; return "\(f.vehicleClass?.name ?? "") \(f.code)" }
-    private var iconName:String {
-        switch sighting.kind { case .scheduled:return "tram.fill"; case .extra:return "sparkles"
-        case .deadhead:return "arrow.left.arrow.right"; case .test:return "wrench.and.screwdriver"
-        case .delivery:return "shippingbox"; case .charter:return "person.3.fill"; case .lastRun:return "star.fill" }
+
+    private var aged: Bool {
+        sighting.isLastRun || sighting.formation?.vehicleClass?.isRetiring == true
     }
-    private var iconColor:Color {
-        switch sighting.kind { case .scheduled:return Theme.Palette.cyan; case .lastRun:return Theme.Palette.red
-        case .extra:return Theme.Palette.gold; default:return Theme.Palette.rail }
+
+    /// 券種色（左帯）。赤＝特急/臨時/ラストラン、青＝定期、緑＝回送/試運転等。
+    private var edgeColor: Color {
+        if sighting.isLastRun { return Theme.Palette.red }
+        switch sighting.kind {
+        case .scheduled:                       return Color(hex: 0x1D4E86) // 青＝普通
+        case .extra, .charter, .lastRun:       return Theme.Palette.red    // 赤＝臨時/団体
+        case .deadhead, .test, .delivery:      return Color(hex: 0x2C6A3C) // 緑＝業務列車
+        }
+    }
+
+    private var label: String {
+        guard let f = sighting.formation else { return "（編成未設定）" }
+        let cls = f.vehicleClass?.name ?? ""
+        return cls.isEmpty ? f.code : "\(cls)  \(f.code)"
+    }
+
+    private var operatorLabel: String {
+        let op = sighting.formation?.vehicleClass?.operatorName ?? ""
+        let cat = sighting.formation?.vehicleClass?.category ?? ""
+        let parts = [op, cat].filter { !$0.isEmpty }
+        return parts.isEmpty ? "TETSULOG" : parts.joined(separator: " · ")
+    }
+
+    /// ダッチング日付印（昭和書式 26.-6.13 のように年・月・日を空白詰めで）
+    private var stampText: String {
+        let cal = Calendar(identifier: .gregorian)
+        let yy = cal.component(.year, from: sighting.date) % 100
+        let mm = cal.component(.month, from: sighting.date)
+        let dd = cal.component(.day, from: sighting.date)
+        return String(format: "%02d.%2d.%2d", yy, mm, dd)
+    }
+
+    /// 券面の通し番号（演出）
+    private var serial: String {
+        let f = DateFormatter(); f.dateFormat = "yyMMdd"
+        let suffix = abs((sighting.formation?.code ?? sighting.id.uuidString).hashValue) % 10000
+        return "\(f.string(from: sighting.date))-\(String(format: "%04d", suffix))"
     }
 }
 

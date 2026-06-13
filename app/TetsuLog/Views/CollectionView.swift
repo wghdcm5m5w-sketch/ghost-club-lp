@@ -307,31 +307,21 @@ struct FormationDetailView: View {
                     }
 
                     ForEach(sightings) { s in
-                        PaperCard {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack {
-                                    Text(s.date, format: .dateTime.year().month().day())
-                                        .font(Theme.Font.mono(13)).foregroundStyle(Theme.Palette.inkSub)
-                                    Spacer()
-                                    if s.isLastRun { InkBadge(text: "ラストラン") }
-                                }
-                                if let file = s.photoFilenames.first, let img = PhotoStore.load(file) {
-                                    Image(uiImage: img).resizable().scaledToFill()
-                                        .frame(height: 150).frame(maxWidth: .infinity)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                }
-                                Text("\(s.lineName) · \(s.stationName)")
-                                    .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
-                                if !s.carNumber.isEmpty {
-                                    Text(s.carNumber).font(Theme.Font.mono(12)).foregroundStyle(Theme.Palette.inkSub)
-                                }
-                                if !s.headmark.isEmpty || !s.livery.isEmpty {
-                                    HStack(spacing: 6) {
-                                        if !s.headmark.isEmpty { tag(s.headmark) }
-                                        if !s.livery.isEmpty { tag(s.livery) }
+                        VStack(spacing: 10) {
+                            // ① 硬券（クリーム券）
+                            SightingTicketDetail(sighting: s)
+                            // ② 添付（写真・録音）はダークガラスで“別物”として下に
+                            if !s.photoFilenames.isEmpty || !s.audioFilenames.isEmpty {
+                                PaperCard(accent: false) {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        if let file = s.photoFilenames.first, let img = PhotoStore.load(file) {
+                                            Image(uiImage: img).resizable().scaledToFill()
+                                                .frame(height: 160).frame(maxWidth: .infinity)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        }
+                                        ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
                                     }
                                 }
-                                ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
                             }
                         }
                         .contextMenu {
@@ -355,11 +345,118 @@ struct FormationDetailView: View {
             Text(v).font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.ink)
         }
     }
-    private func tag(_ t: String) -> some View {
-        Text(t).font(.system(size: 12, weight: .bold))
-            .padding(.horizontal, 8).padding(.vertical, 3)
-            .background(Capsule().fill(Theme.Palette.cyan.opacity(0.12)))
-            .foregroundStyle(Theme.Palette.cyan)
+}
+
+/// 遭遇1件の硬券（詳細用・大判）。LogViewの小判 SightingCard と同系統だが、
+/// 形式・編成番号・列車番号・車番・天気まで券面に同居する。
+private struct SightingTicketDetail: View {
+    let sighting: Sighting
+
+    var body: some View {
+        KikenCard(edge: edgeColor, aged: aged) {
+            VStack(alignment: .leading, spacing: 8) {
+                // 上段：路線（明朝大）／日付印
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(sighting.lineName.isEmpty ? "（路線未設定）" : sighting.lineName)
+                            .font(.system(size: 22, weight: .heavy, design: .serif))
+                            .foregroundStyle(Theme.Palette.paperInk)
+                        Text(operatorLabel)
+                            .font(.system(size: 10, weight: .bold))
+                            .tracking(0.8)
+                            .foregroundStyle(Theme.Palette.paperInkSub)
+                    }
+                    Spacer(minLength: 8)
+                    DatingStamp(text: stampText)
+                }
+
+                // 形式・編成（券面の主役）
+                Text(label)
+                    .font(.system(size: 15, weight: .heavy, design: .monospaced))
+                    .foregroundStyle(Theme.Palette.paperInk)
+
+                // 諸元グリッド（罫線で区切る）
+                Rectangle().fill(Color(hex: 0x46341A).opacity(0.35)).frame(height: 1).padding(.top, 2)
+                LazyVGrid(columns: [GridItem(.flexible(), alignment: .leading), GridItem(.flexible(), alignment: .leading)], alignment: .leading, spacing: 7) {
+                    cell(k: "遭遇駅", v: sighting.stationName.isEmpty ? "—" : sighting.stationName)
+                    if !sighting.trainNumber.isEmpty { cell(k: "列車番号", v: sighting.trainNumber) }
+                    if !sighting.carNumber.isEmpty   { cell(k: "車 番",    v: sighting.carNumber) }
+                    if !sighting.weather.isEmpty     { cell(k: "天 気",    v: sighting.weather) }
+                    if !sighting.headmark.isEmpty    { cell(k: "ヘッドマーク", v: sighting.headmark) }
+                    if !sighting.livery.isEmpty      { cell(k: "塗 装",    v: sighting.livery) }
+                    cell(k: "種 別", v: sighting.isLastRun ? "ラストラン" : sighting.kind.rawValue)
+                }
+                Rectangle().fill(Color(hex: 0x46341A).opacity(0.35)).frame(height: 1)
+
+                // 下段：様式番号・小書き・通し番号
+                HStack(alignment: .center) {
+                    Text("様式 (2) 図 — \(formCode)")
+                        .font(.system(size: 8.5, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(Theme.Palette.paperInkSub)
+                    Spacer()
+                    TicketMicroprint()
+                    Spacer()
+                    Text("No. \(serial)")
+                        .font(.system(size: 8.5, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(Theme.Palette.paperInkSub)
+                }
+            }
+        }
+    }
+
+    private func cell(k: String, v: String) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(k)
+                .font(.system(size: 8, weight: .heavy, design: .monospaced))
+                .tracking(0.6)
+                .foregroundStyle(Theme.Palette.paperInkSub)
+            Text(v)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Theme.Palette.paperInk)
+                .lineLimit(1)
+        }
+    }
+
+    private var aged: Bool {
+        sighting.isLastRun || sighting.formation?.vehicleClass?.isRetiring == true
+    }
+
+    private var edgeColor: Color {
+        if sighting.isLastRun { return Theme.Palette.red }
+        switch sighting.kind {
+        case .scheduled:                  return Color(hex: 0x1D4E86)
+        case .extra, .charter, .lastRun:  return Theme.Palette.red
+        case .deadhead, .test, .delivery: return Color(hex: 0x2C6A3C)
+        }
+    }
+
+    private var label: String {
+        guard let f = sighting.formation else { return "（編成未設定）" }
+        return "\(f.vehicleClass?.name ?? "")  \(f.code)"
+    }
+
+    private var operatorLabel: String {
+        let op = sighting.formation?.vehicleClass?.operatorName ?? ""
+        let cat = sighting.formation?.vehicleClass?.category ?? ""
+        return [op, cat].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    private var stampText: String {
+        let cal = Calendar(identifier: .gregorian)
+        let yy = cal.component(.year, from: sighting.date) % 100
+        let mm = cal.component(.month, from: sighting.date)
+        let dd = cal.component(.day, from: sighting.date)
+        return String(format: "%02d.%2d.%2d", yy, mm, dd)
+    }
+
+    private var serial: String {
+        let f = DateFormatter(); f.dateFormat = "yyMMdd"
+        let suffix = abs((sighting.formation?.code ?? sighting.id.uuidString).hashValue) % 10000
+        return "\(f.string(from: sighting.date))-\(String(format: "%04d", suffix))"
+    }
+
+    private var formCode: String {
+        String(format: "%04d", abs(sighting.id.uuidString.hashValue) % 10000)
     }
 }
 

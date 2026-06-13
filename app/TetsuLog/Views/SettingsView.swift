@@ -144,56 +144,63 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: Pro バナー
+    // MARK: Pro バナー（特別補充券）
     @ViewBuilder
     private var proBanner: some View {
-        if store.isPro {
-            Button {
-                showingPurchase = true
-            } label: {
-                PaperCard(accent: false) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(Theme.Palette.goldDeep)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("TetsuLog Pro 有効")
-                                .font(.system(size: 15, weight: .heavy, design: .serif))
-                                .foregroundStyle(Theme.Palette.ink)
-                            Text("ご購入ありがとうございます")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Theme.Palette.inkSub)
-                        }
+        Button { showingPurchase = true } label: {
+            KikenCard(edge: store.isPro ? Color(hex: 0x2C6A3C) : Theme.Palette.red) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(store.isPro ? "発券済 · TETSULOG PRO" : "特別補充券 · TETSULOG PRO")
+                            .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                            .tracking(2)
+                            .foregroundStyle(store.isPro ? Color(hex: 0x2C6A3C) : Theme.Palette.red)
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub)
+                        if store.isPro {
+                            Image(systemName: "checkmark.seal.fill")
+                                .foregroundStyle(Color(hex: 0x2C6A3C))
+                                .font(.system(size: 14))
+                        }
                     }
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(store.isPro ? "全機能、有効化済み" : "全機能を、買い切りで")
+                            .font(.system(size: 17, weight: .heavy, design: .serif))
+                            .foregroundStyle(Theme.Palette.paperInk)
+                        Spacer()
+                        if !store.isPro {
+                            HStack(alignment: .firstTextBaseline, spacing: 1) {
+                                Text("¥")
+                                    .font(.system(size: 13, weight: .heavy, design: .serif))
+                                    .foregroundStyle(Theme.Palette.red)
+                                Text(displayPrice)
+                                    .font(.system(size: 26, weight: .heavy, design: .serif).monospacedDigit())
+                                    .foregroundStyle(Theme.Palette.red)
+                            }
+                        }
+                    }
+                    Text(store.isPro
+                         ? "ご購入ありがとうございます"
+                         : "OCR / 順光逆光計算 / 走行音録音")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.Palette.paperInkSub)
+                    HStack {
+                        TicketMicroprint(text: store.isPro ? "通用 無期限 ・ サブスクなし" : "下車前途無効 ・ サブスクなし ・ 買い切り")
+                        Spacer()
+                        Text("No. \(serial)")
+                            .font(.system(size: 7.5, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(Theme.Palette.paperInkSub)
+                    }
+                    .padding(.top, 2)
                 }
             }
-            .buttonStyle(.plain)
-        } else {
-            Button {
-                showingPurchase = true
-            } label: {
-                PaperCard(accent: true) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "bag.fill")
-                            .font(.system(size: 22))
-                            .foregroundStyle(Theme.Palette.red)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("TetsuLog Pro")
-                                .font(.system(size: 15, weight: .heavy, design: .serif))
-                                .foregroundStyle(Theme.Palette.ink)
-                            Text("全機能を ¥\(displayPrice) 買い切りで")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Theme.Palette.inkSub)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right").foregroundStyle(Theme.Palette.inkSub)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
         }
+        .buttonStyle(.plain)
+    }
+
+    /// バナーの券面通し番号（演出）
+    private var serial: String {
+        let f = DateFormatter(); f.dateFormat = "yyMMdd"
+        return "\(f.string(from: .now))-0001"
     }
 
     private var displayPrice: String {
