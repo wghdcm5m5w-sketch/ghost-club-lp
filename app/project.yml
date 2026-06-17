@@ -110,6 +110,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"   # Apple Watch
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon   # Watchアプリのアイコン
     dependencies:
       # 文字盤コンプリケーション拡張を Watch アプリに埋め込む
       - target: TetsuLogWatchWidgets
