@@ -8,6 +8,7 @@ import SwiftUI
 struct TetsuLogWidgetBundle: WidgetBundle {
     var body: some Widget {
         CollectionWidget()
+        RetiringWidget()
         RideLiveActivity()
     }
 }

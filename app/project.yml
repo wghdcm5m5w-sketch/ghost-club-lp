@@ -96,6 +96,32 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"   # Apple Watch
+    dependencies:
+      # 文字盤コンプリケーション拡張を Watch アプリに埋め込む
+      - target: TetsuLogWatchWidgets
+        embed: true
+
+  TetsuLogWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    deploymentTarget: "11.0"
+    sources:
+      - path: TetsuLogWatchWidgets
+      # 本体と共有するモデル・共有ストア
+      - path: TetsuLog/Models/Models.swift
+      - path: TetsuLog/Models/SharedStore.swift
+    info:
+      path: TetsuLogWatchWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: TetsuLog
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp.complication
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "4"
+        GENERATE_INFOPLIST_FILE: NO
 
   TetsuLogWidgetsExtension:
     type: app-extension
