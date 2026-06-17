@@ -255,6 +255,20 @@ private struct SightingCard: View {
                 .padding(.top, 1)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(a11yLabel))
+    }
+
+    /// VoiceOver 用の1行サマリ
+    private var a11yLabel: String {
+        var parts: [String] = []
+        parts.append(sighting.lineName.isEmpty ? "路線未設定" : sighting.lineName)
+        parts.append(label)
+        if !sighting.stationName.isEmpty { parts.append("\(sighting.stationName)にて") }
+        parts.append(stampText)
+        if sighting.isLastRun { parts.append("ラストラン") }
+        else if sighting.kind != .scheduled { parts.append(sighting.kind.rawValue) }
+        return parts.joined(separator: "、")
     }
 
     private func microTag(_ t: String) -> some View {

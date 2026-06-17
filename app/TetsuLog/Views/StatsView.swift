@@ -65,6 +65,9 @@ struct StatsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("収集率")
+            .accessibilityValue("\(Int(collectionRatio * 100))パーセント")
         }
     }
 

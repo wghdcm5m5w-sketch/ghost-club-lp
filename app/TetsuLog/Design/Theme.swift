@@ -265,6 +265,7 @@ struct CarDiagram: View {
             }
         }
         .frame(height: height)
+        .accessibilityHidden(true)   // 装飾的な側面図。情報は近接のテキストが伝える
     }
 
     private func drawCar(_ ctx: GraphicsContext, kind: Kind, rect: CGRect, facingRight: Bool) {

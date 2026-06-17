@@ -141,6 +141,7 @@ final class Sighting {
     var trainNumber: String = ""      // 2024M / 9501M / 試8520 など
     var kindRaw: String = TrainKind.scheduled.rawValue  // 定期/臨時/回送/...
     var audioFilenames: [String] = []   // 音鉄用: 走行音・車内放送・駅メロ等
+    var audioTags: [String: String] = [:]   // 録音ファイル名 → 種別タグ（走行音/駅メロ/車内放送…）
 
     init(date: Date = .now, stationName: String = "", lineName: String = "") {
         self.date = date

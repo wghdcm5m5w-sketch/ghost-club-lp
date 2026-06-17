@@ -89,12 +89,20 @@ final class AudioRecorderModel: NSObject, AVAudioRecorderDelegate {
 struct AudioRecorderSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model = AudioRecorderModel()
-    var onSave: (String) -> Void
+    @State private var tag: String = AudioTag.default
+    var onSave: (String, String) -> Void
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 28) {
                 Spacer()
+
+                // 録音の種別タグ
+                Picker("種別", selection: $tag) {
+                    ForEach(AudioTag.all, id: \.self) { Text($0).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
 
                 Text(timeString(model.elapsed))
                     .font(.system(size: 56, weight: .semibold, design: .rounded).monospacedDigit())
@@ -159,7 +167,7 @@ struct AudioRecorderSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
                         if let f = model.savedFilename {
-                            onSave(f)
+                            onSave(f, tag)
                         }
                         dismiss()
                     }

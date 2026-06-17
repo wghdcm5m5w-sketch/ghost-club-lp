@@ -59,9 +59,16 @@ final class AudioPlayerModel: NSObject, AVAudioPlayerDelegate {
     }
 }
 
+/// 音鉄の録音タグ（走行音・駅メロ等）。保存は String そのもの。
+enum AudioTag {
+    static let all: [String] = ["走行音", "駅メロ", "車内放送", "警笛", "発車ベル", "その他"]
+    static let `default` = "走行音"
+}
+
 /// 遭遇記録に添付された録音を再生する小さなプレイヤー
 struct AudioPlayerRow: View {
     let filename: String
+    var tag: String? = nil
     @State private var player = AudioPlayerModel()
 
     var body: some View {
@@ -74,6 +81,11 @@ struct AudioPlayerRow: View {
             .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 2) {
+                if let tag, !tag.isEmpty {
+                    Text(tag)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.green)
+                }
                 ProgressView(value: progress)
                     .tint(.green)
                 HStack {
@@ -89,6 +101,9 @@ struct AudioPlayerRow: View {
                 .foregroundStyle(.green)
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(tag.map { "録音 \($0)" } ?? "録音"))
+        .accessibilityValue(Text("長さ \(timeString(player.duration))"))
         .onAppear { player.load(filename: filename) }
         .onDisappear { player.stop() }
     }

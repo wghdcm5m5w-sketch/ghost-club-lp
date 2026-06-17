@@ -318,7 +318,7 @@ struct FormationDetailView: View {
                                             if let file = s.photoFilenames.first {
                                                 LazyPhoto(filename: file, height: 160)
                                             }
-                                            ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0) }
+                                            ForEach(s.audioFilenames, id: \.self) { AudioPlayerRow(filename: $0, tag: s.audioTags[$0]) }
                                         }
                                     }
                                 }

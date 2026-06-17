@@ -60,6 +60,7 @@ struct AddSightingView: View {
     @State private var longitude: Double = 0
 
     @State private var audioFilenames: [String] = []
+    @State private var audioTags: [String: String] = [:]
     @State private var showingRecorder = false
     @State private var showingPurchase = false
 
@@ -138,10 +139,11 @@ struct AddSightingView: View {
                     }
                     ForEach(audioFilenames, id: \.self) { file in
                         HStack {
-                            AudioPlayerRow(filename: file)
+                            AudioPlayerRow(filename: file, tag: audioTags[file])
                             Button {
                                 AudioStore.delete(file)
                                 audioFilenames.removeAll { $0 == file }
+                                audioTags[file] = nil
                                 Haptics.tick()
                             } label: {
                                 Image(systemName: "trash").foregroundStyle(.red)
@@ -211,8 +213,9 @@ struct AddSightingView: View {
                 }
             }
             .sheet(isPresented: $showingRecorder) {
-                AudioRecorderSheet { filename in
+                AudioRecorderSheet { filename, tag in
                     audioFilenames.append(filename)
+                    audioTags[filename] = tag
                 }
             }
             .sheet(isPresented: $showingPurchase) { PurchaseView() }
@@ -258,6 +261,7 @@ struct AddSightingView: View {
             photoAttached = previewImage != nil
         }
         audioFilenames = s.audioFilenames
+        audioTags = s.audioTags
         loaded = true
     }
 
@@ -323,6 +327,8 @@ struct AddSightingView: View {
         s.longitude = longitude
         if let savedPhotoFilename { s.photoFilenames = [savedPhotoFilename] }
         s.audioFilenames = audioFilenames
+        // 削除済みファイルのタグを掃除してから保存
+        s.audioTags = audioTags.filter { audioFilenames.contains($0.key) }
 
         if editing == nil { context.insert(s) }
         do {
