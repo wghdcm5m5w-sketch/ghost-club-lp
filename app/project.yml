@@ -44,6 +44,13 @@ targets:
       properties:
         CFBundleDisplayName: TetsuLog
         UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: "編成番号を読み取って記録するためにカメラを使用します。画像は端末内でのみ処理されます。"
         NSLocationWhenInUseUsageDescription: "撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。"
         NSPhotoLibraryUsageDescription: "記録に写真を添付するためにフォトライブラリへアクセスします。"
