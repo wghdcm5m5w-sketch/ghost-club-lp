@@ -124,7 +124,7 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp.complication
+        PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp.cmpl
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"
         GENERATE_INFOPLIST_FILE: NO
