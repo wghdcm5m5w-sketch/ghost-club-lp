@@ -11,6 +11,7 @@ struct SettingsView: View {
     @AppStorage("tetsulog.lastSyncAt") private var lastSyncAt: Double = 0
     @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
     @AppStorage(AppLockManager.graceKey) private var appLockGraceSec = 0
+    @AppStorage("tetsulog.warnDuplicates") private var warnDuplicates = true
     private let lockAvailable = AppLockManager.isAvailable
 
     @State private var exportURL: URL?
@@ -47,6 +48,14 @@ struct SettingsView: View {
                             row("乗車記録", "\(rides.count)件")
                             line
                             row("累計乗車距離", String(format:"%.1f km", rides.map(\.distanceKm).reduce(0,+)))
+                            line
+                            HStack {
+                                Label("重複記録を警告", systemImage: "exclamationmark.triangle")
+                                    .font(Theme.Font.body(15)).foregroundStyle(Theme.Palette.cyan)
+                                Spacer()
+                                Toggle("", isOn: $warnDuplicates).labelsHidden().tint(Theme.Palette.red)
+                            }
+                            caption("同じ日に同じ編成を記録しようとすると注意を表示します（保存はできます）。")
                         }
 
                         section("狙いの編成リマインダー") {
@@ -105,6 +114,8 @@ struct SettingsView: View {
                             }
                             line
                             row("端末内の写真・録音", storageBytes.map(formatBytes) ?? "計測中…")
+                            line
+                            actionRow("写真・録音をまとめて書き出す", "photo.on.rectangle.angled"){ exportMedia() }
                             line
                             actionRow("参照切れファイルを掃除", "trash"){ cleanupOrphans() }
                             if let cleanupMessage {
@@ -250,6 +261,12 @@ struct SettingsView: View {
         if let s = ExportService.exportSightingsCSV(context) { urls.append(s) }
         if let r = ExportService.exportRidesCSV(context) { urls.append(r) }
         guard !urls.isEmpty else { return }
+        csvURLs = urls; showingCSVShare = true; Haptics.success()
+    }
+    private func exportMedia() {
+        // 端末内の写真・録音をまとめて共有シートへ（「ファイルに保存」「AirDrop」等でバックアップ）
+        let urls = PhotoStore.allFileURLs() + AudioStore.allFileURLs()
+        guard !urls.isEmpty else { cleanupMessage = "書き出せる写真・録音がありません。"; return }
         csvURLs = urls; showingCSVShare = true; Haptics.success()
     }
     private func handleImport(_ result: Result<URL, Error>) {

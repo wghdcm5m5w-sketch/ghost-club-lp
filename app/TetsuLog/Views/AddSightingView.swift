@@ -11,9 +11,23 @@ struct AddSightingView: View {
 
     @Query(sort: \VehicleClass.name) private var classes: [VehicleClass]
     @Query private var allSightings: [Sighting]
+    @AppStorage("tetsulog.warnDuplicates") private var warnDuplicates = true
 
     /// 編集対象。nilなら新規。
     var editing: Sighting?
+
+    /// 同じ日・同じ編成の記録が既にあれば注意文を返す（ブロックはしない）。
+    private var duplicateNote: String? {
+        guard warnDuplicates, let f = selectedFormation else { return nil }
+        let cal = Calendar.current
+        let dups = allSightings.filter { s in
+            if let e = editing, s.persistentModelID == e.persistentModelID { return false }
+            guard let sf = s.formation else { return false }
+            return sf.persistentModelID == f.persistentModelID && cal.isDate(s.date, inSameDayAs: date)
+        }
+        guard !dups.isEmpty else { return nil }
+        return "同じ日に \(f.code) の記録が既に\(dups.count)件あります。意図的な複数記録ならこのまま保存できます。"
+    }
 
     private var stationSuggestions: [String] {
         Array(Set(allSightings.map(\.stationName).filter { !$0.isEmpty })).sorted()
@@ -72,6 +86,11 @@ struct AddSightingView: View {
                     }
                     TextField("車番（クハE235-1247 等）", text: $carNumber)
                         .font(.body.monospaced())
+                    if let duplicateNote {
+                        Label(duplicateNote, systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
                 }
 
                 Section {

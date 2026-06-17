@@ -55,6 +55,11 @@ enum PhotoStore {
     }
 
     /// ディレクトリ内の全ファイル名
+    /// 端末内に保存された全写真ファイルのURL（バックアップ書き出し用）
+    static func allFileURLs() -> [URL] {
+        allFilenames().map { dir.appendingPathComponent($0) }
+    }
+
     static func allFilenames() -> [String] {
         (try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []
     }
