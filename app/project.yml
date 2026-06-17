@@ -91,6 +91,12 @@ targets:
       # 共有モデル（本体と同じ実装を参照）
       - path: TetsuLog/Models/Models.swift
       - path: TetsuLog/Models/SharedStore.swift
+    info:
+      path: TetsuLogWatch/Info.plist
+      properties:
+        CFBundleDisplayName: TetsuLog
+        WKApplication: true
+        UILaunchScreen: {}
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ryofujimatsu.tetsulog.watchapp
