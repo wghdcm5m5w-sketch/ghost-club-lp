@@ -34,7 +34,10 @@ enum PhotoStore {
         let filename = "\(UUID().uuidString).jpg"
         let url = dir.appendingPathComponent(filename)
         do {
-            try jpeg.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
+            // Data Protection は録音(AudioStore)・保存先ディレクトリと同じクラスにそろえる。
+            // completeUnlessOpen はロック後に閉じたファイルが読めなくなり、
+            // 一覧表示などと相性が悪く、他のメディアと不整合になるため避ける。
+            try jpeg.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
             return filename
         } catch {
             return nil

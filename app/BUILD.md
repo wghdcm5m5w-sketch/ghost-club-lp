@@ -20,8 +20,13 @@ open TetsuLog.xcodeproj    # Xcode で開いてビルド/アーカイブ
 
 `xcodegen generate` は次を毎回作り直す:
 - `TetsuLog.xcodeproj`（5ターゲット: 本体 / Tests / iOSウィジェット / Watchアプリ / Watchコンプリ）
-- 各ターゲットの `*.entitlements`（App Group / iCloud(CloudKit) / Push）
+- 各ターゲットの `*.entitlements`（App Group / iCloud(CloudKit)）
 - 各ターゲットの共有スキーム
+
+> Push (aps-environment) は entitlements に固定していない。CloudKit の基本同期には
+> 不要で、App ID に Push が無い状態でアーカイブ署名が失敗するのを避けるため。
+> プッシュ更新型ライブアクティビティ等で必要になったら、Xcode で Push Notifications を
+> 有効化し、project.yml の本体 `entitlements:` に `aps-environment: development` を追記する。
 
 → Xcode の Signing & Capabilities を手で触る必要はない。手で触っても
 次の `xcodegen generate` で project.yml の内容に戻る。Capability を増減

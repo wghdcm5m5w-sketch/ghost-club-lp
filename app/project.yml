@@ -72,7 +72,11 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     # ▼ Capabilities は project.yml が正。再生成で確実に復元される。
-    #   本体: App Group（ウィジェット/Watchと共有）+ iCloud/CloudKit（Private DB同期）+ Push（CloudKit/ライブアクティビティ）。
+    #   本体: App Group（ウィジェット/Watchと共有）+ iCloud/CloudKit（Private DB同期）。
+    #   ※ Push(aps-environment) はここに固定しない。CloudKitの基本同期には不要で、
+    #     App IDにPushが無い状態でアーカイブ署名が失敗する事故を避けるため。
+    #     プッシュ更新型ライブアクティビティ等で必要になったら Xcode で
+    #     Push Notifications を有効化し、ここに aps-environment を追記する。
     entitlements:
       path: TetsuLog/TetsuLog.entitlements
       properties:
@@ -82,7 +86,6 @@ targets:
           - iCloud.com.ryofujimatsu.tetsulog
         com.apple.developer.icloud-services:
           - CloudKit
-        aps-environment: development
     dependencies:
       # ウィジェット拡張を本体に埋め込む
       - target: TetsuLogWidgetsExtension
