@@ -55,12 +55,16 @@ struct AddSightingView: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var photoAttached = false
     @State private var savedPhotoFilename: String?
+    /// ロード時点でDBが参照していた写真（保存成功するまで物理削除しない）。
+    @State private var originalPhotoFilename: String?
     @State private var previewImage: UIImage?
     @State private var latitude: Double = 0
     @State private var longitude: Double = 0
 
     @State private var audioFilenames: [String] = []
     @State private var audioTags: [String: String] = [:]
+    /// ロード時点でDBが参照していた録音（保存成功するまで物理削除しない）。
+    @State private var originalAudioFilenames: [String] = []
     @State private var showingRecorder = false
     @State private var showingPurchase = false
 
@@ -141,9 +145,13 @@ struct AddSightingView: View {
                         HStack {
                             AudioPlayerRow(filename: file, tag: audioTags[file])
                             Button {
-                                AudioStore.delete(file)
                                 audioFilenames.removeAll { $0 == file }
                                 audioTags[file] = nil
+                                // セッション中に録音した未保存ファイルのみ即削除。
+                                // DBが参照済みの録音は保存が成功するまで物理削除しない（消失防止）。
+                                if !originalAudioFilenames.contains(file) {
+                                    AudioStore.delete(file)
+                                }
                                 Haptics.tick()
                             } label: {
                                 Image(systemName: "trash").foregroundStyle(.red)
@@ -200,7 +208,7 @@ struct AddSightingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("キャンセル") { dismiss() }
+                    Button("キャンセル") { cancelEditing() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") { save() }
@@ -257,10 +265,12 @@ struct AddSightingView: View {
         longitude = s.longitude
         if let file = s.photoFilenames.first {
             savedPhotoFilename = file
+            originalPhotoFilename = file
             previewImage = PhotoStore.load(file)
             photoAttached = previewImage != nil
         }
         audioFilenames = s.audioFilenames
+        originalAudioFilenames = s.audioFilenames
         audioTags = s.audioTags
         loaded = true
     }
@@ -293,7 +303,12 @@ struct AddSightingView: View {
     private func loadPhotoMetadata(_ item: PhotosPickerItem) async {
         guard let data = try? await item.loadTransferable(type: Data.self) else { return }
         let info = PhotoMetadata.read(from: data)
-        let filename = PhotoStore.save(data)
+        guard let filename = PhotoStore.save(data) else {
+            await MainActor.run {
+                saveError = "写真を保存できませんでした。空き容量をご確認ください。"
+            }
+            return
+        }
         let image = UIImage(data: data)
         await MainActor.run {
             if let d = info.date { date = d }
@@ -301,10 +316,15 @@ struct AddSightingView: View {
                 latitude = c.latitude
                 longitude = c.longitude
             }
-            if let old = savedPhotoFilename { PhotoStore.delete(old) }
+            let prev = savedPhotoFilename
             savedPhotoFilename = filename
             previewImage = image
-            photoAttached = filename != nil
+            photoAttached = true
+            // 直前にこのセッションで作った未保存ファイルだけ即削除する。
+            // DBが参照済みのオリジナルは保存が成功するまで保持（消失防止）。
+            if let prev, prev != originalPhotoFilename {
+                PhotoStore.delete(prev)
+            }
             Haptics.tick()
         }
     }
@@ -341,6 +361,18 @@ struct AddSightingView: View {
             return
         }
 
+        // 保存が成功してから初めて、参照されなくなった旧メディアを物理削除する。
+        // （DBコミット前にファイルを消すと、保存失敗時に参照だけ残って静かに消失するため）
+        if let originalPhotoFilename, originalPhotoFilename != savedPhotoFilename {
+            PhotoStore.delete(originalPhotoFilename)
+        }
+        for file in originalAudioFilenames where !audioFilenames.contains(file) {
+            AudioStore.delete(file)
+        }
+        // コミット済み状態にそろえ、二重削除や取り消し時の誤削除を防ぐ。
+        originalPhotoFilename = savedPhotoFilename
+        originalAudioFilenames = audioFilenames
+
         if editing == nil {
             if selectedClass?.isRetiring == true || isLastRun {
                 Haptics.farewell()
@@ -357,11 +389,34 @@ struct AddSightingView: View {
 
     private func deleteRecord() {
         guard let s = editing else { return }
-        for file in s.photoFilenames { PhotoStore.delete(file) }
-        for file in s.audioFilenames { AudioStore.delete(file) }
+        let photos = s.photoFilenames
+        let audios = s.audioFilenames
         context.delete(s)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            // 削除のコミットに失敗したら巻き戻し、メディアは一切消さずに通知する。
+            context.rollback()
+            saveError = "記録を削除できませんでした。(\(error.localizedDescription))"
+            Haptics.tick()
+            return
+        }
+        // DBから参照が消えたあとにのみメディアを物理削除する。
+        for file in photos { PhotoStore.delete(file) }
+        for file in audios { AudioStore.delete(file) }
         Haptics.tick()
+        dismiss()
+    }
+
+    /// キャンセル時は、このセッションで新規作成され未コミットのメディアだけを掃除する。
+    /// DBが参照済みのオリジナルは絶対に消さない（保存しなかった編集で消失させないため）。
+    private func cancelEditing() {
+        if let savedPhotoFilename, savedPhotoFilename != originalPhotoFilename {
+            PhotoStore.delete(savedPhotoFilename)
+        }
+        for file in audioFilenames where !originalAudioFilenames.contains(file) {
+            AudioStore.delete(file)
+        }
         dismiss()
     }
 }
