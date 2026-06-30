@@ -18,3 +18,39 @@ enum WidgetTheme {
         LinearGradient(colors: [navy, navyD], startPoint: .top, endPoint: .bottom)
     }
 }
+
+/// 共有ストアを読めなかった／まだ同期されていないときに、
+/// 誤った「ゼロ」ではなく「アプリを開いて同期」を案内するウィジェット表示。
+struct UnsyncedWidgetLabel: View {
+    let family: WidgetFamily
+
+    var body: some View {
+        switch family {
+        case .accessoryInline:
+            Text("アプリを開いて同期")
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 1) {
+                Text("TETSULOG")
+                    .font(.system(size: 10, weight: .heavy, design: .serif)).tracking(2)
+                Text("アプリを開いて同期")
+                    .font(.system(size: 13, weight: .bold))
+            }
+        default:
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .foregroundStyle(WidgetTheme.creamSub)
+                    Text("TETSULOG")
+                        .font(.system(size: 9, weight: .heavy, design: .serif)).tracking(2)
+                        .foregroundStyle(WidgetTheme.creamSub)
+                }
+                Spacer()
+                Text("アプリを開いて同期")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(WidgetTheme.cream)
+                Text("最新の記録を読み込みます")
+                    .font(.system(size: 11)).foregroundStyle(WidgetTheme.creamSub)
+            }
+        }
+    }
+}

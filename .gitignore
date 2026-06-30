@@ -1,1 +1,20 @@
+# Python
 tools/__pycache__/
+
+# ── Xcode / XcodeGen ───────────────────────────────────────────────
+# project.yml が source of truth。.xcodeproj と entitlements は
+# `xcodegen generate` で生成する成果物なので git 管理しない。
+# （ビルド前に必ず app/ で `xcodegen generate` を実行すること）
+*.xcodeproj/
+*.entitlements
+
+# Xcode ユーザー固有・バックアップ・ビルド成果物
+xcuserdata/
+*.xcuserstate
+*.xcodeproj.bak/
+*.bak
+DerivedData/
+build/
+
+# macOS
+.DS_Store

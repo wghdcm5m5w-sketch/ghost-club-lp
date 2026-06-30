@@ -1,14 +1,18 @@
-# XcodeGen 設定ファイル
-# Mac で `brew install xcodegen` 後、この app/ ディレクトリで `xcodegen generate` を実行すると
-# TetsuLog.xcodeproj が生成される。手作業のファイル取り込み・ターゲット設定が不要になる。
+# XcodeGen 設定ファイル ＝ このプロジェクトの「唯一の正」(source of truth)
 #
-# ▼ まず動かす（最小構成・推奨）
-#   この設定は「本体アプリのみ・ローカル保存」。無料Apple IDでも実機で動く。
-#   CloudKit / ウィジェット / ライブアクティビティは含めない（後述の手順で追加）。
+# ▼ 重要: TetsuLog.xcodeproj は **このファイルから生成する成果物** であり、git 管理しない。
+#   ビルド前に必ず次を実行する（Mac, この app/ ディレクトリで）:
+#       brew install xcodegen   # 初回のみ
+#       xcodegen generate       # project.yml → TetsuLog.xcodeproj / *.entitlements を生成
+#   その後 TetsuLog.xcodeproj を Xcode で開いてビルド/アーカイブする。
+#   Signing&Capabilities をXcodeのUIで触っても再生成で消えるため、
+#   署名・Capability・entitlements は全てこの project.yml に書く（下記参照）。
+#
+# ▼ 構成: 本体(iOS) + テスト + ウィジェット(iOS) + Apple Watch アプリ + Watchコンプリ の5ターゲット。
+#   CloudKit / App Groups / ライブアクティビティを含むフル構成。
 #
 # ▼ Bundle ID と開発チーム
 #   PRODUCT_BUNDLE_IDENTIFIER と DEVELOPMENT_TEAM を自分のものに変更すること。
-#   （Xcode で一度ターゲットの Signing で Team を選べば DEVELOPMENT_TEAM は空でも可）
 
 name: TetsuLog
 options:
@@ -22,7 +26,9 @@ settings:
     MARKETING_VERSION: "1.1"
     CURRENT_PROJECT_VERSION: "2"
     SWIFT_VERSION: "5.0"
-    DEVELOPMENT_TEAM: ""          # ←自分のTeam IDを入れるか、Xcodeで選択
+    # 開発者の Apple Developer Team ID。自分のIDに変更する
+    # （Xcode › Settings › Accounts、または developer.apple.com › Membership で確認）。
+    DEVELOPMENT_TEAM: R329LXJQXR
     CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: NO
     # App Intents の SSU 学習ステップ(AppIntentsSSUTraining)が
@@ -65,6 +71,18 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    # ▼ Capabilities は project.yml が正。再生成で確実に復元される。
+    #   本体: App Group（ウィジェット/Watchと共有）+ iCloud/CloudKit（Private DB同期）+ Push（CloudKit/ライブアクティビティ）。
+    entitlements:
+      path: TetsuLog/TetsuLog.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.ryofujimatsu.tetsulog
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.ryofujimatsu.tetsulog
+        com.apple.developer.icloud-services:
+          - CloudKit
+        aps-environment: development
     dependencies:
       # ウィジェット拡張を本体に埋め込む
       - target: TetsuLogWidgetsExtension
@@ -72,8 +90,6 @@ targets:
       # Apple Watch アプリを本体に埋め込む
       - target: TetsuLogWatch
         embed: true
-    # ▼ Capabilities（iCloud/App Groups/Push）は Xcode の Signing & Capabilities で付与する。
-    #   xcodegen で entitlements を自動生成したい場合は各ターゲットに entitlements: を追加。
 
   TetsuLogTests:
     type: bundle.unit-test
@@ -111,6 +127,17 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"   # Apple Watch
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon   # Watchアプリのアイコン
+    # Watch は別デバイス。App Group は端末内（Watchアプリ↔Watchコンプリ）共有用。
+    # iCloud/CloudKit で iPhone と同じ Private DB を Watch 自身が同期して読む。
+    entitlements:
+      path: TetsuLogWatch/TetsuLogWatch.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.ryofujimatsu.tetsulog
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.ryofujimatsu.tetsulog
+        com.apple.developer.icloud-services:
+          - CloudKit
     dependencies:
       # 文字盤コンプリケーション拡張を Watch アプリに埋め込む
       - target: TetsuLogWatchWidgets
@@ -137,6 +164,12 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "4"
         GENERATE_INFOPLIST_FILE: NO
+    # Watchコンプリは Watchアプリが同期したローカルストアを App Group 経由で読むだけ。
+    entitlements:
+      path: TetsuLogWatchWidgets/TetsuLogWatchWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.ryofujimatsu.tetsulog
 
   TetsuLogWidgetsExtension:
     type: app-extension
@@ -160,3 +193,9 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         GENERATE_INFOPLIST_FILE: NO
+    # iOSウィジェットは本体と同じ App Group のストアをローカル読み取り（iCloud権限は不要）。
+    entitlements:
+      path: TetsuLogWidgets/TetsuLogWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.ryofujimatsu.tetsulog

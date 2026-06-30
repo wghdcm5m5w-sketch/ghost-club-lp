@@ -23,6 +23,7 @@ struct RetiringEntry: TimelineEntry {
     let date: Date
     let total: Int           // 廃車進行中の形式数
     let names: [String]      // 代表形式名（最大4件）
+    var loaded: Bool = true  // 共有ストアを読めたか（false=未同期・要アプリ起動）
 }
 
 struct RetiringProvider: TimelineProvider {
@@ -42,9 +43,13 @@ struct RetiringProvider: TimelineProvider {
 
     private func loadEntry() -> RetiringEntry {
         guard let container = SharedStore.container else {
-            return .init(date: .now, total: 0, names: [])
+            return .init(date: .now, total: 0, names: [], loaded: false)
         }
         let context = ModelContext(container)
+        // 形式マスタが空＝まだ同期されていない。誤って「廃車なし」と出さない。
+        guard SharedStore.isPopulated(context) else {
+            return .init(date: .now, total: 0, names: [], loaded: false)
+        }
         let descriptor = FetchDescriptor<VehicleClass>(
             predicate: #Predicate { $0.isRetiring },
             sortBy: [SortDescriptor(\.name)]
@@ -60,6 +65,14 @@ struct RetiringWidgetView: View {
     let entry: RetiringEntry
 
     var body: some View {
+        if entry.loaded {
+            loadedBody
+        } else {
+            UnsyncedWidgetLabel(family: family)
+        }
+    }
+
+    @ViewBuilder private var loadedBody: some View {
         switch family {
         case .accessoryInline:
             Text(entry.total > 0 ? "廃車進行 \(entry.total)形式" : "廃車進行なし")

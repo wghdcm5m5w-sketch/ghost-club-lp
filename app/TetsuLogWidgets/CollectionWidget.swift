@@ -24,6 +24,7 @@ struct CollectionEntry: TimelineEntry {
     let date: Date
     let monthCount: Int        // 今月の遭遇件数
     let uniqueFormations: Int  // 遭遇済みのユニーク編成数
+    var loaded: Bool = true    // 共有ストアを読めたか（false=未同期・要アプリ起動）
 }
 
 struct CollectionProvider: TimelineProvider {
@@ -44,9 +45,13 @@ struct CollectionProvider: TimelineProvider {
 
     private func loadEntry() -> CollectionEntry {
         guard let container = SharedStore.container else {
-            return .init(date: .now, monthCount: 0, uniqueFormations: 0)
+            return .init(date: .now, monthCount: 0, uniqueFormations: 0, loaded: false)
         }
         let context = ModelContext(container)
+        // 形式マスタが空＝まだ同期されていない。誤って「0件」と出さない。
+        guard SharedStore.isPopulated(context) else {
+            return .init(date: .now, monthCount: 0, uniqueFormations: 0, loaded: false)
+        }
 
         // 今月の遭遇件数
         let startOfMonth = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
@@ -66,6 +71,14 @@ struct CollectionWidgetView: View {
     let entry: CollectionEntry
 
     var body: some View {
+        if entry.loaded {
+            loadedBody
+        } else {
+            UnsyncedWidgetLabel(family: family)
+        }
+    }
+
+    @ViewBuilder private var loadedBody: some View {
         switch family {
         case .accessoryInline:
             Text("今月 \(entry.monthCount) 件")

@@ -24,6 +24,7 @@ struct WeekEntry: TimelineEntry {
     let date: Date
     let week: Int
     let month: Int
+    var loaded: Bool = true   // 共有ストアを読めたか（false=未同期・要アプリ起動）
 }
 
 struct WeekProvider: TimelineProvider {
@@ -40,9 +41,12 @@ struct WeekProvider: TimelineProvider {
 
     private func load() -> WeekEntry {
         guard let container = SharedStore.container else {
-            return .init(date: .now, week: 0, month: 0)
+            return .init(date: .now, week: 0, month: 0, loaded: false)
         }
         let ctx = ModelContext(container)
+        guard SharedStore.isPopulated(ctx) else {
+            return .init(date: .now, week: 0, month: 0, loaded: false)
+        }
         let cal = Calendar.current
         let weekStart = cal.dateInterval(of: .weekOfYear, for: .now)?.start ?? .now
         let monthStart = cal.dateInterval(of: .month, for: .now)?.start ?? .now
@@ -59,6 +63,38 @@ struct ComplicationView: View {
     let entry: WeekEntry
 
     var body: some View {
+        if entry.loaded {
+            loadedBody
+        } else {
+            unsyncedBody
+        }
+    }
+
+    @ViewBuilder private var unsyncedBody: some View {
+        switch family {
+        case .accessoryInline:
+            Label("アプリで同期", systemImage: "arrow.triangle.2.circlepath")
+        case .accessoryCircular:
+            ZStack {
+                AccessoryWidgetBackground()
+                Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 16))
+            }
+        case .accessoryCorner:
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .font(.system(size: 16))
+                .widgetLabel("アプリを開いて同期")
+        default:
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.triangle.2.circlepath").foregroundStyle(.orange)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("TETSULOG").font(.system(size: 9, weight: .heavy)).tracking(1)
+                    Text("アプリを開いて同期").font(.system(size: 13, weight: .bold))
+                }
+            }
+        }
+    }
+
+    @ViewBuilder private var loadedBody: some View {
         switch family {
         case .accessoryInline:
             Label("今週 \(entry.week)", systemImage: "tram.fill")
