@@ -17,17 +17,25 @@ final class PurchaseManager {
 
     /// 状態
     private(set) var product: Product?
+    /// 機能解放の唯一の真実。Apple が検証した `Transaction.currentEntitlements` でのみ true になる。
+    /// UserDefaults キャッシュからは絶対に true にしない（キャッシュ改ざんで解放されないように）。
     private(set) var isPro: Bool = false
+    /// 起動後に一度でもエンタイトルメントを確認したか（UI の「確認中」判定用）。
+    private(set) var hasCheckedEntitlements: Bool = false
     private(set) var isPurchasing: Bool = false
     private(set) var lastError: String?
 
     private let cacheKey = "tetsulog.isPro"
+    /// 表示専用の前回検証結果。機能ゲートには使わない（あくまで体感用）。
+    var cachedProForDisplay: Bool { UserDefaults.standard.bool(forKey: cacheKey) }
+
     private nonisolated(unsafe) var updatesTask: Task<Void, Never>?
 
     init() {
-        // 既存のキャッシュで初期描画を高速化（後で真実値で更新）
-        isPro = UserDefaults.standard.bool(forKey: cacheKey)
         updatesTask = listenForTransactionUpdates()
+        // 起動直後にローカルの検証済みエンタイトルメントを確認する。
+        // currentEntitlements は端末内の署名済みレシートを読むためオフラインでも有効。
+        Task { await refreshEntitlements() }
     }
 
     deinit {
@@ -40,10 +48,12 @@ final class PurchaseManager {
         do {
             let products = try await Product.products(for: [Self.proProductID])
             self.product = products.first
-            await refreshEntitlements()
         } catch {
             lastError = "プロダクト情報を取得できませんでした：\(error.localizedDescription)"
         }
+        // プロダクト取得の成否に関わらず、エンタイトルメントは常に確認する
+        // （ネットワーク不通でプロダクト取得が失敗しても解放状態は端末内で判定できる）。
+        await refreshEntitlements()
     }
 
     // MARK: - 購入
@@ -107,10 +117,10 @@ final class PurchaseManager {
                 owned = true
             }
         }
-        if isPro != owned {
-            isPro = owned
-            UserDefaults.standard.set(owned, forKey: cacheKey)
-        }
+        isPro = owned
+        hasCheckedEntitlements = true
+        // 表示用キャッシュを更新（次回起動の体感用。ゲート判定には使わない）。
+        UserDefaults.standard.set(owned, forKey: cacheKey)
     }
 
     private func verify<T>(_ result: VerificationResult<T>) throws -> T {

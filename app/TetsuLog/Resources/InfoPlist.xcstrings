@@ -23,10 +23,10 @@
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "位置情報利用目的",
       "localizations" : {
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "撮影地の記録と、狙いの編成の接近アラートに位置情報を使用します。位置情報が外部に送信されることはありません。" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to log shooting spots and to alert you when a watched train may approach. Your location never leaves your device." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于记录拍摄地点以及在关注的列车可能接近时提醒您。您的位置信息绝不会被发送到外部。" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "촬영지 기록과 관심 편성의 접근 알림에 위치 정보를 사용합니다. 위치 정보는 외부로 전송되지 않습니다." } }
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "撮影地の位置や、記録に添える現在地の取得に位置情報を使用します。位置情報が外部に送信されることはありません。" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Used to log shooting-spot locations and to attach your current location to a record. Your location never leaves your device." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用于记录拍摄地点位置，以及在记录中附加当前位置。您的位置信息绝不会被发送到外部。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "촬영지 위치 기록과 기록에 현재 위치를 첨부하기 위해 위치 정보를 사용합니다. 위치 정보는 외부로 전송되지 않습니다." } }
       }
     },
     "NSPhotoLibraryUsageDescription" : {

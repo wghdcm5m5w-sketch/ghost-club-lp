@@ -59,7 +59,7 @@ struct PurchaseView: View {
                         // 信頼の補足
                         PaperCard(accent: false) {
                             VStack(alignment: .leading, spacing: 8) {
-                                row("プライバシー", "データは100%あなたのiCloudのみ。運営者は見られません。")
+                                row("プライバシー", "データはこの端末とあなたの非公開iCloudのみ。運営者は見られません。")
                                 rowDivider
                                 row("広告", "なし。トラッキングもありません。")
                                 rowDivider

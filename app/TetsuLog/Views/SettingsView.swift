@@ -8,7 +8,7 @@ struct SettingsView: View {
     @Query private var watchItems: [WatchItem]
     @Query private var sightings: [Sighting]
     @Query private var rides: [RideSegment]
-    @AppStorage("tetsulog.lastSyncAt") private var lastSyncAt: Double = 0
+    @AppStorage("tetsulog.lastExportAt") private var lastExportAt: Double = 0
     @AppStorage(AppLockManager.enabledKey) private var appLockEnabled = false
     @AppStorage(AppLockManager.graceKey) private var appLockGraceSec = 0
     @AppStorage("tetsulog.warnDuplicates") private var warnDuplicates = true
@@ -30,6 +30,9 @@ struct SettingsView: View {
         let b = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
         return "\(v) (\(b))"
     }
+
+    /// 実際に確定した保存先（起動時に決定）。表示と実態を一致させる。
+    private var storageStatus: StorageStatus { StorageStatus.current }
 
     var body: some View {
         NavigationStack {
@@ -58,19 +61,22 @@ struct SettingsView: View {
                             caption("同じ日に同じ編成を記録しようとすると注意を表示します（保存はできます）。")
                         }
 
-                        section("狙いの編成リマインダー") {
+                        section("狙いの編成（ウォッチリスト）") {
                             NavigationLink { WatchListView() } label: {
                                 navRow("ウォッチリストを編集", "bell.badge")
                             }
-                            caption("登録した形式・編成にちなんだ撮影地・駅に近づくと通知します。※リアルタイムの在線位置ではありません。")
+                            caption("会いたい形式・編成を登録しておく「狙いリスト」です。記録時の見分けや撮影計画の覚えにお使いください。※位置情報による自動通知やリアルタイムの在線位置には対応していません。")
                         }
 
                         section("プライバシー・データ") {
                             HStack {
-                                Label("iCloudにのみ保存", systemImage: "lock.icloud").foregroundStyle(Theme.Palette.cyan)
+                                Label(storageStatus.title, systemImage: storageStatus.icon)
+                                    .foregroundStyle(storageStatus.syncsToICloud ? Theme.Palette.cyan : Theme.Palette.red)
                                     .font(Theme.Font.body(15))
                                 Spacer()
                             }
+                            caption(storageStatus.detail,
+                                    color: storageStatus.syncsToICloud ? Theme.Palette.inkSub : Theme.Palette.red)
                             line
                             HStack {
                                 Label("アプリロック", systemImage: "faceid")
@@ -97,9 +103,9 @@ struct SettingsView: View {
                                     .tint(Theme.Palette.cyan)
                                 }
                             }
-                            if lastSyncAt > 0 {
+                            if lastExportAt > 0 {
                                 line
-                                row("最終同期", Date(timeIntervalSince1970: lastSyncAt).formatted(date:.abbreviated, time:.shortened))
+                                row("最終書き出し", Date(timeIntervalSince1970: lastExportAt).formatted(date:.abbreviated, time:.shortened))
                             }
                             line
                             actionRow("データをJSONで書き出す", "square.and.arrow.up"){ export() }
@@ -121,8 +127,8 @@ struct SettingsView: View {
                             if let cleanupMessage {
                                 caption(cleanupMessage, color: Theme.Palette.cyan)
                             }
-                            if lastSyncAt > 0,
-                               Date.now.timeIntervalSince1970 - lastSyncAt > 30 * 24 * 3600 {
+                            if lastExportAt > 0,
+                               Date.now.timeIntervalSince1970 - lastExportAt > 30 * 24 * 3600 {
                                 caption("最後の書き出しから30日以上経っています。バックアップをおすすめします。", color: Theme.Palette.red)
                             }
                             caption("運営者のサーバーには送信されません。\n※写真・録音は端末内保存のためJSONには含まれません（iCloudバックアップで端末間移行可能）。")
@@ -254,7 +260,7 @@ struct SettingsView: View {
     private var line: some View { Rectangle().fill(Theme.Palette.paperEdge).frame(height:1) }
 
     private func export() {
-        if let url = ExportService.exportAll(context) { exportURL = url; showingShare = true; Haptics.success(); lastSyncAt = Date.now.timeIntervalSince1970 }
+        if let url = ExportService.exportAll(context) { exportURL = url; showingShare = true; Haptics.success(); lastExportAt = Date.now.timeIntervalSince1970 }
     }
     private func exportCSV() {
         var urls: [URL] = []

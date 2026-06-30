@@ -122,7 +122,7 @@ enum ExportService {
                       "列車番号", "種別", "ラストラン", "メモ"]
         let dateFormatter = ISO8601DateFormatter()
 
-        var lines: [String] = [header.map(csvEscape).joined(separator: ",")]
+        var lines: [String] = [header.map(safeSpreadsheetField).joined(separator: ",")]
         for s in sightings {
             let fields = [
                 dateFormatter.string(from: s.date),
@@ -141,7 +141,7 @@ enum ExportService {
                 s.isLastRun ? "1" : "0",
                 s.note
             ]
-            lines.append(fields.map(csvEscape).joined(separator: ","))
+            lines.append(fields.map(safeSpreadsheetField).joined(separator: ","))
         }
         let csv = lines.joined(separator: "\r\n")
 
@@ -171,7 +171,7 @@ enum ExportService {
         let header = ["日付", "出発駅", "到着駅", "路線", "編成番号", "距離km", "所要秒", "メモ"]
         let dateFormatter = ISO8601DateFormatter()
 
-        var lines: [String] = [header.map(csvEscape).joined(separator: ",")]
+        var lines: [String] = [header.map(safeSpreadsheetField).joined(separator: ",")]
         for r in rides {
             let fields = [
                 dateFormatter.string(from: r.date),
@@ -183,7 +183,7 @@ enum ExportService {
                 String(r.durationSec),
                 r.note
             ]
-            lines.append(fields.map(csvEscape).joined(separator: ","))
+            lines.append(fields.map(safeSpreadsheetField).joined(separator: ","))
         }
         let csv = lines.joined(separator: "\r\n")
 
@@ -208,6 +208,20 @@ enum ExportService {
             return "\"" + field.replacingOccurrences(of: "\"", with: "\"\"") + "\""
         }
         return field
+    }
+
+    /// CSV インジェクション対策。先頭が = + - @ やタブ/CR で始まるフィールドは
+    /// Excel/スプレッドシートが数式として評価しうる（=HYPERLINK や DDE 経由のコマンド実行など）。
+    /// 先頭にシングルクオートを付けて無効化してから RFC4180 エスケープする。
+    /// ただし座標・距離などの純粋な数値（"-139.7" 等）は数式ではないので素通しする。
+    private static func safeSpreadsheetField(_ field: String) -> String {
+        guard let first = field.first, "=+-@\t\r".contains(first) else {
+            return csvEscape(field)
+        }
+        if (first == "-" || first == "+"), Double(field) != nil {
+            return csvEscape(field)   // 正当な数値はそのまま
+        }
+        return csvEscape("'" + field)
     }
 
     // MARK: - インポート（移行・復元）
@@ -340,7 +354,13 @@ enum ExportService {
             imported.spots += 1
         }
 
-        try? context.save()
+        // 保存に失敗したら巻き戻して nil を返す（取り込めていないのに「成功」と偽らない）。
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            return nil
+        }
         return ImportResult(sightings: imported.sightings,
                             rides: imported.rides,
                             spots: imported.spots,

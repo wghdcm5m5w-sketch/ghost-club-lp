@@ -13,6 +13,7 @@ struct CSVImportSheet: View {
     @State private var mapping: [CSVImporter.Field: Int] = [:]
     @State private var showingFilePicker = true
     @State private var resultMessage: String?
+    @State private var resultIsError = false
 
     private var headers: [String] {
         guard hasHeader, let first = rows.first else {
@@ -96,7 +97,7 @@ struct CSVImportSheet: View {
                     }
 
                     if let resultMessage {
-                        Section { Text(resultMessage).foregroundStyle(.green) }
+                        Section { Text(resultMessage).foregroundStyle(resultIsError ? .red : .green) }
                     }
                 }
             }
@@ -124,7 +125,19 @@ struct CSVImportSheet: View {
         guard url.startAccessingSecurityScopedResource() else { return }
         defer { url.stopAccessingSecurityScopedResource() }
 
-        guard let data = try? Data(contentsOf: url) else { return }
+        // 巨大ファイルでメモリを使い果たさないための上限チェック
+        if let size = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize,
+           size > CSVImporter.maxFileBytes {
+            resultIsError = true
+            resultMessage = "ファイルが大きすぎます（上限 \(CSVImporter.maxFileBytes / (1024*1024))MB）。"
+            return
+        }
+        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+              data.count <= CSVImporter.maxFileBytes else {
+            resultIsError = true
+            resultMessage = "ファイルを読み込めませんでした。"
+            return
+        }
         // 文字エンコーディング推測：UTF-8 → Shift-JIS
         let text: String
         if let utf = String(data: data, encoding: .utf8) {
@@ -144,7 +157,14 @@ struct CSVImportSheet: View {
     private func runImport() {
         let summary = CSVImporter.importRows(rows, hasHeader: hasHeader,
                                              mapping: mapping, into: context)
-        resultMessage = "取り込み完了: \(summary.imported)件 / スキップ \(summary.skipped)件"
-        Haptics.success()
+        if summary.failed {
+            resultIsError = true
+            resultMessage = "保存に失敗しました。空き容量やiCloudの状態をご確認のうえ、もう一度お試しください。"
+            Haptics.tick()
+        } else {
+            resultIsError = false
+            resultMessage = "取り込み完了: \(summary.imported)件 / スキップ \(summary.skipped)件"
+            Haptics.success()
+        }
     }
 }

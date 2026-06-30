@@ -102,7 +102,12 @@ enum CSVImporter {
     struct ImportSummary {
         var imported: Int
         var skipped: Int
+        /// 保存に失敗したか（true のとき imported は 0：取り込めていない）。
+        var failed: Bool = false
     }
+
+    /// 取り込みファイルのバイト上限（巨大ファイルでのメモリ枯渇を防ぐ保険）。
+    static let maxFileBytes = 32 * 1024 * 1024
 
     @MainActor
     @discardableResult
@@ -157,7 +162,13 @@ enum CSVImporter {
             context.insert(sighting)
             imported += 1
         }
-        try? context.save()
+        // 保存に失敗したら巻き戻して失敗を返す（取り込めていないのに「成功」と偽らない）。
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            return ImportSummary(imported: 0, skipped: dataRows.count, failed: true)
+        }
         return ImportSummary(imported: imported, skipped: skipped)
     }
 

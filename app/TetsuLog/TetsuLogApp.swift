@@ -14,6 +14,8 @@ struct TetsuLogApp: App {
         // 1) App Group + CloudKit の共有ストア（ウィジェット連携・本番構成）
         if let shared = SharedStore.container {
             container = shared
+            // App Group は開けたが CloudKit が使えずローカル共有に落ちた場合は同期されない。
+            StorageStatus.current = (SharedStore.mode == .cloudKitShared) ? .cloudShared : .localOnly
             return
         }
 
@@ -24,6 +26,7 @@ struct TetsuLogApp: App {
                 cloudKitDatabase: .private("iCloud.com.ryofujimatsu.tetsulog")
             )
             container = try ModelContainer(for: Schema(types), configurations: config)
+            StorageStatus.current = .cloudNamed
             return
         } catch {
             // iCloud/CloudKit のエンタイトルメントが無い等で失敗 → ローカルのみで続行
@@ -34,6 +37,7 @@ struct TetsuLogApp: App {
         do {
             let local = ModelConfiguration("TetsuLogLocal", cloudKitDatabase: .none)
             container = try ModelContainer(for: Schema(types), configurations: local)
+            StorageStatus.current = .localOnly
         } catch {
             fatalError("ModelContainer の初期化に失敗: \(error)")
         }
