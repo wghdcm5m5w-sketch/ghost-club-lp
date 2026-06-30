@@ -237,11 +237,21 @@ struct AddSightingView: View {
             } message: {
                 Text(saveError ?? "")
             }
+            // 未保存の写真・録音があるときはスワイプで閉じさせない。
+            // （スワイプ離脱は cancelEditing を通らず、未コミットのメディアが孤立するため）
+            .interactiveDismissDisabled(hasUncommittedMedia)
         }
     }
 
     private var formations: [Formation] {
         (selectedClass?.formations ?? []).sorted { $0.code < $1.code }
+    }
+
+    /// このセッションで作成され、まだ保存されていない写真・録音があるか。
+    /// ある場合はスワイプ離脱を禁止し、必ず保存/キャンセルを通して掃除させる。
+    private var hasUncommittedMedia: Bool {
+        if let savedPhotoFilename, savedPhotoFilename != originalPhotoFilename { return true }
+        return audioFilenames.contains { !originalAudioFilenames.contains($0) }
     }
 
     // MARK: - 編集ロード

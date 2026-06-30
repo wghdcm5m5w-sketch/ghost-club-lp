@@ -7,8 +7,13 @@ import SwiftData
 ///
 /// 重要: 本体は CloudKit ミラーリング付きで開き（書き込み＋iCloud同期）、
 /// iCloud エンタイトルメントを持たない拡張（iOS ウィジェット等）は
-/// 同じ App Group のファイルを **CloudKit なし** で開いてローカル読み取りする。
+/// 同じ App Group のファイルを **CloudKit なし** で開いてローカル読み取りを試みる。
 /// これにより「iCloud権限が無い拡張ではコンテナが nil → ウィジェットが常にゼロ」を防ぐ。
+///
+/// 注: 本体が必ず先にストアを生成・マイグレーションする前提のベストエフォート。
+/// 万一この .none 読み取りも開けない場合は container == nil となり、
+/// ウィジェット側は loaded:false で「アプリを開いて同期」を表示する（フェイルセーフ）。
+/// 拡張は決して最初の書き込み手にならない（本体が初期化済みの想定）。
 enum SharedStore {
     /// App Group ID（Capabilities で全ターゲットに設定）
     static let appGroupID = "group.com.ryofujimatsu.tetsulog"
