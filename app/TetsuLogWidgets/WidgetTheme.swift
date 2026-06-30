@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 /// Widget Extension 用のカラー定義（本体 Theme と同じ値）。
 /// Widget拡張は本体ターゲットの Theme.swift を共有しないため、独立して持つ。
