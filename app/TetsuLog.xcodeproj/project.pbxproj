@@ -6,260 +6,1116 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0064AA73E2F78F2F7D011B67 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A65545CA0C6494E805BE04 /* StatsView.swift */; };
+		011DC00C774AA6A47C069490 /* WatchComplicationBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F631B94581BC2B1D16BB675 /* WatchComplicationBundle.swift */; };
+		026E5DDF38882633CBF45258 /* RetiringWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1747660BABF796C3D191 /* RetiringWidget.swift */; };
+		07D5A8181326A7741F78FE6B /* RideActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0CB9FDEBAF20DFB31312C /* RideActivityAttributes.swift */; };
+		08FE8DCE305E21766E67CAF4 /* RideLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CB7E2A5275DD2A16B8936A /* RideLiveActivity.swift */; };
+		09B62AF6D1F69BAAEF56F77C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0C72F3C2DA56ED17A947AC /* Models.swift */; };
+		0AADDF1AB03D3754FB369C6B /* SightingComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81073DFC20DEC8F70F4E447E /* SightingComplication.swift */; };
+		0F3066F80683039E5A81C7FE /* ShootingSpotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1082A2BAD0C507B17A124FF8 /* ShootingSpotView.swift */; };
+		12CE3EE62188099C2E314586 /* MapTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784A63DFB00BA77298B33915 /* MapTabView.swift */; };
+		17F748CA81A33052EF4C0F04 /* TetsuLog.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 44FC92179EBD147DDF3FE7DA /* TetsuLog.storekit */; };
+		1AC9827357CE63B5BE4CEE1D /* SuggestField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD85869C5F789882E942DB7C /* SuggestField.swift */; };
+		1CF3402D3D6E3A606EDBC127 /* TodaySuggestionsStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE707A99B7217A6F45E86C27 /* TodaySuggestionsStrip.swift */; };
+		1E711A0300211C77ADFF3210 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 92D7621E18B5B508972FF058 /* InfoPlist.xcstrings */; };
+		24014E458C6ADC623D9B802F /* CSVImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5E3DCBD93D1FB2801EA05B /* CSVImporter.swift */; };
+		24D29C5AF0CE6E436627C417 /* TetsuLogWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 214CB4F5F5E862F1C7D601E3 /* TetsuLogWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		257EE4907A18506E5E87B9A3 /* SunCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53ACFD5647FECCE4DB5B9C3C /* SunCalculatorTests.swift */; };
+		25AC139EEF6955D2FF458045 /* TetsuLogIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = C836C360BA1CA70C09FA2013 /* TetsuLogIntents.swift */; };
+		29B531E792382DE04A3FD810 /* WatchTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D16A02EA025D63827D6C2F /* WatchTheme.swift */; };
+		2B0F13AED9F6D6B64D467453 /* AddVehicleClassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766846E1D24E98D748FB2C4E /* AddVehicleClassView.swift */; };
+		31400193D7ACB2A3269D0F59 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2907B0793B200308F57B1B /* CollectionView.swift */; };
+		33E074913E2BF4372567CD3C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 497D4D9C059BAE2EAA46DEB9 /* Localizable.xcstrings */; };
+		34627D6406270DF31357E0FD /* TetsuLogWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C7F4EE08729D4CA8E10652 /* TetsuLogWatchApp.swift */; };
+		34DADD31A5D3C93E5D0EA8B4 /* ApproachMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C14E4CE08C18F255CA4DFF /* ApproachMonitor.swift */; };
+		34E320F650FA9815AEE27709 /* TetsuLogApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9B26AC772DF4C08501DED4 /* TetsuLogApp.swift */; };
+		360FDB5BE4C73A9D4A8DC68D /* AddSightingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1268F9DF260B0F4457B763 /* AddSightingView.swift */; };
+		3ECDA0871EEBD7A824438DD5 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3071B6CF5A429777C71128AE /* SharedStore.swift */; };
+		3FBB3D5824173C132CA85026 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FE198A44679F5EBDFE204E3 /* RootTabView.swift */; };
+		444989E49192C6650CE67F6E /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619333FDFA3F09568930E3C7 /* PurchaseManager.swift */; };
+		48C99645633B6B47B70EAEC6 /* RideActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0CB9FDEBAF20DFB31312C /* RideActivityAttributes.swift */; };
+		4D7BFA9B617FE371F2DD2662 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8FC86027B63D1C2B23463C /* PreviewData.swift */; };
+		4F979966EAD06B3D7B9D691E /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E58A4D6C5CC46270F71B6A /* ExportService.swift */; };
+		5408B19FCA57BCE1A42E44EE /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1525F7673C9DF31F486287B1 /* LogView.swift */; };
+		6105B172264F203C4A532E68 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3071B6CF5A429777C71128AE /* SharedStore.swift */; };
+		63EBEEF7EABCD9DEECAC2A46 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0C72F3C2DA56ED17A947AC /* Models.swift */; };
+		64C0933BD02E4B304161E720 /* PolylineCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007FA0648B40194A485B0E6D /* PolylineCodec.swift */; };
+		6709FBA76A8AB7F782A3EDC4 /* TetsuLogWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F63D2C61182B81E0BF3A2591 /* TetsuLogWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		68E09EC4758B080EE5FA1D78 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CA75DAAC69BB94551998C0D6 /* PrivacyInfo.xcprivacy */; };
+		6B19508AC9E7AA6A2AA2A445 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DEA42DFD37CB6E4E59C571 /* SettingsView.swift */; };
+		6BF3D8D8C158E3749FA52902 /* RideEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29586C1389B45519564F2905 /* RideEditView.swift */; };
+		6F8687E52A65D35C7BBA7504 /* TetsuLogWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717AF6B4BAD815DC14F8853A /* TetsuLogWidgetBundle.swift */; };
+		709EC88D946ED55DC9B7A1B3 /* SunCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01908967FF3C734D7C60347C /* SunCalculator.swift */; };
+		744D512FE56EAB56F471D26B /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A990D6A3231BC117DD0A207D /* AudioPlayerView.swift */; };
+		7601925BE59F30E04BBD7AA2 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA11AB9279008465F792DC /* Statistics.swift */; };
+		7F24AB6127FBE48E1906B0D6 /* CSVImporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DBB2E4517D99A601156F0F /* CSVImporterTests.swift */; };
+		8AF4DACF3936C8E0002E04C4 /* AudioRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F65696E60FCFE09FD7E8FE /* AudioRecorderView.swift */; };
+		91296D73221FEFA7B369353B /* seed_spots.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C4F6E6D58171B36EBB4447C /* seed_spots.json */; };
+		976994CFAEE48AC5B61F5B7D /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0C72F3C2DA56ED17A947AC /* Models.swift */; };
+		9ABA6BC4B57B5699A27C5D10 /* CollectionWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D9903C69FFD80D778347A3 /* CollectionWidget.swift */; };
+		9F0EB70D6ED6C08AADD33B0A /* FormationNumberParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF191E6E514A2C659A1E86B6 /* FormationNumberParserTests.swift */; };
+		A20FD864C48383778C86C121 /* FormationNumberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B99FCEF45C49F0E436352E /* FormationNumberParser.swift */; };
+		A2F2A90FADFFB249289743A1 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0C72F3C2DA56ED17A947AC /* Models.swift */; };
+		A485011E285D1C0FFC7989B2 /* FormStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557429492119B1B2472C9AD0 /* FormStyle.swift */; };
+		B28C7ADB1EAA7297066E5115 /* WidgetTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC80446B0A9C94069521058 /* WidgetTheme.swift */; };
+		B3AC2D858018B5B548BFBF69 /* AppLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A36A5D38634E0AED948AA51 /* AppLock.swift */; };
+		B4E97AF07A732B26B38B04F3 /* CSVImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F33226B39660B6F488741C /* CSVImportView.swift */; };
+		B542A01B5C41ABDC68FC226B /* PurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B94BF7E26F4328D4CA4A9E /* PurchaseView.swift */; };
+		B5BCA0D103A67DD1952D1FD2 /* FormationScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA69F0A75E71D587A77BF65B /* FormationScannerView.swift */; };
+		B8935BFA46A72AD2C98643E2 /* ProGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A50D77F3A227C67F98E538 /* ProGate.swift */; };
+		B919A1FF2FE2E89100749BFB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B919A1FE2FE2E89100749BFB /* Assets.xcassets */; };
+		BA686FD0242524F7DC27AAF0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CC5FCE6AF45E611DFCBCE6 /* Haptics.swift */; };
+		BE9CA1F066B078F8C8E42CA6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 291AA9282DB045A91110AFD9 /* Assets.xcassets */; };
+		C02B1E790D82388FA16C8BB9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 46B6EE78D6AC78012C50A23A /* README.md */; };
+		C1474B601709A84F0B9E5CD3 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137381A9117AD8E5590D4D42 /* SeedData.swift */; };
+		CB09631B3FE05C320A09B594 /* AudioStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C26A0780F6DF84468135DD /* AudioStore.swift */; };
+		CC9DC4749A7C7D8CE9407318 /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165E283E6E83195ABAB75E3F /* ShareCardView.swift */; };
+		CF408BF5DAF87CA0671CD811 /* PhotoMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F5E4D7B21510ACCAB51E5D /* PhotoMetadata.swift */; };
+		D3D659576815B0AE4C023D74 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F1067B2F61B1F2E3DC65E1 /* Theme.swift */; };
+		DD435CB89AB7A7B28F2C2D05 /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47B5CAB6AD4C27EDB22EE9C /* PhotoStore.swift */; };
+		DDE5D64F25342309F0D44AFF /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3071B6CF5A429777C71128AE /* SharedStore.swift */; };
+		DF13F8FF926B92918A34B55E /* RideSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1610B9529E2F1124FB26A052 /* RideSessionView.swift */; };
+		E105EA86233600799145916F /* WatchTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822EF3EA6CE5C976BCB93C1E /* WatchTodayView.swift */; };
+		EB940822F95050E47F757455 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C17B0CEEC7290F413F2B324 /* OnboardingView.swift */; };
+		EE771F8A00D7D6B3EEFD513F /* seed_vehicles.json in Resources */ = {isa = PBXBuildFile; fileRef = 9FC3552AFA889009720ABDDF /* seed_vehicles.json */; };
+		F0B47C0301BDF85EF29F776B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 89925B3CAA67E8A215533633 /* README.md */; };
+		F1B625185195919F153A85DD /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3071B6CF5A429777C71128AE /* SharedStore.swift */; };
+		F9A5D30B6BF51C60B8AB7C68 /* StatisticsNormalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C9D921E3DD17C354B9688C /* StatisticsNormalizationTests.swift */; };
+		FA4D5A1E6E5458CC24B9AE64 /* PolylineCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EA062004220DB82F128F75 /* PolylineCodecTests.swift */; };
+		FE9FE38940A964EF06C2F92C /* TetsuLogWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FCFCAB2625C302FB65AEDA8E /* TetsuLogWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF94E92828937279B001A4F2 /* WatchQuickRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFA34DD2BBEE9FFAC12DAF8 /* WatchQuickRecordView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0D7FB0229C622CCF000D8678 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 38846C0FB7633CE9D2F4D33E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 87D0CB06D0CFCCAF347E1661;
+			remoteInfo = TetsuLogWidgetsExtension;
+		};
+		3C4B628651E132E8CE1189E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 38846C0FB7633CE9D2F4D33E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CB0D50EB74233FB49B2511E3;
+			remoteInfo = TetsuLogWatchWidgets;
+		};
+		490FD365E895476FAE93DE92 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 38846C0FB7633CE9D2F4D33E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1E09B72E59946534055B7BDB;
+			remoteInfo = TetsuLog;
+		};
+		9AD5FA0DA969A788F4BB2388 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 38846C0FB7633CE9D2F4D33E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A07C670AD002A9712EDCCFF9;
+			remoteInfo = TetsuLogWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8B807CA9881E2FE8922044D2 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6709FBA76A8AB7F782A3EDC4 /* TetsuLogWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93ADD5A500B7623BCC8068DA /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				24D29C5AF0CE6E436627C417 /* TetsuLogWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E48B648566578CFFD26804AF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FE9FE38940A964EF06C2F92C /* TetsuLogWatchWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		7A0000000000000000000010 /* TetsuLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TetsuLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		007FA0648B40194A485B0E6D /* PolylineCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineCodec.swift; sourceTree = "<group>"; };
+		01908967FF3C734D7C60347C /* SunCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunCalculator.swift; sourceTree = "<group>"; };
+		1082A2BAD0C507B17A124FF8 /* ShootingSpotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShootingSpotView.swift; sourceTree = "<group>"; };
+		12C26A0780F6DF84468135DD /* AudioStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStore.swift; sourceTree = "<group>"; };
+		137381A9117AD8E5590D4D42 /* SeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedData.swift; sourceTree = "<group>"; };
+		1525F7673C9DF31F486287B1 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		1610B9529E2F1124FB26A052 /* RideSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSessionView.swift; sourceTree = "<group>"; };
+		165E283E6E83195ABAB75E3F /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
+		1A36A5D38634E0AED948AA51 /* AppLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLock.swift; sourceTree = "<group>"; };
+		1E5E3DCBD93D1FB2801EA05B /* CSVImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImporter.swift; sourceTree = "<group>"; };
+		1F631B94581BC2B1D16BB675 /* WatchComplicationBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchComplicationBundle.swift; sourceTree = "<group>"; };
+		214CB4F5F5E862F1C7D601E3 /* TetsuLogWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TetsuLogWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26B99FCEF45C49F0E436352E /* FormationNumberParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormationNumberParser.swift; sourceTree = "<group>"; };
+		291AA9282DB045A91110AFD9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		29586C1389B45519564F2905 /* RideEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideEditView.swift; sourceTree = "<group>"; };
+		3071B6CF5A429777C71128AE /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		32F1067B2F61B1F2E3DC65E1 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		44FC92179EBD147DDF3FE7DA /* TetsuLog.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = TetsuLog.storekit; sourceTree = "<group>"; };
+		46B6EE78D6AC78012C50A23A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		497D4D9C059BAE2EAA46DEB9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		53ACFD5647FECCE4DB5B9C3C /* SunCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunCalculatorTests.swift; sourceTree = "<group>"; };
+		557429492119B1B2472C9AD0 /* FormStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormStyle.swift; sourceTree = "<group>"; };
+		5AFA34DD2BBEE9FFAC12DAF8 /* WatchQuickRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchQuickRecordView.swift; sourceTree = "<group>"; };
+		619333FDFA3F09568930E3C7 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
+		61DEA42DFD37CB6E4E59C571 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		67F65696E60FCFE09FD7E8FE /* AudioRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderView.swift; sourceTree = "<group>"; };
+		70D9903C69FFD80D778347A3 /* CollectionWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionWidget.swift; sourceTree = "<group>"; };
+		717AF6B4BAD815DC14F8853A /* TetsuLogWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetsuLogWidgetBundle.swift; sourceTree = "<group>"; };
+		73CB7E2A5275DD2A16B8936A /* RideLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideLiveActivity.swift; sourceTree = "<group>"; };
+		73CC5FCE6AF45E611DFCBCE6 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		766846E1D24E98D748FB2C4E /* AddVehicleClassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVehicleClassView.swift; sourceTree = "<group>"; };
+		784A63DFB00BA77298B33915 /* MapTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTabView.swift; sourceTree = "<group>"; };
+		7FE198A44679F5EBDFE204E3 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		81073DFC20DEC8F70F4E447E /* SightingComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SightingComplication.swift; sourceTree = "<group>"; };
+		822EF3EA6CE5C976BCB93C1E /* WatchTodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTodayView.swift; sourceTree = "<group>"; };
+		82D16A02EA025D63827D6C2F /* WatchTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTheme.swift; sourceTree = "<group>"; };
+		871ADD2F13F7CC1C7F838CE6 /* TetsuLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TetsuLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		89925B3CAA67E8A215533633 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		8C4F6E6D58171B36EBB4447C /* seed_spots.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = seed_spots.json; sourceTree = "<group>"; };
+		8CAA11AB9279008465F792DC /* Statistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
+		90F5E4D7B21510ACCAB51E5D /* PhotoMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMetadata.swift; sourceTree = "<group>"; };
+		92D7621E18B5B508972FF058 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		92F33226B39660B6F488741C /* CSVImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImportView.swift; sourceTree = "<group>"; };
+		94A65545CA0C6494E805BE04 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		94B8B4F8C9FA956206089350 /* TetsuLogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TetsuLogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		96EA062004220DB82F128F75 /* PolylineCodecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolylineCodecTests.swift; sourceTree = "<group>"; };
+		99C7F4EE08729D4CA8E10652 /* TetsuLogWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetsuLogWatchApp.swift; sourceTree = "<group>"; };
+		9A9B26AC772DF4C08501DED4 /* TetsuLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetsuLogApp.swift; sourceTree = "<group>"; };
+		9C17B0CEEC7290F413F2B324 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		9EC80446B0A9C94069521058 /* WidgetTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTheme.swift; sourceTree = "<group>"; };
+		9FC3552AFA889009720ABDDF /* seed_vehicles.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = seed_vehicles.json; sourceTree = "<group>"; };
+		A4DBB2E4517D99A601156F0F /* CSVImporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImporterTests.swift; sourceTree = "<group>"; };
+		A76004C6C251422E9E497BFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A990D6A3231BC117DD0A207D /* AudioPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerView.swift; sourceTree = "<group>"; };
+		AC51C6A6E826973BF0BB021F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B6A50D77F3A227C67F98E538 /* ProGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProGate.swift; sourceTree = "<group>"; };
+		B919A1FA2FE2D80300749BFB /* TetsuLog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TetsuLog.entitlements; sourceTree = "<group>"; };
+		B919A1FB2FE2D9BC00749BFB /* TetsuLogWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TetsuLogWidgetsExtension.entitlements; sourceTree = "<group>"; };
+		B919A1FC2FE2D9E300749BFB /* TetsuLogWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TetsuLogWatch.entitlements; sourceTree = "<group>"; };
+		B919A1FD2FE2DA2400749BFB /* TetsuLogWatchWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TetsuLogWatchWidgets.entitlements; sourceTree = "<group>"; };
+		B919A1FE2FE2E89100749BFB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = TetsuLogWatch/Assets.xcassets; sourceTree = "<group>"; };
+		B9E8BEAB53AA7F4AA3A3D20A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BCB6EA0074E2E811D7F89F31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BD85869C5F789882E942DB7C /* SuggestField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestField.swift; sourceTree = "<group>"; };
+		C836C360BA1CA70C09FA2013 /* TetsuLogIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetsuLogIntents.swift; sourceTree = "<group>"; };
+		CA69F0A75E71D587A77BF65B /* FormationScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormationScannerView.swift; sourceTree = "<group>"; };
+		CA75DAAC69BB94551998C0D6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		CF191E6E514A2C659A1E86B6 /* FormationNumberParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormationNumberParserTests.swift; sourceTree = "<group>"; };
+		D47B5CAB6AD4C27EDB22EE9C /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
+		D9E58A4D6C5CC46270F71B6A /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
+		DAF0CB9FDEBAF20DFB31312C /* RideActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActivityAttributes.swift; sourceTree = "<group>"; };
+		DB0C72F3C2DA56ED17A947AC /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		DD8FC86027B63D1C2B23463C /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+		DE2907B0793B200308F57B1B /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		DE707A99B7217A6F45E86C27 /* TodaySuggestionsStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaySuggestionsStrip.swift; sourceTree = "<group>"; };
+		E25A1747660BABF796C3D191 /* RetiringWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetiringWidget.swift; sourceTree = "<group>"; };
+		E2B94BF7E26F4328D4CA4A9E /* PurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseView.swift; sourceTree = "<group>"; };
+		E9C14E4CE08C18F255CA4DFF /* ApproachMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproachMonitor.swift; sourceTree = "<group>"; };
+		F4C9D921E3DD17C354B9688C /* StatisticsNormalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsNormalizationTests.swift; sourceTree = "<group>"; };
+		F63D2C61182B81E0BF3A2591 /* TetsuLogWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TetsuLogWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCFCAB2625C302FB65AEDA8E /* TetsuLogWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TetsuLogWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF1268F9DF260B0F4457B763 /* AddSightingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSightingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7A0000000000000000000099 /* Exceptions for "TetsuLog" folder in "TetsuLog" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
+/* Begin PBXGroup section */
+		078BBB7371D470C9799FD054 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				871ADD2F13F7CC1C7F838CE6 /* TetsuLog.app */,
+				94B8B4F8C9FA956206089350 /* TetsuLogTests.xctest */,
+				214CB4F5F5E862F1C7D601E3 /* TetsuLogWatch.app */,
+				FCFCAB2625C302FB65AEDA8E /* TetsuLogWatchWidgets.appex */,
+				F63D2C61182B81E0BF3A2591 /* TetsuLogWidgetsExtension.appex */,
 			);
-			target = 7A0000000000000000000011 /* TetsuLog */;
+			name = Products;
+			sourceTree = "<group>";
 		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		7A0000000000000000000001 /* TetsuLog */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				7A0000000000000000000099 /* Exceptions for "TetsuLog" folder in "TetsuLog" target */,
+		0F243069F96A7C80E527444B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				92D7621E18B5B508972FF058 /* InfoPlist.xcstrings */,
+				497D4D9C059BAE2EAA46DEB9 /* Localizable.xcstrings */,
+				8C4F6E6D58171B36EBB4447C /* seed_spots.json */,
+				9FC3552AFA889009720ABDDF /* seed_vehicles.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1735A3898CA97C729D4657AA /* TetsuLogTests */ = {
+			isa = PBXGroup;
+			children = (
+				A4DBB2E4517D99A601156F0F /* CSVImporterTests.swift */,
+				CF191E6E514A2C659A1E86B6 /* FormationNumberParserTests.swift */,
+				96EA062004220DB82F128F75 /* PolylineCodecTests.swift */,
+				46B6EE78D6AC78012C50A23A /* README.md */,
+				F4C9D921E3DD17C354B9688C /* StatisticsNormalizationTests.swift */,
+				53ACFD5647FECCE4DB5B9C3C /* SunCalculatorTests.swift */,
+			);
+			path = TetsuLogTests;
+			sourceTree = "<group>";
+		};
+		2824845FD919EE322D6F4F32 /* TetsuLogWatch */ = {
+			isa = PBXGroup;
+			children = (
+				B919A1FC2FE2D9E300749BFB /* TetsuLogWatch.entitlements */,
+				BCB6EA0074E2E811D7F89F31 /* Info.plist */,
+				89925B3CAA67E8A215533633 /* README.md */,
+				99C7F4EE08729D4CA8E10652 /* TetsuLogWatchApp.swift */,
+				5AFA34DD2BBEE9FFAC12DAF8 /* WatchQuickRecordView.swift */,
+				82D16A02EA025D63827D6C2F /* WatchTheme.swift */,
+				822EF3EA6CE5C976BCB93C1E /* WatchTodayView.swift */,
+			);
+			path = TetsuLogWatch;
+			sourceTree = "<group>";
+		};
+		32F0CF7B1444CC036781A8C9 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				557429492119B1B2472C9AD0 /* FormStyle.swift */,
+				B6A50D77F3A227C67F98E538 /* ProGate.swift */,
+				32F1067B2F61B1F2E3DC65E1 /* Theme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		4398ED62B7E4BC90371F2180 /* TetsuLogWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				70D9903C69FFD80D778347A3 /* CollectionWidget.swift */,
+				B9E8BEAB53AA7F4AA3A3D20A /* Info.plist */,
+				E25A1747660BABF796C3D191 /* RetiringWidget.swift */,
+				73CB7E2A5275DD2A16B8936A /* RideLiveActivity.swift */,
+				717AF6B4BAD815DC14F8853A /* TetsuLogWidgetBundle.swift */,
+				9EC80446B0A9C94069521058 /* WidgetTheme.swift */,
+			);
+			path = TetsuLogWidgets;
+			sourceTree = "<group>";
+		};
+		4E51FAEA221DBAC1CDA95076 = {
+			isa = PBXGroup;
+			children = (
+				B919A1FE2FE2E89100749BFB /* Assets.xcassets */,
+				B919A1FB2FE2D9BC00749BFB /* TetsuLogWidgetsExtension.entitlements */,
+				6161B6ED22A85FE7CAFC7C3B /* TetsuLog */,
+				1735A3898CA97C729D4657AA /* TetsuLogTests */,
+				2824845FD919EE322D6F4F32 /* TetsuLogWatch */,
+				76844F59E5666F7213C741B5 /* TetsuLogWatchWidgets */,
+				4398ED62B7E4BC90371F2180 /* TetsuLogWidgets */,
+				078BBB7371D470C9799FD054 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6161B6ED22A85FE7CAFC7C3B /* TetsuLog */ = {
+			isa = PBXGroup;
+			children = (
+				B919A1FA2FE2D80300749BFB /* TetsuLog.entitlements */,
+				291AA9282DB045A91110AFD9 /* Assets.xcassets */,
+				AC51C6A6E826973BF0BB021F /* Info.plist */,
+				CA75DAAC69BB94551998C0D6 /* PrivacyInfo.xcprivacy */,
+				9A9B26AC772DF4C08501DED4 /* TetsuLogApp.swift */,
+				BA40F77BC0B9193B01C7183F /* Configuration */,
+				32F0CF7B1444CC036781A8C9 /* Design */,
+				FA471B90833A04296A8F1BF8 /* Features */,
+				E9F750D4FEF9B1B4D6E3F2B7 /* Models */,
+				0F243069F96A7C80E527444B /* Resources */,
+				D0AE96B1E60E2E2A87D92D1F /* Views */,
 			);
 			path = TetsuLog;
 			sourceTree = "<group>";
 		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		7A0000000000000000000021 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXGroup section */
-		7A0000000000000000000002 = {
+		76844F59E5666F7213C741B5 /* TetsuLogWatchWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				7A0000000000000000000001 /* TetsuLog */,
-				7A0000000000000000000003 /* Products */,
+				B919A1FD2FE2DA2400749BFB /* TetsuLogWatchWidgets.entitlements */,
+				A76004C6C251422E9E497BFD /* Info.plist */,
+				81073DFC20DEC8F70F4E447E /* SightingComplication.swift */,
+				1F631B94581BC2B1D16BB675 /* WatchComplicationBundle.swift */,
 			);
+			path = TetsuLogWatchWidgets;
 			sourceTree = "<group>";
 		};
-		7A0000000000000000000003 /* Products */ = {
+		BA40F77BC0B9193B01C7183F /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				7A0000000000000000000010 /* TetsuLog.app */,
+				44FC92179EBD147DDF3FE7DA /* TetsuLog.storekit */,
 			);
-			name = Products;
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		D0AE96B1E60E2E2A87D92D1F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FF1268F9DF260B0F4457B763 /* AddSightingView.swift */,
+				766846E1D24E98D748FB2C4E /* AddVehicleClassView.swift */,
+				A990D6A3231BC117DD0A207D /* AudioPlayerView.swift */,
+				67F65696E60FCFE09FD7E8FE /* AudioRecorderView.swift */,
+				DE2907B0793B200308F57B1B /* CollectionView.swift */,
+				92F33226B39660B6F488741C /* CSVImportView.swift */,
+				1525F7673C9DF31F486287B1 /* LogView.swift */,
+				784A63DFB00BA77298B33915 /* MapTabView.swift */,
+				9C17B0CEEC7290F413F2B324 /* OnboardingView.swift */,
+				E2B94BF7E26F4328D4CA4A9E /* PurchaseView.swift */,
+				29586C1389B45519564F2905 /* RideEditView.swift */,
+				1610B9529E2F1124FB26A052 /* RideSessionView.swift */,
+				7FE198A44679F5EBDFE204E3 /* RootTabView.swift */,
+				61DEA42DFD37CB6E4E59C571 /* SettingsView.swift */,
+				165E283E6E83195ABAB75E3F /* ShareCardView.swift */,
+				1082A2BAD0C507B17A124FF8 /* ShootingSpotView.swift */,
+				94A65545CA0C6494E805BE04 /* StatsView.swift */,
+				BD85869C5F789882E942DB7C /* SuggestField.swift */,
+				DE707A99B7217A6F45E86C27 /* TodaySuggestionsStrip.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E9F750D4FEF9B1B4D6E3F2B7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DB0C72F3C2DA56ED17A947AC /* Models.swift */,
+				DD8FC86027B63D1C2B23463C /* PreviewData.swift */,
+				137381A9117AD8E5590D4D42 /* SeedData.swift */,
+				3071B6CF5A429777C71128AE /* SharedStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FA471B90833A04296A8F1BF8 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				1A36A5D38634E0AED948AA51 /* AppLock.swift */,
+				E9C14E4CE08C18F255CA4DFF /* ApproachMonitor.swift */,
+				12C26A0780F6DF84468135DD /* AudioStore.swift */,
+				1E5E3DCBD93D1FB2801EA05B /* CSVImporter.swift */,
+				D9E58A4D6C5CC46270F71B6A /* ExportService.swift */,
+				26B99FCEF45C49F0E436352E /* FormationNumberParser.swift */,
+				CA69F0A75E71D587A77BF65B /* FormationScannerView.swift */,
+				73CC5FCE6AF45E611DFCBCE6 /* Haptics.swift */,
+				90F5E4D7B21510ACCAB51E5D /* PhotoMetadata.swift */,
+				D47B5CAB6AD4C27EDB22EE9C /* PhotoStore.swift */,
+				007FA0648B40194A485B0E6D /* PolylineCodec.swift */,
+				619333FDFA3F09568930E3C7 /* PurchaseManager.swift */,
+				DAF0CB9FDEBAF20DFB31312C /* RideActivityAttributes.swift */,
+				8CAA11AB9279008465F792DC /* Statistics.swift */,
+				01908967FF3C734D7C60347C /* SunCalculator.swift */,
+				C836C360BA1CA70C09FA2013 /* TetsuLogIntents.swift */,
+			);
+			path = Features;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7A0000000000000000000011 /* TetsuLog */ = {
+		1E09B72E59946534055B7BDB /* TetsuLog */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7A0000000000000000000014 /* Build configuration list for PBXNativeTarget "TetsuLog" */;
+			buildConfigurationList = 9D16CA5F25C9F79597B44DC1 /* Build configuration list for PBXNativeTarget "TetsuLog" */;
 			buildPhases = (
-				7A0000000000000000000020 /* Sources */,
-				7A0000000000000000000021 /* Frameworks */,
-				7A0000000000000000000022 /* Resources */,
+				29E56C7BA3DBB7BA41DCC947 /* Sources */,
+				10E8D65DBED9CFBFBE49F9B8 /* Resources */,
+				8B807CA9881E2FE8922044D2 /* Embed Foundation Extensions */,
+				93ADD5A500B7623BCC8068DA /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				7A0000000000000000000001 /* TetsuLog */,
+				5F35D2F23F6578795BEA8C15 /* PBXTargetDependency */,
+				EC0CF1983684D7ACD14CA20D /* PBXTargetDependency */,
 			);
 			name = TetsuLog;
 			packageProductDependencies = (
 			);
 			productName = TetsuLog;
-			productReference = 7A0000000000000000000010 /* TetsuLog.app */;
+			productReference = 871ADD2F13F7CC1C7F838CE6 /* TetsuLog.app */;
 			productType = "com.apple.product-type.application";
+		};
+		41EE042A7ABF16A323D05617 /* TetsuLogTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E0064BF32B04FBE58F6E6497 /* Build configuration list for PBXNativeTarget "TetsuLogTests" */;
+			buildPhases = (
+				83DBB496A27AF2F1D55ABFD2 /* Sources */,
+				DE3F2EBF48DE75EAFF98958C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4890365759CD93560618CF49 /* PBXTargetDependency */,
+			);
+			name = TetsuLogTests;
+			packageProductDependencies = (
+			);
+			productName = TetsuLogTests;
+			productReference = 94B8B4F8C9FA956206089350 /* TetsuLogTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		87D0CB06D0CFCCAF347E1661 /* TetsuLogWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E56D25B7A4D3A78397522D4 /* Build configuration list for PBXNativeTarget "TetsuLogWidgetsExtension" */;
+			buildPhases = (
+				4F1E88065C76440631166FE2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TetsuLogWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = TetsuLogWidgetsExtension;
+			productReference = F63D2C61182B81E0BF3A2591 /* TetsuLogWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A07C670AD002A9712EDCCFF9 /* TetsuLogWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B7BA5737E26A0FFBF232ADB0 /* Build configuration list for PBXNativeTarget "TetsuLogWatch" */;
+			buildPhases = (
+				0AC056849C87034338EEB6BF /* Sources */,
+				3AA6739C2D2B94F4D37EB7DD /* Resources */,
+				E48B648566578CFFD26804AF /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1D06AB8F7EE151EEFC01D18B /* PBXTargetDependency */,
+			);
+			name = TetsuLogWatch;
+			packageProductDependencies = (
+			);
+			productName = TetsuLogWatch;
+			productReference = 214CB4F5F5E862F1C7D601E3 /* TetsuLogWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CB0D50EB74233FB49B2511E3 /* TetsuLogWatchWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 98DBD6C7FB7EC8DDE88AA040 /* Build configuration list for PBXNativeTarget "TetsuLogWatchWidgets" */;
+			buildPhases = (
+				966D40F058396125BCCDEF94 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TetsuLogWatchWidgets;
+			packageProductDependencies = (
+			);
+			productName = TetsuLogWatchWidgets;
+			productReference = FCFCAB2625C302FB65AEDA8E /* TetsuLogWatchWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		7A0000000000000000000004 /* Project object */ = {
+		38846C0FB7633CE9D2F4D33E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					7A0000000000000000000011 = {
-						CreatedOnToolsVersion = 16.0;
+					1E09B72E59946534055B7BDB = {
+						ProvisioningStyle = Automatic;
+					};
+					41EE042A7ABF16A323D05617 = {
+						ProvisioningStyle = Automatic;
+					};
+					87D0CB06D0CFCCAF347E1661 = {
+						ProvisioningStyle = Automatic;
+					};
+					A07C670AD002A9712EDCCFF9 = {
+						ProvisioningStyle = Automatic;
+					};
+					CB0D50EB74233FB49B2511E3 = {
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 7A0000000000000000000007 /* Build configuration list for PBXProject "TetsuLog" */;
-			compatibilityVersion = "Xcode 15.0";
-			developmentRegion = ja;
+			buildConfigurationList = FD584B5A05EB84AD5BC0A7D2 /* Build configuration list for PBXProject "TetsuLog" */;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				ja,
-				en,
-				"zh-Hans",
-				ko,
 				Base,
+				en,
+				ja,
+				ko,
+				"zh-Hans",
 			);
-			mainGroup = 7A0000000000000000000002;
+			mainGroup = 4E51FAEA221DBAC1CDA95076;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 7A0000000000000000000003 /* Products */;
+			productRefGroup = 078BBB7371D470C9799FD054 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7A0000000000000000000011 /* TetsuLog */,
+				1E09B72E59946534055B7BDB /* TetsuLog */,
+				41EE042A7ABF16A323D05617 /* TetsuLogTests */,
+				A07C670AD002A9712EDCCFF9 /* TetsuLogWatch */,
+				CB0D50EB74233FB49B2511E3 /* TetsuLogWatchWidgets */,
+				87D0CB06D0CFCCAF347E1661 /* TetsuLogWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		7A0000000000000000000022 /* Resources */ = {
+		10E8D65DBED9CFBFBE49F9B8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE9CA1F066B078F8C8E42CA6 /* Assets.xcassets in Resources */,
+				1E711A0300211C77ADFF3210 /* InfoPlist.xcstrings in Resources */,
+				33E074913E2BF4372567CD3C /* Localizable.xcstrings in Resources */,
+				68E09EC4758B080EE5FA1D78 /* PrivacyInfo.xcprivacy in Resources */,
+				17F748CA81A33052EF4C0F04 /* TetsuLog.storekit in Resources */,
+				91296D73221FEFA7B369353B /* seed_spots.json in Resources */,
+				EE771F8A00D7D6B3EEFD513F /* seed_vehicles.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AA6739C2D2B94F4D37EB7DD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B919A1FF2FE2E89100749BFB /* Assets.xcassets in Resources */,
+				F0B47C0301BDF85EF29F776B /* README.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DE3F2EBF48DE75EAFF98958C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C02B1E790D82388FA16C8BB9 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7A0000000000000000000020 /* Sources */ = {
+		0AC056849C87034338EEB6BF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				976994CFAEE48AC5B61F5B7D /* Models.swift in Sources */,
+				6105B172264F203C4A532E68 /* SharedStore.swift in Sources */,
+				34627D6406270DF31357E0FD /* TetsuLogWatchApp.swift in Sources */,
+				FF94E92828937279B001A4F2 /* WatchQuickRecordView.swift in Sources */,
+				29B531E792382DE04A3FD810 /* WatchTheme.swift in Sources */,
+				E105EA86233600799145916F /* WatchTodayView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29E56C7BA3DBB7BA41DCC947 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				360FDB5BE4C73A9D4A8DC68D /* AddSightingView.swift in Sources */,
+				2B0F13AED9F6D6B64D467453 /* AddVehicleClassView.swift in Sources */,
+				B3AC2D858018B5B548BFBF69 /* AppLock.swift in Sources */,
+				34DADD31A5D3C93E5D0EA8B4 /* ApproachMonitor.swift in Sources */,
+				744D512FE56EAB56F471D26B /* AudioPlayerView.swift in Sources */,
+				8AF4DACF3936C8E0002E04C4 /* AudioRecorderView.swift in Sources */,
+				CB09631B3FE05C320A09B594 /* AudioStore.swift in Sources */,
+				B4E97AF07A732B26B38B04F3 /* CSVImportView.swift in Sources */,
+				24014E458C6ADC623D9B802F /* CSVImporter.swift in Sources */,
+				31400193D7ACB2A3269D0F59 /* CollectionView.swift in Sources */,
+				4F979966EAD06B3D7B9D691E /* ExportService.swift in Sources */,
+				A485011E285D1C0FFC7989B2 /* FormStyle.swift in Sources */,
+				A20FD864C48383778C86C121 /* FormationNumberParser.swift in Sources */,
+				B5BCA0D103A67DD1952D1FD2 /* FormationScannerView.swift in Sources */,
+				BA686FD0242524F7DC27AAF0 /* Haptics.swift in Sources */,
+				5408B19FCA57BCE1A42E44EE /* LogView.swift in Sources */,
+				12CE3EE62188099C2E314586 /* MapTabView.swift in Sources */,
+				63EBEEF7EABCD9DEECAC2A46 /* Models.swift in Sources */,
+				EB940822F95050E47F757455 /* OnboardingView.swift in Sources */,
+				CF408BF5DAF87CA0671CD811 /* PhotoMetadata.swift in Sources */,
+				DD435CB89AB7A7B28F2C2D05 /* PhotoStore.swift in Sources */,
+				64C0933BD02E4B304161E720 /* PolylineCodec.swift in Sources */,
+				4D7BFA9B617FE371F2DD2662 /* PreviewData.swift in Sources */,
+				B8935BFA46A72AD2C98643E2 /* ProGate.swift in Sources */,
+				444989E49192C6650CE67F6E /* PurchaseManager.swift in Sources */,
+				B542A01B5C41ABDC68FC226B /* PurchaseView.swift in Sources */,
+				07D5A8181326A7741F78FE6B /* RideActivityAttributes.swift in Sources */,
+				6BF3D8D8C158E3749FA52902 /* RideEditView.swift in Sources */,
+				DF13F8FF926B92918A34B55E /* RideSessionView.swift in Sources */,
+				3FBB3D5824173C132CA85026 /* RootTabView.swift in Sources */,
+				C1474B601709A84F0B9E5CD3 /* SeedData.swift in Sources */,
+				6B19508AC9E7AA6A2AA2A445 /* SettingsView.swift in Sources */,
+				CC9DC4749A7C7D8CE9407318 /* ShareCardView.swift in Sources */,
+				DDE5D64F25342309F0D44AFF /* SharedStore.swift in Sources */,
+				0F3066F80683039E5A81C7FE /* ShootingSpotView.swift in Sources */,
+				7601925BE59F30E04BBD7AA2 /* Statistics.swift in Sources */,
+				0064AA73E2F78F2F7D011B67 /* StatsView.swift in Sources */,
+				1AC9827357CE63B5BE4CEE1D /* SuggestField.swift in Sources */,
+				709EC88D946ED55DC9B7A1B3 /* SunCalculator.swift in Sources */,
+				34E320F650FA9815AEE27709 /* TetsuLogApp.swift in Sources */,
+				25AC139EEF6955D2FF458045 /* TetsuLogIntents.swift in Sources */,
+				D3D659576815B0AE4C023D74 /* Theme.swift in Sources */,
+				1CF3402D3D6E3A606EDBC127 /* TodaySuggestionsStrip.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F1E88065C76440631166FE2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9ABA6BC4B57B5699A27C5D10 /* CollectionWidget.swift in Sources */,
+				09B62AF6D1F69BAAEF56F77C /* Models.swift in Sources */,
+				026E5DDF38882633CBF45258 /* RetiringWidget.swift in Sources */,
+				48C99645633B6B47B70EAEC6 /* RideActivityAttributes.swift in Sources */,
+				08FE8DCE305E21766E67CAF4 /* RideLiveActivity.swift in Sources */,
+				3ECDA0871EEBD7A824438DD5 /* SharedStore.swift in Sources */,
+				6F8687E52A65D35C7BBA7504 /* TetsuLogWidgetBundle.swift in Sources */,
+				B28C7ADB1EAA7297066E5115 /* WidgetTheme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83DBB496A27AF2F1D55ABFD2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F24AB6127FBE48E1906B0D6 /* CSVImporterTests.swift in Sources */,
+				9F0EB70D6ED6C08AADD33B0A /* FormationNumberParserTests.swift in Sources */,
+				FA4D5A1E6E5458CC24B9AE64 /* PolylineCodecTests.swift in Sources */,
+				F9A5D30B6BF51C60B8AB7C68 /* StatisticsNormalizationTests.swift in Sources */,
+				257EE4907A18506E5E87B9A3 /* SunCalculatorTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		966D40F058396125BCCDEF94 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2F2A90FADFFB249289743A1 /* Models.swift in Sources */,
+				F1B625185195919F153A85DD /* SharedStore.swift in Sources */,
+				0AADDF1AB03D3754FB369C6B /* SightingComplication.swift in Sources */,
+				011DC00C774AA6A47C069490 /* WatchComplicationBundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		1D06AB8F7EE151EEFC01D18B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CB0D50EB74233FB49B2511E3 /* TetsuLogWatchWidgets */;
+			targetProxy = 3C4B628651E132E8CE1189E9 /* PBXContainerItemProxy */;
+		};
+		4890365759CD93560618CF49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1E09B72E59946534055B7BDB /* TetsuLog */;
+			targetProxy = 490FD365E895476FAE93DE92 /* PBXContainerItemProxy */;
+		};
+		5F35D2F23F6578795BEA8C15 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 87D0CB06D0CFCCAF347E1661 /* TetsuLogWidgetsExtension */;
+			targetProxy = 0D7FB0229C622CCF000D8678 /* PBXContainerItemProxy */;
+		};
+		EC0CF1983684D7ACD14CA20D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A07C670AD002A9712EDCCFF9 /* TetsuLogWatch */;
+			targetProxy = 9AD5FA0DA969A788F4BB2388 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		7A0000000000000000000008 /* Debug */ = {
+		1F576B687FCE822D05E5502A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWidgetsExtension.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TetsuLogWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.widgets;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		25734D7A2746E4103F6810C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWatch/TetsuLogWatch.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				INFOPLIST_FILE = TetsuLogWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.watchapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		41EDC4762CBFCC54410209DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWatchWidgets/TetsuLogWatchWidgets.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TetsuLogWatchWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.watchapp.cmpl;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		44F959C87F70C975CBBF0DBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SHORTCUTS_FLEXIBLE_MATCHING = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
+					"DEBUG=1",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		7A0000000000000000000009 /* Release */ = {
+		4BC2FE9B79627E8DC83EA20D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TetsuLog/TetsuLog.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				INFOPLIST_FILE = TetsuLog/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6878A76DE0AB374EAA98C4FD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SHORTCUTS_FLEXIBLE_MATCHING = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = iphoneos;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				VALIDATE_PRODUCT = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
-		7A0000000000000000000015 /* Debug */ = {
+		8E3339F9D7B720378CE12069 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWatchWidgets/TetsuLogWatchWidgets.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TetsuLogWatchWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.watchapp.cmpl;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		996AE19A4725C03C86143616 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TetsuLog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TetsuLog";
+			};
+			name = Release;
+		};
+		9ED8B350792278E099C7DA60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWidgetsExtension.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TetsuLogWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.widgets;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A4DBE05E2B8008A9DC25F565 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_APP_SHORTCUTS_FLEXIBLE_MATCHING = NO;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = TetsuLog/TetsuLog.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = R329LXJQXR;
 				INFOPLIST_FILE = TetsuLog/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		7A0000000000000000000016 /* Release */ = {
+		B7463B88CB11737B0049B4CF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_APP_SHORTCUTS_FLEXIBLE_MATCHING = NO;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = TetsuLog/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = R329LXJQXR;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.tests;
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TetsuLog.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TetsuLog";
 			};
-			name = Release;
+			name = Debug;
+		};
+		E9B69C780227D244A167E3FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TetsuLogWatch/TetsuLogWatch.entitlements;
+				DEVELOPMENT_TEAM = R329LXJQXR;
+				INFOPLIST_FILE = TetsuLogWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ryofujimatsu.tetsulog.watchapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7A0000000000000000000007 /* Build configuration list for PBXProject "TetsuLog" */ = {
+		5E56D25B7A4D3A78397522D4 /* Build configuration list for PBXNativeTarget "TetsuLogWidgetsExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7A0000000000000000000008 /* Debug */,
-				7A0000000000000000000009 /* Release */,
+				1F576B687FCE822D05E5502A /* Debug */,
+				9ED8B350792278E099C7DA60 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		7A0000000000000000000014 /* Build configuration list for PBXNativeTarget "TetsuLog" */ = {
+		98DBD6C7FB7EC8DDE88AA040 /* Build configuration list for PBXNativeTarget "TetsuLogWatchWidgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7A0000000000000000000015 /* Debug */,
-				7A0000000000000000000016 /* Release */,
+				8E3339F9D7B720378CE12069 /* Debug */,
+				41EDC4762CBFCC54410209DC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
+		};
+		9D16CA5F25C9F79597B44DC1 /* Build configuration list for PBXNativeTarget "TetsuLog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4DBE05E2B8008A9DC25F565 /* Debug */,
+				4BC2FE9B79627E8DC83EA20D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B7BA5737E26A0FFBF232ADB0 /* Build configuration list for PBXNativeTarget "TetsuLogWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E9B69C780227D244A167E3FC /* Debug */,
+				25734D7A2746E4103F6810C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E0064BF32B04FBE58F6E6497 /* Build configuration list for PBXNativeTarget "TetsuLogTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7463B88CB11737B0049B4CF /* Debug */,
+				996AE19A4725C03C86143616 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FD584B5A05EB84AD5BC0A7D2 /* Build configuration list for PBXProject "TetsuLog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44F959C87F70C975CBBF0DBB /* Debug */,
+				6878A76DE0AB374EAA98C4FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 7A0000000000000000000004 /* Project object */;
+	rootObject = 38846C0FB7633CE9D2F4D33E /* Project object */;
 }
